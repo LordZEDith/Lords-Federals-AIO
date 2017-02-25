@@ -9,7 +9,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Federal Poppy");
+		MainMenu = GPluginSDK->AddMenu("Lords & Federals Poppy");
 
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{

@@ -33,6 +33,7 @@
 #include "Diana.h"
 #include "Rengar.h"
 #include "Warwick.h"
+#include "Poppy.h"
 
 // Champions Support
 #include "Sona.h"

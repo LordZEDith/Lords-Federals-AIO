@@ -975,6 +975,102 @@ public:
 	}
 };
 
+class cPoppy : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		//Message().JungleLaneSeries();
+		Message().ChampionLoadMessage();
+		Poppy().InitializeMenu();
+		Poppy().LoadSpells();
+
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+	}
+
+	virtual void OnRender() override
+	{
+		Poppy().Drawing();
+		AutoSmite().DrawingsSmite();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		{
+			return;
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		{
+			Poppy().Combo();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		{
+			Poppy().Harass();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		{
+			Poppy().LaneClear();
+			Poppy().JungleClear();
+		}
+
+		Poppy().SkinChanger();
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+		Poppy().OnGapcloser(Args);
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+		Poppy().OnCreateObject(Source);
+
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+		Poppy().OnDeleteObject(Source);
+	}
+
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+		Poppy().OnInterruptible(Args);
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+		Poppy().OnDash(Args);
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+};
+
 class cNocturne : public IChampion
 {
 public:
