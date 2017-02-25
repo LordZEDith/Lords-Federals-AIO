@@ -132,12 +132,6 @@
     <ClInclude Include="Color.h">
       <Filter>Header Files\Custom/Common</Filter>
     </ClInclude>
-    <ClInclude Include="PluginData.h">
-      <Filter>Header Files\SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="PluginSDK.h">
-      <Filter>Header Files\SDK</Filter>
-    </ClInclude>
     <ClInclude Include="TextHeader.h">
       <Filter>Header Files\Custom/Common</Filter>
     </ClInclude>
@@ -171,11 +165,14 @@
     <ClInclude Include="LPPConstants.h">
       <Filter>Header Files\SDK</Filter>
     </ClInclude>
+    <ClInclude Include="PluginData.h">
+      <Filter>Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="PluginSDK.h">
+      <Filter>Header Files\SDK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Champions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

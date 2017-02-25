@@ -191,7 +191,6 @@
     <ClInclude Include="Ziggs.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Champions.cpp" />
     <ClCompile Include="PluginSDK.cpp" />
     <ClCompile Include="Program.cpp" />
   </ItemGroup>

@@ -36,6 +36,7 @@ public:
 	virtual void OnProcessSpell(CastedSpell const& Args) = 0;
 	virtual void OnExitVisible(IUnit* Source) = 0;
 	virtual void OnUnitDeath(IUnit* Source) = 0;
+	virtual void OnBuffAdd(IUnit* Source, void* BuffData) = 0;
 	virtual void OnLoad() = 0;
 	//virtual void OnUnLoad() = 0;
 	virtual void OnRender() = 0;
@@ -126,6 +127,11 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -223,6 +229,11 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
 };
 
 class cZiggs : public IChampion
@@ -310,6 +321,11 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -405,6 +421,11 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
 };
 
 class cDraven : public IChampion
@@ -497,6 +518,110 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
+};
+
+class cEzreal : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		//Message().MidLaneSeries();
+		Message().ChampionLoadMessage();
+		Ezreal().InitializeSpells();
+		Ezreal().InitializeMenu();	
+	}
+
+	virtual void OnRender() override
+	{
+		Ezreal().Drawing();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		{
+			return;
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		{
+			Ezreal().Combo();
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		{
+			Ezreal().Harass();
+			Ezreal().LastHit();
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		{
+			Ezreal().LaneClear();
+		}
+		
+		Ezreal().Automatic();
+		Ezreal().EAntiMelee();
+		Ezreal().StackMuneItem();
+		Ezreal().KsJungle();
+		Ezreal().SkinChanger();		
+	}
+
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+		Ezreal().OnGapcloser(Args);
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+		
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+		Ezreal().OnAfterAttack(Source, Target);
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+		Ezreal().OnProcessSpell(Args);
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+		Ezreal().OnBuffAdd(Source, BuffData);
+	}
 };
 
 class cAhri : public IChampion
@@ -588,6 +713,11 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -684,6 +814,11 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
 };
 
 class cOlaf : public IChampion
@@ -777,6 +912,11 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -877,6 +1017,11 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
 };
 
 class cMaokai : public IChampion
@@ -970,6 +1115,11 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -1069,6 +1219,11 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
 };
 
 class cNocturne : public IChampion
@@ -1165,6 +1320,11 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
 };
 
 class cHecarim : public IChampion
@@ -1256,6 +1416,11 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -1357,6 +1522,11 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
 };
 
 class cMalphite : public IChampion
@@ -1445,6 +1615,11 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -1541,6 +1716,11 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
 };
 
 class cSona : public IChampion
@@ -1630,6 +1810,11 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -1732,6 +1917,11 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
 };
 
 class cWarwick : public IChampion
@@ -1821,6 +2011,11 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -1916,6 +2111,11 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
 };
 
 class cKayle : public IChampion
@@ -2005,6 +2205,11 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -2101,6 +2306,11 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
 };
 
 class cTwistedFate : public IChampion
@@ -2192,6 +2402,11 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+		
+	}
 };
 
 
@@ -2258,6 +2473,12 @@ PLUGIN_EVENT(void) OnDash(UnitDash* Source)
 	pChampion->OnDash(Source);
 }
 
+PLUGIN_EVENT(void) OnBuffAdd(IUnit* Source, void* BuffData)
+{
+	pChampion->OnBuffAdd(Source, BuffData);
+}
+
+
 void LoadChampion()
 {
 	std::string szChampion = GEntityList->Player()->ChampionName();
@@ -2271,8 +2492,8 @@ void LoadChampion()
 		pChampion = new cDraven;
 	else if (szChampion == "Tristana")
 		pChampion = new cTristana;
-//	else if (szChampion == "Corki")
-	//	pChampion = new cCorki;
+	else if (szChampion == "Ezreal")
+		pChampion = new cEzreal;
 	// Midlane
 	else if (szChampion == "Ahri")
 		pChampion = new cAhri;
@@ -2328,7 +2549,7 @@ void LoadChampion()
 		GEventManager->AddEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
 		GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 		GEventManager->AddEventHandler(kEventOnLevelUp, OnLevelUp);
-		//GEventManager->AddEventHandler(kEventOnBuffAdd, OnBuffAdd);
+		GEventManager->AddEventHandler(kEventOnBuffAdd, OnBuffAdd);
 		//GEventManager->AddEventHandler(kEventOnBuffRemove, OnBuffRemove);
 		GEventManager->AddEventHandler(kEventOnSpellCast, OnProcessSpell);
 		GEventManager->AddEventHandler(kEventOnCreateObject, OnCreateObject);
@@ -2365,7 +2586,7 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->RemoveEventHandler(kEventOnLevelUp, OnLevelUp);
-	//GEventManager->RemoveEventHandler(kEventOnBuffAdd, OnBuffAdd);
+	GEventManager->RemoveEventHandler(kEventOnBuffAdd, OnBuffAdd);
 	//GEventManager->RemoveEventHandler(kEventOnBuffRemove, OnBuffRemove);
 	GEventManager->RemoveEventHandler(kEventOnSpellCast, OnProcessSpell);
 	GEventManager->RemoveEventHandler(kEventOnCreateObject, OnCreateObject);

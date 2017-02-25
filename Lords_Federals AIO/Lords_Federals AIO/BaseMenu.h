@@ -86,6 +86,7 @@ IMenuOption* LaneClearQ;
 IMenuOption* LastHitQ;
 IMenuOption* CCedQ;
 IMenuOption* RangeQ;
+IMenuOption* RangeQlh;
 IMenuOption* MinionsQ;
 IMenuOption* JungleQ;
 IMenuOption* CharmedQ;
@@ -96,6 +97,8 @@ IMenuOption* goPassiveC;
 IMenuOption* goPassiveLC;
 IMenuOption* goPassiveH;
 IMenuOption* goPassiveJ;
+IMenuOption* LaneClearQLast;
+IMenuOption* HarassWithFarm;
 
 IMenuOption* ComboW;
 IMenuOption* HarassW;
@@ -216,6 +219,7 @@ IMenuOption* FastCombo;
 IMenuOption* ComboA;
 IMenuOption* ComboAA;
 IMenuOption* Predic;
+IMenuOption* StackMune;
 
 IMenuOption* rStun;
 IMenuOption* rBlind;
@@ -235,6 +239,8 @@ IMenuOption* AutoSmites;
 IMenuOption* AutoHarass;
 IMenuOption* AntiDash;
 IMenuOption* CheckShield;
+IMenuOption* AntiMelee;
+IMenuOption* AntiGrab;
 
 IMenuOption* QD;
 IMenuOption* WD;
@@ -295,6 +301,7 @@ bool temp = false;
 int cnumber = 0;
 float DragonDmg = 0;
 double DragonTime = 0;
+int QLastCast = 0;
 
 short keystate;
 bool smiteKeyWasDown = false;
