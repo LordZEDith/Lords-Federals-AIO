@@ -7,8 +7,6 @@
 
 bool jumpKeyWasDown = false;
 bool wAtivo;
-float DragonDmg = 0;
-double DragonTime = 0;
 
 class Ziggs
 {

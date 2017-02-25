@@ -168,6 +168,9 @@
     <ClInclude Include="Lux.h">
       <Filter>Header Files\Champions\Midlane</Filter>
     </ClInclude>
+    <ClInclude Include="LPPConstants.h">
+      <Filter>Header Files\SDK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Champions.cpp">
