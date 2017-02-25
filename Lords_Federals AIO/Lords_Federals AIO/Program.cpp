@@ -593,6 +593,99 @@ public:
 	}
 };
 
+class cLux : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		//Message().JungleLaneSeries();
+		Message().ChampionLoadMessage();
+		Lux().InitializeMenu();
+		Lux().LoadSpells();
+	}
+
+	virtual void OnRender() override
+	{
+		Lux().Drawing();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		{
+			return;
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		{
+			Lux().Combo();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		{
+			Lux().Harass();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		{
+			Lux().JungleClear();
+			Lux().LaneClear();
+		}
+
+		Lux().SkinChanger();
+		Lux().AutoRKS();
+		Lux().AutoCCed();
+		Lux().KsJungle();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+		Lux().OnGapcloser(Args);
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+		Lux().OnCreateObject(Source);
+
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+		Lux().OnDeleteObject(Source);
+	}
+
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+		Lux().OnProcessSpell(Args);
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+};
+
 class cOlaf : public IChampion
 {
 public:
@@ -2064,6 +2157,11 @@ PLUGIN_EVENT(void) OnUnitDeath(IUnit* Source)
 	pChampion->OnUnitDeath(Source);
 }
 
+PLUGIN_EVENT(void) OnDash(UnitDash* Source)
+{
+	pChampion->OnDash(Source);
+}
+
 void LoadChampion()
 {
 	std::string szChampion = GEntityList->Player()->ChampionName();
@@ -2082,6 +2180,8 @@ void LoadChampion()
 	// Midlane
 	else if (szChampion == "Ahri")
 		pChampion = new cAhri;
+	else if (szChampion == "Lux")
+		pChampion = new cLux;
 	else if (szChampion == "Ziggs")
 		pChampion = new cZiggs;
 	else if (szChampion == "Xerath")
@@ -2139,6 +2239,7 @@ void LoadChampion()
 		GEventManager->AddEventHandler(kEventOnDestroyObject, OnDeleteObject);
 		GEventManager->AddEventHandler(kEventOnExitVisible, OnExitVisible);
 		GEventManager->AddEventHandler(kEventOnUnitDeath, OnUnitDeath);
+		GEventManager->AddEventHandler(kEventOnDash, OnDash);
 	}
 }
 
@@ -2175,4 +2276,5 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOnDestroyObject, OnDeleteObject);
 	GEventManager->RemoveEventHandler(kEventOnExitVisible, OnExitVisible);
 	GEventManager->RemoveEventHandler(kEventOnUnitDeath, OnUnitDeath);
+	GEventManager->RemoveEventHandler(kEventOnDash, OnDash);
 }

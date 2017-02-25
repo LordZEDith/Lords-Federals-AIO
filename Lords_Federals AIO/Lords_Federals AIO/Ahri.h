@@ -14,13 +14,13 @@ public:
 
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{
-			ComboQ = ComboSettings->CheckBox("Use Q", true);			
+			ComboQ = ComboSettings->CheckBox("Use Q", true);
 			ComboW = ComboSettings->CheckBox("Use W", true);
 			ComboE = ComboSettings->CheckBox("Use E", true);
 			ComboR = ComboSettings->CheckBox("Use R KS Combo", true);
 			RMax = ComboSettings->CheckBox("Auto R fight logic + aim Q", true);
 			inUnderTower = ComboSettings->CheckBox("Dont Dash To Enemy Turret", false);
-			RWall = ComboSettings->CheckBox("Dont Dash to Wall", false);			
+			RWall = ComboSettings->CheckBox("Dont Dash to Wall", false);
 		}
 
 		HarassSettings = MainMenu->AddMenu("Harass Settings");
@@ -42,10 +42,10 @@ public:
 
 		LaneClearSettings = MainMenu->AddMenu("LaneClear Settings");
 		{
-			LaneClearQ = LaneClearSettings->CheckBox("Use Q in laneclear", true);			
+			LaneClearQ = LaneClearSettings->CheckBox("Use Q in laneclear", true);
 			MinionsQ = LaneClearSettings->AddInteger("Minimum minions to Q in laneclear", 1, 10, 4);
 			LaneClearW = LaneClearSettings->CheckBox("Use W in laneclear", false);
-			MinionsW = LaneClearSettings->AddInteger("Minimum minions to W in laneclear", 1, 10, 6);			
+			MinionsW = LaneClearSettings->AddInteger("Minimum minions to W in laneclear", 1, 10, 6);
 			LaneClearMana = LaneClearSettings->AddInteger("Minimum MP% to laneclear", 1, 100, 60);
 		}
 
@@ -62,9 +62,11 @@ public:
 		{
 			EGapCloser = MiscSettings->CheckBox("Automatically E GapCloser", true);
 			EInterrupter = MiscSettings->CheckBox("Automatically E Interrupt Spell", true);
-			CCedQ = MiscSettings->CheckBox("Auto Q When Enemies Cant Move", true);			
+			CCedQ = MiscSettings->CheckBox("Auto Q When Enemies Cant Move", true);
+			CheckShield = MiscSettings->CheckBox("No Charm (BlackShield, Banshee)", true);
+
 		}
-		
+
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
 		{
 			DrawReady = DrawingSettings->CheckBox("Draw Only Ready Spells", true);
@@ -72,7 +74,7 @@ public:
 			DrawAxe = DrawingSettings->CheckBox("Draw Q Aim", true);
 			DrawW = DrawingSettings->CheckBox("Draw W", false);
 			DrawE = DrawingSettings->CheckBox("Draw E", false);
-			DrawR = DrawingSettings->CheckBox("Draw R", false);			
+			DrawR = DrawingSettings->CheckBox("Draw R", false);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
 		}
 
@@ -119,13 +121,13 @@ public:
 				if (misToTarget < Q->Range() && misToTarget > 50)
 
 				{
-					auto PlayerPos = GEntityList->Player()->GetPosition();					
-					
+					auto PlayerPos = GEntityList->Player()->GetPosition();
+
 					auto cursorToTarget = GetDistanceVectors(PlayerPos.Extend(GGame->CursorPosition(), 100), Target->GetPosition());
 					extz = finishPosition.Extend(Target->ServerPosition(), cursorToTarget + misToTarget);
 
 					if (GetDistanceVectors(PlayerPos, extz) < 800 && CountEnemy(extz, 400) < 2)
-					{	
+					{
 						return extz;
 					}
 
@@ -135,13 +137,13 @@ public:
 
 		}
 
-		return Vec3(0,0,0);
+		return Vec3(0, 0, 0);
 	}
 
 	static void RLogic()
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 450 + R->Range());
-		
+
 		Vec3 dashPosition;
 		auto PlayerPos = GEntityList->Player()->ServerPosition();
 		dashPosition = PlayerPos.Extend(GGame->CursorPosition(), 450);
@@ -179,13 +181,13 @@ public:
 
 		if (ComboR->Enabled())
 		{
-			auto rtarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 450 + R->Range());			
+			auto rtarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 450 + R->Range());
 
 			if (rtarget->IsValidTarget())
 			{
-				auto comboDmg = GetDamageTeste(target, false);				
+				auto comboDmg = GetDamageTeste(target, false);
 
-				if (CountAlly(rtarget->GetPosition(), 600) < 2 && comboDmg > rtarget->GetHealth() && GetDistanceVectors(rtarget->GetPosition(), GGame->CursorPosition()) < GetDistanceVectors(GEntityList->Player()->GetPosition(), rtarget->GetPosition()) && 
+				if (CountAlly(rtarget->GetPosition(), 600) < 2 && comboDmg > rtarget->GetHealth() && GetDistanceVectors(rtarget->GetPosition(), GGame->CursorPosition()) < GetDistanceVectors(GEntityList->Player()->GetPosition(), rtarget->GetPosition()) &&
 					GetDistanceVectors(rtarget->ServerPosition(), dashPosition) < 500)
 				{
 					R->CastOnPosition(dashPosition);
@@ -200,7 +202,7 @@ public:
 				}
 			}
 		}
-	}	
+	}
 
 	static void Automatic()
 	{
@@ -233,7 +235,7 @@ public:
 				Q->CastOnTarget(target, kHitChanceHigh);
 				return;
 			}
-			
+
 			if (CCedQ->Enabled() && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50) && Q->IsReady() && !CanMove(target) && !target->IsDead() && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > Q->ManaCost())
 			{
 				Q->CastOnTarget(target, kHitChanceMedium);
@@ -254,7 +256,14 @@ public:
 
 		if (ComboE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range() - 50))
 		{
-			if (!target->HasBuff("BlackShield"))
+			if (CheckShield->Enabled())
+			{
+				if (CheckShielded(target))
+				{
+					E->CastOnTarget(target, kHitChanceHigh);
+				}
+			}
+			else
 			{
 				E->CastOnTarget(target, kHitChanceHigh);
 			}
@@ -284,7 +293,14 @@ public:
 
 		if (HarassE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range() - 50))
 		{
-			if (!target->HasBuff("BlackShield"))
+			if (CheckShield->Enabled())
+			{
+				if (CheckShielded(target))
+				{
+					E->CastOnTarget(target, kHitChanceHigh);
+				}
+			}
+			else
 			{
 				E->CastOnTarget(target, kHitChanceHigh);
 			}
@@ -299,7 +315,7 @@ public:
 		{
 			Q->CastOnTarget(target, kHitChanceHigh);
 		}
-	}		
+	}
 
 	static void JungleClear()
 	{
@@ -368,7 +384,7 @@ public:
 	}
 
 	static void LaneClear()
-	{		
+	{
 		if (GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger())
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
@@ -382,7 +398,7 @@ public:
 					if (count >= MinionsQ->GetInteger() && Q->CastOnPosition(pos))
 					{
 						return;
-					}					
+					}
 				}
 
 				if (LaneClearW->Enabled() && W->IsReady() && GetMinionsInRange(GEntityList->Player()->GetPosition(), W->Range() - 100) >= MinionsW->GetInteger() && !FoundMinionsNeutral(E->Range() + 100))
@@ -423,16 +439,16 @@ public:
 	{
 		if (EGapCloser->Enabled() && E->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < E->Range())
 
-			{
-				E->CastOnTarget(args.Sender, kHitChanceMedium);
-			}			
+		{
+			E->CastOnTarget(args.Sender, kHitChanceMedium);
+		}
 	}
 
 	static void OnInterruptible(InterruptibleSpell const& Args)
 	{
 		if (EInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < E->Range())
-		{			
-				E->CastOnTarget(Args.Target, kHitChanceHigh);
+		{
+			E->CastOnTarget(Args.Target, kHitChanceHigh);
 		}
 	}
 
@@ -478,17 +494,17 @@ public:
 
 			/*if (GEntityList->Player()->HasBuff("AhriTumble"))
 			{
-				auto buffTime = GBuffData->GetEndTime(GEntityList->Player()->GetBuffDataByName("AhriTumble"));
+			auto buffTime = GBuffData->GetEndTime(GEntityList->Player()->GetBuffDataByName("AhriTumble"));
 
-				
-				GGame->PrintChat("Tenho Buff do Ult");
-				GGame->PrintChat(std::to_string(buffTime - GGame->Time()).data());
+
+			GGame->PrintChat("Tenho Buff do Ult");
+			GGame->PrintChat(std::to_string(buffTime - GGame->Time()).data());
 			}*/
 		}
 	}
 
 	static void OnProcessSpell(CastedSpell const& Args)
-	{		
+	{
 		if (strstr(Args.Name_, "AhriOrb"))
 		{
 			MissileEndPos = Args.EndPosition_;

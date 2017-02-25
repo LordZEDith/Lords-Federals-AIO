@@ -210,6 +210,7 @@ IMenuOption* SmiteRange;
 IMenuOption* SmiteText;
 IMenuOption* SmiteDamage;
 IMenuOption* SmiteKeyToggle;
+IMenuOption* SmiteAmmo;
 
 IMenuOption* FastCombo;
 IMenuOption* ComboA;
@@ -233,6 +234,7 @@ IMenuOption* UseItems;
 IMenuOption* AutoSmites;
 IMenuOption* AutoHarass;
 IMenuOption* AntiDash;
+IMenuOption* CheckShield;
 
 IMenuOption* QD;
 IMenuOption* WD;
@@ -291,6 +293,8 @@ bool FoundSmite = false;
 int tempaxe = 0;
 bool temp = false;
 int cnumber = 0;
+float DragonDmg = 0;
+double DragonTime = 0;
 
 short keystate;
 bool smiteKeyWasDown = false;

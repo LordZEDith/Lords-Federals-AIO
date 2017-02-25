@@ -4,17 +4,18 @@
 #include "Draven.h"
 #include "Ashe.h"
 #include "Ezreal.h"
-#include "Kogmaw.h"
+//#include "Kogmaw.h"
 #include "Corki.h"
 #include "Tristana.h"
 
 
 // Champions Midlane
 #include "Ahri.h"
-#include "Ziggs.h"
+#include "Karthus.h"
+#include "Lux.h"
 #include "TwistedFate.h"
 #include "Xerath.h"
-#include "Karthus.h"
+#include "Ziggs.h"
 
 
 // Champions Jungle

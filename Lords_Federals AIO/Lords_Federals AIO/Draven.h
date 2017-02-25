@@ -26,11 +26,11 @@ public:
 		AxeSettings = MainMenu->AddMenu("Axe Settings");
 		{
 			gotoAxeC = AxeSettings->CheckBox("Catch axe", true);
-			gotoAxeMaxDist = AxeSettings->AddInteger("Max dist to catch axe", 200, 1500, 500);			
+			gotoAxeMaxDist = AxeSettings->AddInteger("Max dist to catch axe", 200, 1500, 500);
 			axeKill = AxeSettings->CheckBox("No Catch Axe if can kill 2 AA", true);
 			axeTower = AxeSettings->CheckBox("No Catch Axe Under Turret Combo", true);
 			axeTower2 = AxeSettings->CheckBox("No Catch Axe Under Turret Farm", true);
-			axeEnemy = AxeSettings->CheckBox("No Catch Axe in Enemy grup", true);			
+			axeEnemy = AxeSettings->CheckBox("No Catch Axe in Enemy grup", true);
 		}
 
 		QSettings = MainMenu->AddMenu("Q Settings");
@@ -220,14 +220,14 @@ public:
 	}
 
 	static void CatchAxe(IUnit* target)
-	{		
+	{
 		auto maxDist = gotoAxeMaxDist->GetInteger();
-		auto modokey = GOrbwalking->GetOrbwalkingMode();		
-		
+		auto modokey = GOrbwalking->GetOrbwalkingMode();
+
 		/*if (GetDistance(GEntityList->Player(), target) < 30)
 		{
-			GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
-			return;
+		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
+		return;
 		}*/
 
 		if (axeTower->Enabled() && modokey == kModeCombo && IsUnderTurretPos(target->GetPosition()))
@@ -317,7 +317,7 @@ public:
 				R->CastOnTargetAoE(TargetR, 2, kHitChanceHigh);
 			}
 		}
-	}	
+	}
 
 	static void AxeLogicFarm()
 	{
@@ -325,7 +325,7 @@ public:
 		{
 			return;
 		}
-		
+
 		if (axeListTeste.size() == 0)
 		{
 			GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
@@ -333,7 +333,7 @@ public:
 		}
 
 		if (axeListTeste.size() == 1)
-		{			
+		{
 			CatchAxe(axeListTeste.front());
 			return;
 		}
@@ -342,14 +342,14 @@ public:
 			auto bestAxe = axeListTeste.front();
 			/*for (auto obj : axeListTeste)
 			{
-				if (GetDistanceVectors(GGame->CursorPosition(), bestAxe->GetPosition()) > GetDistanceVectors(GGame->CursorPosition(), obj->GetPosition()))
-				{
-					bestAxe = obj;
-				}
+			if (GetDistanceVectors(GGame->CursorPosition(), bestAxe->GetPosition()) > GetDistanceVectors(GGame->CursorPosition(), obj->GetPosition()))
+			{
+			bestAxe = obj;
+			}
 			}*/
 			GOrbwalking->DisableNextAttack();
 			CatchAxe(bestAxe);
-		}		
+		}
 	}
 
 	static void AxeLogicCombo()
@@ -358,7 +358,7 @@ public:
 		{
 			return;
 		}
-		
+
 		if (axeListTeste.size() == 0)
 		{
 			GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
@@ -391,28 +391,28 @@ public:
 			{
 				/*if (GetDistanceVectors(GGame->CursorPosition(), bestAxe->GetPosition()) > GetDistanceVectors(GGame->CursorPosition(), obj->GetPosition()))
 				{
-					bestAxe = obj;
+				bestAxe = obj;
 				}*/
 			}
 
 			CatchAxe(bestAxe);
 		}
-	}		
+	}
 
 	static void OnGapcloser(GapCloserSpell const& args)
 	{
 		if (EGapCloser->Enabled() && E->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < E->Range())
-			{
-				E->CastOnTarget(args.Sender, kHitChanceMedium);
-			}				
-	}	
+		{
+			E->CastOnTarget(args.Sender, kHitChanceMedium);
+		}
+	}
 
 	static void OnAfterAttack(IUnit* source, IUnit* target)
 	{
 		if (source != GEntityList->Player() || target == nullptr)
 			return;
 
-		auto buffCount = GEntityList->Player()->GetBuffCount("dravenspinningattack");		
+		auto buffCount = GEntityList->Player()->GetBuffCount("dravenspinningattack");
 
 		switch (GOrbwalking->GetOrbwalkingMode())
 		{
@@ -446,17 +446,17 @@ public:
 	static void OnCreateObject(IUnit* Source)
 	{
 		if (strstr(Source->GetObjectName(), "Draven_Base_Q_reticle_self.troy"))
-		{		
-			axeListTeste.push_back(Source);		
+		{
+			axeListTeste.push_back(Source);
 		}
 	}
 
 	static void OnDeleteObject(IUnit* Source)
 	{
 		if (strstr(Source->GetObjectName(), "Draven_Base_Q_reticle_self.troy"))
-		{			
-			axeListTeste.remove(Source);			
+		{
+			axeListTeste.remove(Source);
 		}
-	}	
-	
+	}
+
 };

@@ -13,21 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\ADC">
-      <UniqueIdentifier>{a2988ff6-947d-483e-8f07-abb8f7cdc203}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Jungle">
-      <UniqueIdentifier>{7096a396-6c2e-464b-9343-0465291d7be7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Midlane">
-      <UniqueIdentifier>{9fdc098c-03d6-41cf-8fd8-866684a7274e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\TopLane">
-      <UniqueIdentifier>{05dbd84b-656a-406e-aba3-f64597b9c891}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Support">
-      <UniqueIdentifier>{a3ffafe0-1a2b-41b0-9e56-e9e1e4161c81}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\SDK">
       <UniqueIdentifier>{16498ad2-6786-4301-bc0d-5d48f08d4185}</UniqueIdentifier>
     </Filter>
@@ -37,88 +22,106 @@
     <Filter Include="Header Files\Custom/Common">
       <UniqueIdentifier>{00285616-8dfe-4fbc-bc4e-caf9ef772702}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Champions">
+      <UniqueIdentifier>{a8e52e86-b2c9-4935-b761-130cfeea48eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Champions\Midlane">
+      <UniqueIdentifier>{9fdc098c-03d6-41cf-8fd8-866684a7274e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Champions\Jungle">
+      <UniqueIdentifier>{7096a396-6c2e-464b-9343-0465291d7be7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Champions\ADC">
+      <UniqueIdentifier>{a2988ff6-947d-483e-8f07-abb8f7cdc203}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Champions\Support">
+      <UniqueIdentifier>{a3ffafe0-1a2b-41b0-9e56-e9e1e4161c81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Champions\TopLane">
+      <UniqueIdentifier>{05dbd84b-656a-406e-aba3-f64597b9c891}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ezreal.h">
-      <Filter>Header Files\ADC</Filter>
+      <Filter>Header Files\Champions\ADC</Filter>
     </ClInclude>
     <ClInclude Include="Kogmaw.h">
-      <Filter>Header Files\ADC</Filter>
+      <Filter>Header Files\Champions\ADC</Filter>
     </ClInclude>
     <ClInclude Include="Ashe.h">
-      <Filter>Header Files\ADC</Filter>
+      <Filter>Header Files\Champions\ADC</Filter>
     </ClInclude>
     <ClInclude Include="Tristana.h">
-      <Filter>Header Files\ADC</Filter>
+      <Filter>Header Files\Champions\ADC</Filter>
     </ClInclude>
     <ClInclude Include="Varus.h">
-      <Filter>Header Files\ADC</Filter>
+      <Filter>Header Files\Champions\ADC</Filter>
     </ClInclude>
     <ClInclude Include="Corki.h">
-      <Filter>Header Files\ADC</Filter>
+      <Filter>Header Files\Champions\ADC</Filter>
     </ClInclude>
     <ClInclude Include="Rengar.h">
-      <Filter>Header Files\Jungle</Filter>
+      <Filter>Header Files\Champions\Jungle</Filter>
     </ClInclude>
     <ClInclude Include="Olaf.h">
-      <Filter>Header Files\Jungle</Filter>
+      <Filter>Header Files\Champions\Jungle</Filter>
     </ClInclude>
     <ClInclude Include="Nocturne.h">
-      <Filter>Header Files\Jungle</Filter>
+      <Filter>Header Files\Champions\Jungle</Filter>
     </ClInclude>
     <ClInclude Include="Hecarim.h">
-      <Filter>Header Files\Jungle</Filter>
+      <Filter>Header Files\Champions\Jungle</Filter>
     </ClInclude>
     <ClInclude Include="TwistedFate.h">
-      <Filter>Header Files\Midlane</Filter>
+      <Filter>Header Files\Champions\Midlane</Filter>
     </ClInclude>
     <ClInclude Include="Ahri.h">
-      <Filter>Header Files\Midlane</Filter>
+      <Filter>Header Files\Champions\Midlane</Filter>
     </ClInclude>
     <ClInclude Include="Xerath.h">
-      <Filter>Header Files\Midlane</Filter>
+      <Filter>Header Files\Champions\Midlane</Filter>
     </ClInclude>
     <ClInclude Include="Ziggs.h">
-      <Filter>Header Files\Midlane</Filter>
+      <Filter>Header Files\Champions\Midlane</Filter>
     </ClInclude>
     <ClInclude Include="Karthus.h">
-      <Filter>Header Files\Midlane</Filter>
+      <Filter>Header Files\Champions\Midlane</Filter>
     </ClInclude>
     <ClInclude Include="Diana.h">
-      <Filter>Header Files\Jungle</Filter>
+      <Filter>Header Files\Champions\Jungle</Filter>
     </ClInclude>
     <ClInclude Include="Draven.h">
-      <Filter>Header Files\ADC</Filter>
+      <Filter>Header Files\Champions\ADC</Filter>
     </ClInclude>
     <ClInclude Include="Darius.h">
-      <Filter>Header Files\TopLane</Filter>
+      <Filter>Header Files\Champions\TopLane</Filter>
     </ClInclude>
     <ClInclude Include="DrMundo.h">
-      <Filter>Header Files\TopLane</Filter>
+      <Filter>Header Files\Champions\TopLane</Filter>
     </ClInclude>
     <ClInclude Include="Kayle.h">
-      <Filter>Header Files\TopLane</Filter>
+      <Filter>Header Files\Champions\TopLane</Filter>
     </ClInclude>
     <ClInclude Include="Malphite.h">
-      <Filter>Header Files\TopLane</Filter>
+      <Filter>Header Files\Champions\TopLane</Filter>
     </ClInclude>
     <ClInclude Include="Maokai.h">
-      <Filter>Header Files\TopLane</Filter>
+      <Filter>Header Files\Champions\TopLane</Filter>
     </ClInclude>
     <ClInclude Include="Poppy.h">
-      <Filter>Header Files\TopLane</Filter>
+      <Filter>Header Files\Champions\TopLane</Filter>
     </ClInclude>
     <ClInclude Include="Shen.h">
-      <Filter>Header Files\TopLane</Filter>
+      <Filter>Header Files\Champions\TopLane</Filter>
     </ClInclude>
     <ClInclude Include="Riven.h">
-      <Filter>Header Files\TopLane</Filter>
+      <Filter>Header Files\Champions\TopLane</Filter>
     </ClInclude>
     <ClInclude Include="Sona.h">
-      <Filter>Header Files\Support</Filter>
+      <Filter>Header Files\Champions\Support</Filter>
     </ClInclude>
     <ClInclude Include="Warwick.h">
-      <Filter>Header Files\Jungle</Filter>
+      <Filter>Header Files\Champions\Jungle</Filter>
     </ClInclude>
     <ClInclude Include="BaseMenu.h">
       <Filter>Header Files\Custom/Common</Filter>
@@ -144,9 +147,6 @@
     <ClInclude Include="Toxic.h">
       <Filter>Header Files\Custom/Common</Filter>
     </ClInclude>
-    <ClInclude Include="Champions.h">
-      <Filter>Header Files\Custom/Common</Filter>
-    </ClInclude>
     <ClInclude Include="AutoLeveler.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
@@ -156,21 +156,27 @@
     <ClInclude Include="AutoSmite.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="ChampTemplate.h">
-      <Filter>Header Files\Custom/Common</Filter>
-    </ClInclude>
     <ClInclude Include="Version Checker.h">
       <Filter>Header Files\Custom/Common</Filter>
+    </ClInclude>
+    <ClInclude Include="ChampTemplate.h">
+      <Filter>Header Files\Champions</Filter>
+    </ClInclude>
+    <ClInclude Include="Champions.h">
+      <Filter>Header Files\Champions</Filter>
+    </ClInclude>
+    <ClInclude Include="Lux.h">
+      <Filter>Header Files\Champions\Midlane</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Champions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PluginSDK.cpp">
+    <ClCompile Include="Program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Program.cpp">
+    <ClCompile Include="PluginSDK.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

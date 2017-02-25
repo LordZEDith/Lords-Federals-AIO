@@ -502,3 +502,13 @@ static bool CheckWallsVectores(Vec3 from, Vec3 to)
 
 	return false;
 }
+
+static bool CheckShielded(IUnit* target)
+{
+	if (!target->HasBuff("BlackShield") && !target->HasBuff("bansheesveil") && !target->HasBuff("itemmagekillerveil"))
+	{
+		return true;
+	}
+
+	return false;
+}

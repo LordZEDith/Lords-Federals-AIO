@@ -9,7 +9,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Olaf");
+		MainMenu = GPluginSDK->AddMenu("Federal Olaf");
 
 		RSettings = MainMenu->AddMenu("R CC Settings");
 		{
@@ -25,7 +25,7 @@ public:
 			rSlow = RSettings->CheckBox("Slow", false);
 			rSilence = RSettings->CheckBox("Silence", true);
 			rDisarm = RSettings->CheckBox("Disarm", true);
-			rSnare = RSettings->CheckBox("Snare", true);			
+			rSnare = RSettings->CheckBox("Snare", true);
 		}
 
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
@@ -87,7 +87,7 @@ public:
 			JungleHealth = JungleClearSettings->AddInteger("Minimum HP% to use W to jungle", 1, 100, 100);
 			JungleE = JungleClearSettings->CheckBox("Use E to jungle", true);
 			JungleMana = JungleClearSettings->AddInteger("Minimum MP% to jungle", 1, 100, 20);
-		}		
+		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
 		{
@@ -95,6 +95,7 @@ public:
 			DrawQ = DrawingSettings->CheckBox("Draw Q", true);
 			DrawE = DrawingSettings->CheckBox("Draw E", false);
 			DrawAxe = DrawingSettings->CheckBox("Draw Axe position", true);
+			DrawTemp = DrawingSettings->CheckBox("Draw Axe Time", true);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
 		}
 
@@ -112,7 +113,7 @@ public:
 		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, kCollidesWithNothing);
 		E->SetOverrideRange(325.f);
 		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, kCollidesWithNothing);
-		
+
 	}
 
 	static void SkinChanger()
@@ -121,7 +122,7 @@ public:
 		{
 			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
 		}
-	}	
+	}
 
 	static void Automatic()
 	{
@@ -141,7 +142,10 @@ public:
 						auto delay = 0.25f + GetDistance(GEntityList->Player(), hero) / 1600;
 						GPrediction->GetFutureUnitPosition(hero, delay, true, position);
 
-						Q->CastOnPosition(position);
+						if (Q->CastOnPosition(position))
+						{
+							return;
+						}
 					}
 				}
 
@@ -150,11 +154,11 @@ public:
 				{
 					auto damage = GHealthPrediction->GetKSDamage(hero, kSlotE, E->GetDelay(), false);
 
-					if (damage + 50 > hero->GetHealth()){
-
-						E->CastOnTarget(hero, kHitChanceMedium);
+					if (damage + 50 > hero->GetHealth() && E->CastOnTarget(hero, kHitChanceMedium))
+					{
+						return;
 					}
-				}				
+				}
 			}
 		}
 
@@ -174,7 +178,10 @@ public:
 					auto delay = 0.25f + GetDistance(GEntityList->Player(), hero) / 1600;
 					GPrediction->GetFutureUnitPosition(hero, delay, true, positioncc);
 
-					Q->CastOnPosition(positioncc);
+					if (Q->CastOnPosition(positioncc))
+					{
+						return;
+					}
 				}
 			}
 		}
@@ -249,7 +256,7 @@ public:
 	{
 		if (Q->IsReady())
 		{
-			auto qTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range() -30);
+			auto qTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range() - 30);
 
 			if (qTarget != nullptr && qTarget->IsValidTarget() && !qTarget->IsInvulnerable() && !qTarget->IsDead())
 			{
@@ -261,17 +268,17 @@ public:
 				if (Distance < 300) { Extend = 40; }
 				else if (Distance >= 300 && Distance < 500){ Extend = 60; }
 				else if (Distance >= 500 && Distance < 700){ Extend = 80; }
-				else if (Distance >= 700 && Distance < Q->Range()){ Extend = 100; }				
+				else if (Distance >= 700 && Distance < Q->Range()){ Extend = 100; }
 
 				Vec3 position;
 				auto delay = Q->GetDelay() + Distance / Q->Speed();
-				GPrediction->GetFutureUnitPosition(qTarget, delay, true, position);	
+				GPrediction->GetFutureUnitPosition(qTarget, delay, true, position);
 
 				Vec3 PositionTarget = position.Extend(GEntityList->Player()->GetPosition(), -Extend);
 
 				if (Distance < Q->Range())
 				{
-					Q->CastOnPosition(position);
+					Q->CastOnPosition(PositionTarget);
 				}
 			}
 		}
@@ -306,7 +313,7 @@ public:
 		if (gotoAxeC->Enabled())
 		{
 			GotoAxe(lastQpos);
-		}		
+		}
 	}
 
 	static void Harass()
@@ -430,7 +437,7 @@ public:
 	}
 
 	static void LaneClear()
-	{	
+	{
 
 		if (gotoAxelc->Enabled() && !FoundMinionsNeutral(E->Range() + 100))
 		{
@@ -503,35 +510,45 @@ public:
 
 		if (lastQpos.x > 0 && lastQpos.y > 0)
 		{
-			if (DrawAxe->Enabled()) { GRender->DrawOutlinedCircle(lastQpos, Vec4(255, 255, 0, 255), 100); }
+			if (DrawAxe->Enabled()) {
+				GRender->DrawOutlinedCircle(lastQpos, Vec4(255, 255, 0, 255), 100);
 
-			Vec2 mypos;
-			Vec2 axepos;
-			GGame->Projection(GEntityList->Player()->GetPosition(), &mypos);
-			GGame->Projection(lastQpos, &axepos);
-			GRender->DrawLine(mypos, axepos, Vec4(255, 255, 0, 255));
+				Vec2 mypos;
+				Vec2 axepos;
+				GGame->Projection(GEntityList->Player()->GetPosition(), &mypos);
+				GGame->Projection(lastQpos, &axepos);
+				GRender->DrawLine(mypos, axepos, Vec4(255, 255, 0, 255));
+
+				if (DrawTemp->Enabled())
+				{
+					int temptotal = tempaxe - GGame->Time();
+
+					Vec2 temppox;
+					GGame->Projection(lastQpos, &temppox);
+					static auto message = GRender->CreateFontW("Comic Sans", 20.f, kFontWeightBold);
+					message->SetColor(Vec4(0, 255, 0, 255));
+					message->SetOutline(true);
+					message->Render(temppox.x, temppox.y, std::to_string(temptotal).c_str());
+				}
+			}
 		}
-	}		
+	}
 
 	static void OnGapcloser(GapCloserSpell const& args)
 	{
-		if (args.Sender->IsEnemy(GEntityList->Player()) && args.Sender->IsHero())
+		if (QGapCloser->Enabled() && Q->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < Q->Range())
 		{
-			if (QGapCloser->Enabled() && Q->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < Q->Range())
+			if (args.Sender != nullptr && args.Sender->IsValidTarget(GEntityList->Player(), Q->Range()) && !args.Sender->IsInvulnerable() && !args.Sender->IsDead())
 			{
-				if (args.Sender != nullptr && args.Sender->IsValidTarget() && !args.Sender->IsInvulnerable() && !args.Sender->IsDead())
+				auto Distance = GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition);
+
+				Vec3 position;
+				auto delay = 0.25f + Distance / 1600;
+				GPrediction->GetFutureUnitPosition(args.Sender, delay, true, position);
+
+				if (Distance < Q->Range() && Q->CastOnPosition(position))
 				{
-
-					float Distance = GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition);
-
-					Vec3 position;
-					auto delay = 0.25f + Distance / 1600;
-					GPrediction->GetFutureUnitPosition(args.Sender, delay, true, position);
-
-					if (Distance < Q->Range())
-					{
-						Q->CastOnPosition(position);
-					}
+					return;
 				}
 			}
 		}
@@ -570,7 +587,7 @@ public:
 			lastQpos = Source->GetPosition();
 
 			temp = true;
-			tempaxe = GGame->Time() + 8;			
+			tempaxe = GGame->Time() + 9;
 		}
 	}
 
@@ -579,7 +596,7 @@ public:
 		if (strstr(Source->GetObjectName(), "Olaf_Base_Q_Axe_Ally"))
 		{
 			lastQpos = Vec3(0, 0, 0);
-			GOrbwalking->SetOverridePosition(lastQpos);			
+			GOrbwalking->SetOverridePosition(lastQpos);
 
 			temp = false;
 			tempaxe = 0;

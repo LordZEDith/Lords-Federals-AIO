@@ -42,6 +42,7 @@ public:
 					SmiteCombo = SmiteChampion->CheckBox("Use Smite in Combo", true);
 					SmiteComboHP = SmiteChampion->AddInteger("Minimum HP% to Smite Combo", 1, 100, 50);
 					KillstealSmite = SmiteChampion->CheckBox("Use Smite to killsteal", true);
+					SmiteAmmo = SmiteChampion->CheckBox("Save 1 smite charge", false);
 				}
 
 				SmiteDraw = SmiteSettings->AddMenu("Smite Drawings");
@@ -58,7 +59,7 @@ public:
 	}
 
 	void SpellsSmite()
-	{		
+	{
 		if (strstr(GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1), "SummonerSmite"))
 		{
 			Smite = GPluginSDK->CreateSpell(kSummonerSlot1, 570);
@@ -76,7 +77,7 @@ public:
 
 		if (FoundSmite)
 		{
-			GRender->NotificationEx(Color::Green().Get(), 2, true, true, ("Lords & Federals Smite: Smite Found!"));
+			GRender->NotificationEx(Color::Green().Get(), 2, true, true, ("Federal Smite: Smite Found!"));
 
 		}
 	}
@@ -113,8 +114,15 @@ public:
 
 	void AutomaticSmite()
 	{
+		//GGame->PrintChat(std::to_string(GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot1)).data());		
+
 		if (FoundSmite && Smite->IsReady() && SmiteActive->Enabled() && KillstealSmite->Enabled())
 		{
+			if (SmiteAmmo->Enabled() && (GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot1) == 1 || GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot2) == 1))
+			{
+				return;
+			}
+
 			for (auto hero : GEntityList->GetAllHeros(false, true))
 			{
 				auto damage = GDamage->GetSummonerSpellDamage(GEntityList->Player(), hero, kSummonerSpellSmite);
@@ -145,9 +153,9 @@ public:
 							}
 						}
 					}
-				}				
+				}
 			}
-			
+
 			for (auto minion : GEntityList->GetAllMinions(false, false, true))
 			{
 				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, 570))
@@ -350,5 +358,5 @@ public:
 			}
 		}
 	}
-	
+
 };
