@@ -7,13 +7,11 @@
 #include "Version Checker.h"
 
 
-
 #pragma region Events
 PLUGIN_EVENT(void) OnOrbwalkBeforeAttack(IUnit* Target)
 {
 
 }
-
 PLUGIN_EVENT(void) OnOrbwalkAttack(IUnit* Source, IUnit* Target)
 {
 
@@ -35,7 +33,7 @@ public:
 	virtual void OnLevelUp(IUnit* Source, int NewLevel) = 0;
 	virtual void OnProcessSpell(CastedSpell const& Args) = 0;
 	virtual void OnExitVisible(IUnit* Source) = 0;
-	virtual void OnUnitDeath(IUnit* Source) = 0;
+	virtual void OnUnitDeath(IUnit* Source) = 0;	
 	virtual void OnLoad() = 0;
 	//virtual void OnUnLoad() = 0;
 	virtual void OnRender() = 0;
@@ -128,7 +126,7 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
-	}
+	}	
 };
 
 class cVarus : public IChampion
@@ -171,9 +169,9 @@ public:
 				Varus().LaneClear();
 				Varus().JungleClear();
 			}
-			  Varus().SemiRLogic();
-			  Varus().AutoHarass();
-			  Varus().KillSteal();		
+			Varus().SemiRLogic();
+			Varus().AutoHarass();
+			Varus().KillSteal();		
 			AutoSmite().AutomaticSmite();
 			AutoSmite().KeyPressSmite();
 		 
@@ -222,7 +220,7 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
-	}
+	}	
 };
 
 class cZiggs : public IChampion
@@ -486,6 +484,100 @@ public:
 	void OnProcessSpell(CastedSpell const& Args) override
 	{		
 
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+};
+
+class cEzreal : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		//Message().MidLaneSeries();
+		Message().ChampionLoadMessage();
+		Ezreal().InitializeSpells();
+		Ezreal().InitializeMenu();	
+	}
+
+	virtual void OnRender() override
+	{
+		Ezreal().Drawing();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		{
+			return;
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		{
+			Ezreal().Combo();
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		{
+			Ezreal().Harass();
+			Ezreal().LastHit();
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		{
+			Ezreal().LaneClear();
+		}
+		
+		Ezreal().Automatic();
+		Ezreal().EAntiMelee();
+		Ezreal().StackMuneItem();
+		Ezreal().KsJungle();
+		Ezreal().SkinChanger();		
+	}
+
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+		Ezreal().OnGapcloser(Args);
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+		
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+		Ezreal().OnAfterAttack(Source, Target);
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+		Ezreal().OnProcessSpell(Args);
 	}
 
 	void OnExitVisible(IUnit* Source) override
@@ -1456,10 +1548,10 @@ public:
 
 	virtual void OnLoad() override
 	{
-		Message().MidLaneSeries();
+		//Message().MidLaneSeries();
 		Message().ChampionLoadMessage();
-		Xerath().Menu();
-		Xerath().LoadSpells();
+		Xerath().InitializeMenu();
+		Xerath().InitializeSpells();
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
@@ -1484,21 +1576,23 @@ public:
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 		{
-
+			Xerath().Harass();
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 		{
-
+			Xerath().JungleClear();
+			Xerath().LaneClear();
 		}
-		Xerath().Always();
-		Xerath().AutoE();
 
+		Xerath().Ultimate();
+		Xerath().Automatic();
+		Xerath().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
-
+		Xerath().OnGapcloser(Args);
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
 	{
@@ -1520,7 +1614,7 @@ public:
 	}
 	void OnInterruptible(InterruptibleSpell const& Args) override
 	{
-
+		Xerath().OnInterruptible(Args);
 	}
 
 	void OnDash(UnitDash* Args) override
@@ -1529,7 +1623,7 @@ public:
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-
+		Xerath().OnProcessSpell(Args);
 	}
 
 	void OnExitVisible(IUnit* Source) override
@@ -2180,7 +2274,7 @@ public:
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-
+		
 	}
 
 	void OnExitVisible(IUnit* Source) override
@@ -2193,8 +2287,6 @@ public:
 
 	}
 };
-
-
 
 IChampion* pChampion = nullptr;
 
@@ -2271,8 +2363,8 @@ void LoadChampion()
 		pChampion = new cDraven;
 	else if (szChampion == "Tristana")
 		pChampion = new cTristana;
-//	else if (szChampion == "Corki")
-	//	pChampion = new cCorki;
+	else if (szChampion == "Ezreal")
+		pChampion = new cEzreal;
 	// Midlane
 	else if (szChampion == "Ahri")
 		pChampion = new cAhri;
@@ -2325,7 +2417,7 @@ void LoadChampion()
 		GEventManager->AddEventHandler(kEventOnRender, OnRender);
 		GEventManager->AddEventHandler(kEventOnGapCloser, OnGapCloser);
 		GEventManager->AddEventHandler(kEventOnInterruptible, OnInterruptible);
-		GEventManager->AddEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
+		GEventManager->AddEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);		
 		GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 		GEventManager->AddEventHandler(kEventOnLevelUp, OnLevelUp);
 		//GEventManager->AddEventHandler(kEventOnBuffAdd, OnBuffAdd);
@@ -2362,7 +2454,7 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
 	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapCloser);
 	GEventManager->RemoveEventHandler(kEventOnInterruptible, OnInterruptible);
-	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
+	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);	
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->RemoveEventHandler(kEventOnLevelUp, OnLevelUp);
 	//GEventManager->RemoveEventHandler(kEventOnBuffAdd, OnBuffAdd);
