@@ -2302,8 +2302,8 @@ void LoadChampion()
 		pChampion = new cDrMundo;
 	else if (szChampion == "Maokai")
 		pChampion = new cMaokai;
-	//else if (szChampion == "Poppy")
-	//	pChampion = new cPoppy;
+	else if (szChampion == "Poppy")
+		pChampion = new cPoppy;
 	else if (szChampion == "Malphite")
 		pChampion = new cMalphite;
 	else if (szChampion == "Kayle")
