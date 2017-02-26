@@ -520,31 +520,4 @@ public:
 			}
 		}	
 	}
-
-	static void OnBuffAdd(IUnit* Source, void* BuffData)
-	{
-		/*if (Source != GEntityList->Player() && AntiGrab->Enabled() && E->IsReady())
-		{			
-			std::vector<void*> vecBuffs;
-			Source->GetAllBuffsData(vecBuffs);
-
-			for (auto i : vecBuffs)
-			{
-
-				GBuffData->GetBuffName(i);
-				GGame->PrintChat(GBuffData->GetBuffName(i));
-
-				/*if (GEntityList->Player()->HasBuff("AhriTumble"))
-				{
-				auto buffTime = GBuffData->GetEndTime(GEntityList->Player()->GetBuffDataByName("AhriTumble"));
-
-
-				GGame->PrintChat("Tenho Buff do Ult");
-				GGame->PrintChat(std::to_string(buffTime - GGame->Time()).data());
-				}
-			}
-		}*/
-		
-	}	
-
 };

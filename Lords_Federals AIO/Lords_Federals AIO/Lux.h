@@ -399,11 +399,7 @@ public:
 								strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "Gromp") ||
 								strstr(minion->GetObjectName(), "SRU_Krug5") || strstr(minion->GetObjectName(), "Razorbeak9"))
 							{
-
-								if (CheckWalls(GEntityList->Player(), minion))
-								{
-									Q->CastOnUnit(minion);
-								}
+								Q->CastOnUnit(minion);								
 							}
 						}
 					}

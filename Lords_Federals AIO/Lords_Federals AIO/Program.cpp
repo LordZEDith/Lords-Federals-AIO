@@ -13,7 +13,6 @@ PLUGIN_EVENT(void) OnOrbwalkBeforeAttack(IUnit* Target)
 {
 
 }
-
 PLUGIN_EVENT(void) OnOrbwalkAttack(IUnit* Source, IUnit* Target)
 {
 
@@ -35,8 +34,7 @@ public:
 	virtual void OnLevelUp(IUnit* Source, int NewLevel) = 0;
 	virtual void OnProcessSpell(CastedSpell const& Args) = 0;
 	virtual void OnExitVisible(IUnit* Source) = 0;
-	virtual void OnUnitDeath(IUnit* Source) = 0;
-	virtual void OnBuffAdd(IUnit* Source, void* BuffData) = 0;
+	virtual void OnUnitDeath(IUnit* Source) = 0;	
 	virtual void OnLoad() = 0;
 	//virtual void OnUnLoad() = 0;
 	virtual void OnRender() = 0;
@@ -129,12 +127,7 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
-	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
-	{
-
-	}
+	}	
 };
 
 class cVarus : public IChampion
@@ -228,12 +221,7 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
-	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
-	{
-
-	}
+	}	
 };
 
 class cZiggs : public IChampion
@@ -321,11 +309,6 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -421,11 +404,6 @@ public:
 	{
 
 	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
-	{
-
-	}
 };
 
 class cDraven : public IChampion
@@ -515,11 +493,6 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -617,11 +590,6 @@ public:
 	{
 
 	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
-	{
-		Ezreal().OnBuffAdd(Source, BuffData);
-	}
 };
 
 class cAhri : public IChampion
@@ -713,11 +681,6 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -814,11 +777,6 @@ public:
 	{
 
 	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
-	{
-
-	}
 };
 
 class cOlaf : public IChampion
@@ -912,11 +870,6 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -1017,11 +970,6 @@ public:
 	{
 
 	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
-	{
-
-	}
 };
 
 class cMaokai : public IChampion
@@ -1115,11 +1063,6 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -1219,11 +1162,6 @@ public:
 	{
 
 	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
-	{
-
-	}
 };
 
 class cNocturne : public IChampion
@@ -1320,11 +1258,6 @@ public:
 	{
 
 	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
-	{
-
-	}
 };
 
 class cHecarim : public IChampion
@@ -1416,11 +1349,6 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -1522,11 +1450,6 @@ public:
 	{
 
 	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
-	{
-
-	}
 };
 
 class cMalphite : public IChampion
@@ -1618,11 +1541,6 @@ public:
 	{
 
 	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
-	{
-
-	}
 };
 
 class cXerath : public IChampion
@@ -1631,10 +1549,10 @@ public:
 
 	virtual void OnLoad() override
 	{
-		Message().MidLaneSeries();
+		//Message().MidLaneSeries();
 		Message().ChampionLoadMessage();
-		Xerath().Menu();
-		Xerath().LoadSpells();
+		Xerath().InitializeMenu();
+		Xerath().InitializeSpells();
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
@@ -1659,21 +1577,23 @@ public:
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 		{
-
+			Xerath().Harass();
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 		{
-
+			Xerath().JungleClear();
+			Xerath().LaneClear();
 		}
-		Xerath().Always();
-		Xerath().AutoE();
 
+		Xerath().Ultimate();
+		Xerath().Automatic();
+		Xerath().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
-
+		Xerath().OnGapcloser(Args);
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
 	{
@@ -1695,7 +1615,7 @@ public:
 	}
 	void OnInterruptible(InterruptibleSpell const& Args) override
 	{
-
+		Xerath().OnInterruptible(Args);
 	}
 
 	void OnDash(UnitDash* Args) override
@@ -1704,7 +1624,7 @@ public:
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-
+		Xerath().OnProcessSpell(Args);
 	}
 
 	void OnExitVisible(IUnit* Source) override
@@ -1713,11 +1633,6 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -1810,11 +1725,6 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -1917,11 +1827,6 @@ public:
 	{
 
 	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
-	{
-
-	}
 };
 
 class cWarwick : public IChampion
@@ -2011,11 +1916,6 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -2111,11 +2011,6 @@ public:
 	{
 
 	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
-	{
-
-	}
 };
 
 class cKayle : public IChampion
@@ -2205,11 +2100,6 @@ public:
 	}
 
 	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 
 	}
@@ -2306,11 +2196,6 @@ public:
 	{
 
 	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
-	{
-
-	}
 };
 
 class cTwistedFate : public IChampion
@@ -2390,7 +2275,7 @@ public:
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-
+		
 	}
 
 	void OnExitVisible(IUnit* Source) override
@@ -2402,14 +2287,7 @@ public:
 	{
 
 	}
-
-	void OnBuffAdd(IUnit* Source, void* BuffData) override
-	{
-		
-	}
 };
-
-
 
 IChampion* pChampion = nullptr;
 
@@ -2473,12 +2351,6 @@ PLUGIN_EVENT(void) OnDash(UnitDash* Source)
 	pChampion->OnDash(Source);
 }
 
-PLUGIN_EVENT(void) OnBuffAdd(IUnit* Source, void* BuffData)
-{
-	pChampion->OnBuffAdd(Source, BuffData);
-}
-
-
 void LoadChampion()
 {
 	std::string szChampion = GEntityList->Player()->ChampionName();
@@ -2523,8 +2395,8 @@ void LoadChampion()
 		pChampion = new cDrMundo;
 	else if (szChampion == "Maokai")
 		pChampion = new cMaokai;
-	//else if (szChampion == "Poppy")
-	//	pChampion = new cPoppy;
+	else if (szChampion == "Poppy")
+		pChampion = new cPoppy;
 	else if (szChampion == "Malphite")
 		pChampion = new cMalphite;
 	else if (szChampion == "Kayle")
@@ -2546,10 +2418,10 @@ void LoadChampion()
 		GEventManager->AddEventHandler(kEventOnRender, OnRender);
 		GEventManager->AddEventHandler(kEventOnGapCloser, OnGapCloser);
 		GEventManager->AddEventHandler(kEventOnInterruptible, OnInterruptible);
-		GEventManager->AddEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
+		GEventManager->AddEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);		
 		GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 		GEventManager->AddEventHandler(kEventOnLevelUp, OnLevelUp);
-		GEventManager->AddEventHandler(kEventOnBuffAdd, OnBuffAdd);
+		//GEventManager->AddEventHandler(kEventOnBuffAdd, OnBuffAdd);
 		//GEventManager->AddEventHandler(kEventOnBuffRemove, OnBuffRemove);
 		GEventManager->AddEventHandler(kEventOnSpellCast, OnProcessSpell);
 		GEventManager->AddEventHandler(kEventOnCreateObject, OnCreateObject);
@@ -2583,10 +2455,10 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
 	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapCloser);
 	GEventManager->RemoveEventHandler(kEventOnInterruptible, OnInterruptible);
-	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
+	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);	
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->RemoveEventHandler(kEventOnLevelUp, OnLevelUp);
-	GEventManager->RemoveEventHandler(kEventOnBuffAdd, OnBuffAdd);
+	//GEventManager->RemoveEventHandler(kEventOnBuffAdd, OnBuffAdd);
 	//GEventManager->RemoveEventHandler(kEventOnBuffRemove, OnBuffRemove);
 	GEventManager->RemoveEventHandler(kEventOnSpellCast, OnProcessSpell);
 	GEventManager->RemoveEventHandler(kEventOnCreateObject, OnCreateObject);
