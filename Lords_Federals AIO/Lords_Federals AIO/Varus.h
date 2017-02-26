@@ -10,73 +10,23 @@ public:
 	void  Menu()
 	{
 		MainMenu = GPluginSDK->AddMenu("Lords & Federals Varus");
-		QMenu = MainMenu->AddMenu("Combo");
-		WMenu = MainMenu->AddMenu("Harass");
-		EMenu = MainMenu->AddMenu("LaneClear");
-		RMenu = MainMenu->AddMenu("JungleClear");
-		KillStealMenu = MainMenu->AddMenu("Killsteal");
-		Miscs = MainMenu->AddMenu("Miscs");
-		Drawings = MainMenu->AddMenu("Drawings");
-
-		ComboQ = QMenu->CheckBox("Use Q", true);
-		ComboE = QMenu->CheckBox("Use E", true);
-		ComboR = QMenu->CheckBox("Use R", true);
-		LaneClearQ = QMenu->CheckBox("Use R|Logic", true);
-		QEnemies = QMenu->AddFloat("Use R|Counts Enemies In Range >= x", 1, 5, 3);
-		QEnemies1 = QMenu->AddFloat("Use Spell|When target Have x Passive", 0, 3, 3);
-
-		ComboE2 = WMenu->CheckBox("Use Q", true);
-		ComboW = WMenu->CheckBox(" Use E", true);
-		HarassE = WMenu->CheckBox("Auto Harass", true); //toggle
-		HarassManaE = WMenu->AddFloat("Harass Mana %", 0, 100, 60);
-
-
-		//AutoUlt = EMenu->CheckBox("Use Q", true);
-		//REnemies = EMenu->AddFloat("If Q CanHit Counts >= x", 1, 5, 3);
-		ComboRKill = EMenu->CheckBox("Use E", true);
-		ComboREnemies = EMenu->AddFloat("If E CanHit Counts >= x", 1, 5, 3);
-		HarassManaQ = EMenu->AddFloat("Harass Mana %", 0, 100, 60);
-
-		//HarassManaW = RMenu->CheckBox("Use Q", true);
-		FarmW = RMenu->CheckBox("Use E", true);
-		HarassW = RMenu->AddFloat("Harass Mana %", 0, 100, 60);
-
-		ComboQH = KillStealMenu->CheckBox("Use Q", true);
-		ComboEA = KillStealMenu->CheckBox("Use E", true);
-
-				
-		HarassManaW = Miscs->CheckBox("Use Spell Harass(In LaneClear Mode)", true);
-
-		DrawReady = Drawings->CheckBox("Draw Only Ready Spells", true);
-		DrawQ = Drawings->CheckBox("Draw Q", true);
-		DrawE = Drawings->CheckBox("Draw E", true);
-		DrawR = Drawings->CheckBox("Draw R", true);
-
-
-
 
 	}
-	void LoadSpells()
+
+	static void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
-		Q->SetCharged(925.f, 1700.f, 1.45f);
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
+		Q->SetSkillshot(0.25f, 70.f, 1650.f, 925.f);
 		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
-		E = GPluginSDK->CreateSpell2(kSlotE, kCircleCast, false, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
-		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, false, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
-		//Q->SetOverrideRange(1600);
-		Q->SetOverrideDelay(0.25f);
-		Q->SetOverrideRadius(70);
-		Q->SetOverrideSpeed(1650);
-		E->SetOverrideRange(975);
-		E->SetOverrideRadius(120);
-		E->SetOverrideDelay(0.35f);
-		E->SetOverrideSpeed(1500);
-		R->SetOverrideRange(1050);
-		R->SetOverrideRadius(120);
-		R->SetOverrideDelay(0.25f);
-		R->SetOverrideSpeed(1950);
+		W->SetOverrideRange(0);
+		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
+		E->SetSkillshot(0.35f, 120.f, 1500.f, 975.f);
+		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, true, kCollidesWithYasuoWall);
+		R->SetSkillshot(0.25f, 120.f, 1950.f, 1050.f);
 
+		Q->SetCharged(925.f, 1600.f, 1.5f);
 	}
+
 	int GetEnemiesInRange2(float range)
 	{
 		auto enemies = GEntityList->GetAllHeros(false, true);

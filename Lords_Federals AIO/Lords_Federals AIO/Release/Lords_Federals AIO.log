@@ -1,4 +1,4 @@
-﻿Build started 25/02/2017 19:53:05.
+﻿Build started 26/02/2017 18:17:26.
      1>Project "C:\Users\forke\Desktop\Lords Federal Aio\Lords-Federals-AIO\Lords_Federals AIO\Lords_Federals AIO\Lords_Federals AIO.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          H:\Arquivos de Programas (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _USRDLL /D LORDS_FEDERALSAIO_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Program.cpp
@@ -22,24 +22,23 @@
      1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Common.h(70): warning C4305: '*=' : truncation from 'double' to 'float'
      1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Common.h(73): warning C4305: '*=' : truncation from 'double' to 'float'
      1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Common.h(400): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Varus.h(136): warning C4390: ';' : empty controlled statement found; is this the intent?
-     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Varus.h(170): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
-     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Varus.h(183): warning C4806: '==' : unsafe operation: no value of type 'bool' promoted to type 'eOrbwalkingMode' can equal the given constant
+     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Varus.h(86): warning C4390: ';' : empty controlled statement found; is this the intent?
+     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Varus.h(120): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
+     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Varus.h(133): warning C4806: '==' : unsafe operation: no value of type 'bool' promoted to type 'eOrbwalkingMode' can equal the given constant
      1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Draven.h(114): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
      1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Draven.h(268): warning C4804: '>' : unsafe use of type 'bool' in operation
      1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Ezreal.h(200): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Ezreal.h(225): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Ezreal.h(244): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Ezreal.h(492): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Ezreal.h(226): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Ezreal.h(245): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Ezreal.h(493): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
      1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Lux.h(314): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
      1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Lux.h(367): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Lux.h(435): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Lux.h(447): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Lux.h(481): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Lux.h(549): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Xerath.h(93): warning C4390: ';' : empty controlled statement found; is this the intent?
-     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Xerath.h(197): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Xerath.h(216): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Lux.h(431): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Lux.h(443): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Lux.h(477): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Lux.h(545): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Xerath.h(121): warning C4244: 'return' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Xerath.h(528): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
      1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Champions.h(22): warning C4067: unexpected tokens following preprocessor directive - expected a newline
      1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Olaf.h(524): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
      1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\Olaf.h(590): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
@@ -59,11 +58,10 @@
          Release\Program.obj
             Creating library C:\Users\forke\Desktop\Lords Federal Aio\Lords-Federals-AIO\Lords_Federals AIO\Lords_Federals AIO\Release\Lords_Federals AIO.lib and object C:\Users\forke\Desktop\Lords Federal Aio\Lords-Federals-AIO\Lords_Federals AIO\Lords_Federals AIO\Release\Lords_Federals AIO.exp
          Generating code
-     1>c:\users\forke\desktop\lords federal aio\lords-federals-aio\lords_federals aio\lords_federals aio\xerath.h(192): warning C4715: 'Xerath::RealRange' : not all control paths return a value
          Finished generating code
          Lords_Federals AIO.vcxproj -> C:\Users\forke\Desktop\Lords Federal Aio\Lords-Federals-AIO\Lords_Federals AIO\Lords_Federals AIO\Release\Lords_Federals AIO.dll
      1>Done Building Project "C:\Users\forke\Desktop\Lords Federal Aio\Lords-Federals-AIO\Lords_Federals AIO\Lords_Federals AIO\Lords_Federals AIO.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:03.77
+Time Elapsed 00:00:04.67
