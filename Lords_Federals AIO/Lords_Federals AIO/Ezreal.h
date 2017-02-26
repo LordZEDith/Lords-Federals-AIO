@@ -199,7 +199,8 @@ public:
 			{
 				if (checkRrange(target) && KillstealR->Enabled() && R->IsReady() && target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) > target->GetHealth())
 				{
-					E->CastOnUnit(target);
+					R->CastOnTarget(target, kHitChanceHigh);
+					return;
 				}
 				
 				if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
