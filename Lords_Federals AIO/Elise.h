@@ -32,7 +32,6 @@ public:
 			Wspider = ComboSettings->CheckBox("Spider Combo W", true);
 			Espider = ComboSettings->CheckBox("Spider Combo E", true);
 			ComboR = ComboSettings->CheckBox("Auto Switch Form", true);
-
 		}
 
 		JungleClearSettings = MainMenu->AddMenu("JungleClear Settings");
@@ -62,8 +61,7 @@ public:
 			DrawReady = DrawingSettings->CheckBox("Draw Only Ready Spells", true);
 			DrawQ = DrawingSettings->CheckBox("Draw Q", true);
 			DrawW = DrawingSettings->CheckBox("Draw W", false);
-			DrawE = DrawingSettings->CheckBox("Draw E", false);			
-			DrawR = DrawingSettings->CheckBox("Draw R", false);
+			DrawE = DrawingSettings->CheckBox("Draw E", false);	
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
 		}
 
@@ -502,5 +500,40 @@ public:
 				E->CastOnTarget(Args.Target, kHitChanceHigh);
 			}
 		}
+	}
+
+	static void Drawings()
+	{
+		if (EliseHuman())
+		{
+			if (DrawReady->Enabled())
+			{
+				if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range()); }
+				if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
+				if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }
+			}
+			else
+			{
+				if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range()); }
+				if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
+				if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }
+			}
+		}
+		else
+		{
+			if (DrawReady->Enabled())
+			{
+				if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q2->Range()); }
+				if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E2->Range()); }
+				if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W2->Range()); }
+			}
+			else
+			{
+				if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q2->Range()); }
+				if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E2->Range()); }
+				if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W2->Range()); }
+			}
+		}
+				
 	}
 };

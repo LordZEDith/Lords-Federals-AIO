@@ -1370,7 +1370,7 @@ public:
 
 	virtual void OnRender() override
 	{
-		//Elise().Drawing();
+		Elise().Drawings();
 		AutoSmite().DrawingsSmite();
 	}
 
