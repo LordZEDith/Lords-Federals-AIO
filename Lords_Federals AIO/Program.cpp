@@ -1353,6 +1353,100 @@ public:
 	}
 };
 
+class cElise : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		//Message().JungleLaneSeries();
+		Message().ChampionLoadMessage();
+		Elise().InitializeMenu();
+		Elise().LoadSpells();
+
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+	}
+
+	virtual void OnRender() override
+	{
+		//Elise().Drawing();
+		AutoSmite().DrawingsSmite();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		{
+			return;
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		{
+			Elise().Combo();			
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		{
+			//Elise().Harass();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		{
+			//Elise().LaneClear();
+			Elise().JungleClear();
+		}
+		
+		Elise().SkinChanger();
+		Elise().EliseRappel();
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+		Elise().OnGapcloser(Args);
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+		Elise().OnAfterAttack(Source, Target);
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+		Elise().OnInterruptible(Args);
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+		Elise().OnProcessSpell(Args);
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+};
+
 class cRengar : public IChampion
 {
 public:
@@ -2389,6 +2483,8 @@ void LoadChampion()
 		pChampion = new cDiana;
 	else if (szChampion == "Warwick")
 		pChampion = new cWarwick;
+	else if (szChampion == "Elise")
+		pChampion = new cElise;
 	// Toplane
 	else if (szChampion == "DrMundo")
 		pChampion = new cDrMundo;

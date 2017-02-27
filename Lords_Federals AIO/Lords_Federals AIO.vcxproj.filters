@@ -171,6 +171,9 @@
     <ClInclude Include="PluginSDK.h">
       <Filter>Header Files\SDK</Filter>
     </ClInclude>
+    <ClInclude Include="Elise.h">
+      <Filter>Header Files\Champions\Jungle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">

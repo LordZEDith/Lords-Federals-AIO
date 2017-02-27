@@ -26,6 +26,7 @@
 #include "Malphite.h"
 #include "Riven.h"
 #include "Kayle.h"
+#include "Elise.h"
 
 // Champions Toplane
 #include "DrMundo.h"

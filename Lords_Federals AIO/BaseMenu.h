@@ -7,6 +7,9 @@ ISpell2* Q;
 ISpell2* W;
 ISpell2* E;
 ISpell2* R;
+ISpell2* Q2;
+ISpell2* W2;
+ISpell2* E2;
 
 ISpell* Smite;
 ISpell* Ignite;
@@ -370,7 +373,6 @@ IMenuOption* noti;
 
 
 ISpell2* Q1;
-ISpell2* Q2;
 ISpell2* Q3;
 
 Vec3 prediction(0, 0, 0);

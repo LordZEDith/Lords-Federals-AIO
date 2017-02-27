@@ -161,6 +161,7 @@
     <ClInclude Include="Diana.h" />
     <ClInclude Include="Draven.h" />
     <ClInclude Include="DrMundo.h" />
+    <ClInclude Include="Elise.h" />
     <ClInclude Include="Ezreal.h" />
     <ClInclude Include="Hecarim.h" />
     <ClInclude Include="Karthus.h" />
