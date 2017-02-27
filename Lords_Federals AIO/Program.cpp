@@ -1363,6 +1363,7 @@ public:
 		Message().ChampionLoadMessage();
 		Elise().InitializeMenu();
 		Elise().LoadSpells();
+		Elise().LoadTextures();
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
@@ -1397,6 +1398,7 @@ public:
 		
 		Elise().SkinChanger();
 		Elise().EliseRappel();
+		Elise().Cooldowns();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 	}

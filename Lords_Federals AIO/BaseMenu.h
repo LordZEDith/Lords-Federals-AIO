@@ -181,6 +181,11 @@ IMenuOption* DrawR2;
 IMenuOption* DrawComboDamage;
 IMenuOption* Drawkill;
 IMenuOption* DrawTemp;
+IMenuOption* DrawQ2;
+IMenuOption* DrawE2;
+IMenuOption* DrawTime;
+IMenuOption* DrawTimex;
+IMenuOption* DrawTimey;
 
 IMenuOption* HealthPercent;
 IMenuOption* HealthQ;
@@ -318,6 +323,38 @@ const char* LastSpellName;
 int LastSpellTime = 0;
 
 enum HitChance; 
+
+// Elise
+float _humQcd, _humWcd, _humEcd;
+float _spidQcd, _spidWcd, _spidEcd;
+float _humaQcd, _humaWcd, _humaEcd;
+float _spideQcd, _spideWcd, _spideEcd;
+float _Rcd, _ultcd;
+
+IMenuOption* Qspider;
+IMenuOption* Wspider;
+IMenuOption* Espider;
+IMenuOption* JungleQspider;
+IMenuOption* JungleWspider;
+IMenuOption* JungleEspider;
+
+ITexture* tHumanQ;
+ITexture* tHumanW;
+ITexture* tHumanE;
+ITexture* tSpiderQ;
+ITexture* tSpiderW;
+ITexture* tSpiderE;
+ITexture* tUltimate;
+
+ITexture* cdtHumanQ;
+ITexture* cdtHumanW;
+ITexture* cdtHumanE;
+ITexture* cdtSpiderQ;
+ITexture* cdtSpiderW;
+ITexture* cdtSpiderE;
+ITexture* cdtUltimate;
+
+Vec2 Resolution;
 
 //ZIGGS MENU
 IMenu* FarmSettings;

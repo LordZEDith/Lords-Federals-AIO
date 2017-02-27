@@ -12,8 +12,7 @@ public:
 		MainMenu = GPluginSDK->AddMenu("Lords & Federals Maokai");
 		
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
-		{
-			
+		{			
 			ComboQ = ComboSettings->CheckBox("Use Q", true);			
 			RangeQ = ComboSettings->AddInteger("Q max Range", 0, 600, 600);
 			ComboW = ComboSettings->CheckBox("Use W", true);

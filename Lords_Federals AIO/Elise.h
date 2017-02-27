@@ -2,18 +2,7 @@
 #include "PluginSDK.h"
 #include "BaseMenu.h"
 #include "Common.h"
-
-static float _humQcd, _humWcd, _humEcd;
-static float _spidQcd, _spidWcd, _spidEcd;
-static float _humaQcd, _humaWcd, _humaEcd;
-static float _spideQcd, _spideWcd, _spideEcd;
-
-IMenuOption* Qspider;
-IMenuOption* Wspider;
-IMenuOption* Espider;
-IMenuOption* JungleQspider;
-IMenuOption* JungleWspider;
-IMenuOption* JungleEspider;
+#include <string>
 
 class Elise
 {
@@ -21,7 +10,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Federal Olaf");
+		MainMenu = GPluginSDK->AddMenu("Lords & Federals Elise");
 		
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{
@@ -59,9 +48,14 @@ public:
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
 		{
 			DrawReady = DrawingSettings->CheckBox("Draw Only Ready Spells", true);
-			DrawQ = DrawingSettings->CheckBox("Draw Q", true);
-			DrawW = DrawingSettings->CheckBox("Draw W", false);
-			DrawE = DrawingSettings->CheckBox("Draw E", false);	
+			DrawQ = DrawingSettings->CheckBox("Draw Human Q", true);
+			DrawW = DrawingSettings->CheckBox("Draw Human W", false);
+			DrawE = DrawingSettings->CheckBox("Draw Human E", false);
+			DrawQ2 = DrawingSettings->CheckBox("Draw Spider Q", true);
+			DrawE2 = DrawingSettings->CheckBox("Draw Spider E", true);
+			DrawTime = DrawingSettings->CheckBox("Draw Cooldown", true);
+			DrawTimex = DrawingSettings->AddInteger("Pos X", 1, 3000, 800);
+			DrawTimey = DrawingSettings->AddInteger("Pos Y", 1, 3000, 900);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
 		}
 
@@ -99,10 +93,12 @@ public:
 		
 	static bool EliseHuman()
 	{
-		if (strstr(GEntityList->Player()->GetSpellBook()->GetName(kSlotQ), "EliseHumanQ"))
+		if (GEntityList->Player()->GetSpellBook()->GetLevel(kSlotQ) >= 1)
 		{
-			//GGame->PrintChat("Sou humano");
-			return true;
+			if (strstr(GEntityList->Player()->GetSpellBook()->GetName(kSlotQ), "EliseHumanQ"))
+			{				
+				return true;
+			}
 		}
 
 		return false;
@@ -110,10 +106,12 @@ public:
 
 	static bool EliseSpider()
 	{
-		if (strstr(GEntityList->Player()->GetSpellBook()->GetName(kSlotQ), "EliseSpiderQCast"))
+		if (GEntityList->Player()->GetSpellBook()->GetLevel(kSlotQ) >= 1)
 		{
-			//GGame->PrintChat("Sou Aranha");
-			return true;
+			if (strstr(GEntityList->Player()->GetSpellBook()->GetName(kSlotQ), "EliseSpiderQCast"))
+			{				
+				return true;
+			}
 		}
 
 		return false;
@@ -144,28 +142,7 @@ public:
 		_spideQcd = _spidQcd - GGame->Time() > 0 ? _spidQcd - GGame->Time() : 0;
 		_spideWcd = _spidWcd - GGame->Time() > 0 ? _spidWcd - GGame->Time() : 0;
 		_spideEcd = _spidEcd - GGame->Time() > 0 ? _spidEcd - GGame->Time() : 0;
-	}
-
-	static void GetCooldown(CastedSpell spell)
-	{
-		if (EliseHuman())
-		{
-			if (spell.Name_ == "EliseHumanQ")
-				_humQcd = GEntityList->Player()->GetSpellRemainingCooldown(kSlotQ);
-			if (spell.Name_ == "EliseHumanW")
-				_humWcd = GEntityList->Player()->GetSpellRemainingCooldown(kSlotW);
-			if (spell.Name_ == "EliseHumanE")
-				_humEcd = GEntityList->Player()->GetSpellRemainingCooldown(kSlotE);
-		}
-		if (EliseSpider())
-		{
-			if (spell.Name_ == "EliseSpiderQCast")
-				_spidQcd = GEntityList->Player()->GetSpellRemainingCooldown(kSlotQ);
-			if (spell.Name_ == "EliseSpiderW")
-				_spidWcd = GEntityList->Player()->GetSpellRemainingCooldown(kSlotW);
-			if (spell.Name_ == "EliseSpiderEInitial")
-				_spidEcd = GEntityList->Player()->GetSpellRemainingCooldown(kSlotE);
-		}
+		_ultcd = _Rcd - GGame->Time() > 0 ? _Rcd - GGame->Time() : 0;
 	}
 
 	static void CastR()
@@ -442,7 +419,45 @@ public:
 	{
 		if (Args.Caster_ == GEntityList->Player())
 		{
-			GetCooldown(Args);
+			if (EliseHuman())
+			{			
+				if (strstr(Args.Name_, "EliseHumanQ"))
+				{
+					_humQcd = GGame->Time() +7.f;
+				}
+
+				if (strstr(Args.Name_, "EliseHumanW"))
+				{
+					_humWcd = GGame->Time() + 13.f;
+				}
+
+				if (strstr(Args.Name_, "EliseHumanE"))
+				{
+					_humEcd = GGame->Time() + 15.f;
+				}
+			}
+			if (EliseSpider())
+			{
+				if (strstr(Args.Name_, "EliseSpiderQCast"))
+				{
+					_spidQcd = GGame->Time() + 7.f;
+				}
+
+				if (strstr(Args.Name_, "EliseSpiderW"))
+				{
+					_spidWcd = GGame->Time() + 13.f;
+				}
+
+				if (strstr(Args.Name_, "EliseSpiderEInitial"))
+				{
+					_spidEcd = GGame->Time() + 27.f;
+				}
+			}
+
+			if (strstr(Args.Name_, "EliseRSpider") || strstr(Args.Name_, "EliseR"))
+			{
+				_Rcd = GGame->Time() + 5.f;
+			}			
 		}
 	}
 
@@ -502,6 +517,43 @@ public:
 		}
 	}
 
+	static void LoadTextures()
+	{	
+		tHumanQ = GRender->CreateTextureFromFile("Lords_Federals/Elise/HumanQ.png");
+		tHumanW = GRender->CreateTextureFromFile("Lords_Federals/Elise/HumanW.png");
+		tHumanE = GRender->CreateTextureFromFile("Lords_Federals/Elise/HumanE.png");
+		tSpiderQ = GRender->CreateTextureFromFile("Lords_Federals/Elise/SpiderQ.png");
+		tSpiderW = GRender->CreateTextureFromFile("Lords_Federals/Elise/SpiderW.png");
+		tSpiderE = GRender->CreateTextureFromFile("Lords_Federals/Elise/SpiderE.png");
+		tUltimate = GRender->CreateTextureFromFile("Lords_Federals/Elise/Ultimate.png");
+
+		cdtHumanQ = GRender->CreateTextureFromFile("Lords_Federals/Elise/cdHumanQ.png");
+		cdtHumanW = GRender->CreateTextureFromFile("Lords_Federals/Elise/cdHumanW.png");
+		cdtHumanE = GRender->CreateTextureFromFile("Lords_Federals/Elise/cdHumanE.png");
+		cdtSpiderQ = GRender->CreateTextureFromFile("Lords_Federals/Elise/cdSpiderQ.png");
+		cdtSpiderW = GRender->CreateTextureFromFile("Lords_Federals/Elise/cdSpiderW.png");
+		cdtSpiderE = GRender->CreateTextureFromFile("Lords_Federals/Elise/cdSpiderE.png");
+		cdtUltimate = GRender->CreateTextureFromFile("Lords_Federals/Elise/cdUltimate.png");
+
+		Resolution = GRender->ScreenSize();
+		float ScreenRatio = Resolution.y / 2000.f;
+
+		tHumanQ->Scale(ScreenRatio);
+		tHumanW->Scale(ScreenRatio);
+		tHumanE->Scale(ScreenRatio);
+		tSpiderQ->Scale(ScreenRatio);
+		tSpiderW->Scale(ScreenRatio);
+		tSpiderE->Scale(ScreenRatio);
+		tUltimate->Scale(ScreenRatio);
+		cdtHumanQ->Scale(ScreenRatio);
+		cdtHumanW->Scale(ScreenRatio);
+		cdtHumanE->Scale(ScreenRatio);
+		cdtSpiderQ->Scale(ScreenRatio);
+		cdtSpiderW->Scale(ScreenRatio);
+		cdtSpiderE->Scale(ScreenRatio);
+		cdtUltimate->Scale(ScreenRatio);
+	}
+	
 	static void Drawings()
 	{
 		if (EliseHuman())
@@ -519,21 +571,173 @@ public:
 				if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }
 			}
 		}
-		else
+
+		if (EliseSpider())
 		{
 			if (DrawReady->Enabled())
 			{
-				if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q2->Range()); }
-				if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E2->Range()); }
-				if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W2->Range()); }
+				if (Q2->IsReady() && DrawQ2->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q2->Range()); }
+				if (E2->IsReady() && DrawE2->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E2->Range()); }
+
 			}
 			else
 			{
-				if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q2->Range()); }
-				if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E2->Range()); }
-				if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W2->Range()); }
+				if (DrawQ2->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q2->Range()); }
+				if (DrawE2->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E2->Range()); }
 			}
 		}
-				
-	}
+
+		if (DrawTime->Enabled())
+		{
+			int hqcd = _humaQcd;
+			int hwcd = _humaWcd;
+			int hecd = _humaEcd;
+			int sqcd = _spideQcd;
+			int swcd = _spideWcd;
+			int secd = _spideEcd;
+			int ultcd = _ultcd;
+
+			if (EliseSpider())
+			{
+				if (hqcd < 1)
+				{
+					tHumanQ->Draw(DrawTimex->GetInteger(), DrawTimey->GetInteger());
+				}
+
+				if (hqcd >= 1)
+				{
+					cdtHumanQ->Draw(DrawTimex->GetInteger(), DrawTimey->GetInteger());
+				}
+
+				if (hwcd < 1)
+				{
+					tHumanW->Draw(DrawTimex->GetInteger() + 36, DrawTimey->GetInteger());
+				}
+
+				if (hwcd >= 1)
+				{
+					cdtHumanW->Draw(DrawTimex->GetInteger() + 36, DrawTimey->GetInteger());
+				}
+
+				if (hecd < 1)
+				{
+					tHumanE->Draw(DrawTimex->GetInteger() + 72, DrawTimey->GetInteger());
+				}
+
+				if (hecd >= 1)
+				{
+					cdtHumanE->Draw(DrawTimex->GetInteger() + 72, DrawTimey->GetInteger());
+				}
+			}
+
+			if (ultcd < 1)
+			{
+				tUltimate->Draw(DrawTimex->GetInteger() + 108, DrawTimey->GetInteger());
+			}
+
+			if (ultcd >= 1)
+			{
+				cdtUltimate->Draw(DrawTimex->GetInteger() + 108, DrawTimey->GetInteger());
+			}
+
+
+			if (EliseHuman())
+			{
+				if (sqcd < 1)
+				{
+					tSpiderQ->Draw(DrawTimex->GetInteger(), DrawTimey->GetInteger());
+				}
+
+				if (sqcd >= 1)
+				{
+					cdtSpiderQ->Draw(DrawTimex->GetInteger(), DrawTimey->GetInteger());
+				}
+
+				if (swcd < 1)
+				{
+					tSpiderW->Draw(DrawTimex->GetInteger() + 36, DrawTimey->GetInteger());
+				}
+
+				if (swcd >= 1)
+				{
+					cdtSpiderW->Draw(DrawTimex->GetInteger() + 36, DrawTimey->GetInteger());
+				}
+
+				if (secd < 1)
+				{
+					tSpiderE->Draw(DrawTimex->GetInteger() + 72, DrawTimey->GetInteger());
+				}
+
+				if (secd >= 1)
+				{
+					cdtSpiderE->Draw(DrawTimex->GetInteger() + 72, DrawTimey->GetInteger());
+				}
+			}
+
+			static auto message = GRender->CreateFontW("Comic Sans", 20.f, kFontWeightBold);
+			message->SetColor(Vec4(255, 255, 0, 255));
+			message->SetOutline(true);
+
+			if (EliseSpider())
+			{
+				if (hqcd >= 1)
+				{
+					message->Render(DrawTimex->GetInteger() + 14, DrawTimey->GetInteger() + 8, std::to_string(hqcd).data());
+				}
+
+				if (hwcd >= 1 && hwcd < 10)
+				{
+					message->Render(DrawTimex->GetInteger() + 50, DrawTimey->GetInteger() + 8, std::to_string(hwcd).data());
+				}
+				if (hwcd >= 10)
+				{
+					message->Render(DrawTimex->GetInteger() + 46, DrawTimey->GetInteger() + 8, std::to_string(hwcd).data());
+				}
+
+				if (hecd >= 1 && hecd < 10)
+				{
+					message->Render(DrawTimex->GetInteger() + 86, DrawTimey->GetInteger() + 8, std::to_string(hecd).data());
+				}
+
+				if (hecd >= 10)
+				{
+					message->Render(DrawTimex->GetInteger() + 82, DrawTimey->GetInteger() + 8, std::to_string(hecd).data());
+				}
+			}
+
+			if (EliseHuman())
+			{
+				if (sqcd >= 1)
+				{
+					message->Render(DrawTimex->GetInteger() + 14, DrawTimey->GetInteger() + 8, std::to_string(sqcd).data());
+				}
+
+				if (swcd >= 1 && swcd < 10)
+				{
+					message->Render(DrawTimex->GetInteger() + 50, DrawTimey->GetInteger() + 8, std::to_string(swcd).data());
+				}
+				if (swcd >= 10)
+				{
+					message->Render(DrawTimex->GetInteger() + 46, DrawTimey->GetInteger() + 8, std::to_string(swcd).data());
+				}
+
+				if (secd >= 1 && secd < 10)
+				{
+					message->Render(DrawTimex->GetInteger() + 86, DrawTimey->GetInteger() + 8, std::to_string(secd).data());
+				}
+
+				if (secd >= 10)
+				{
+					message->Render(DrawTimex->GetInteger() + 82, DrawTimey->GetInteger() + 8, std::to_string(secd).data());
+				}
+			}
+
+
+			if (ultcd >= 1)
+			{
+				message->Render(DrawTimex->GetInteger() + 122, DrawTimey->GetInteger() + 8, std::to_string(ultcd).data());
+			}
+		}
+	}			
+	
 };
