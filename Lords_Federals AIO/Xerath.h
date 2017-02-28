@@ -62,7 +62,7 @@ public:
 
 		MiscSettings = MainMenu->AddMenu("Misc Settings");
 		{
-			Predic = MiscSettings->CheckBox("HitChance - Off: Medium | On: Hight", true);
+			Predic = MiscSettings->AddInteger("HitChance - 0: Medium | 1: Hight | 3: Future", 0, 3, 3);
 			EGapCloser = MiscSettings->CheckBox("Automatically E GapCloser", true);
 			EInterrupter = MiscSettings->CheckBox("Automatically E Interrupt Spell", true);
 			CCedQ = MiscSettings->CheckBox("Auto Q When Enemies Cant Move", true);
@@ -145,13 +145,17 @@ public:
 				{
 					if (GetDistanceVectors(GGame->CursorPosition(), target->GetPosition()) < RMax->GetInteger())
 					{
-						if (Predic->Enabled())
+						if (Predic->GetInteger() == 2)
 						{
 							R->CastOnTarget(target, kHitChanceHigh);
 						}
-						else
+						else if (Predic->GetInteger() == 1)
 						{
 							R->CastOnTarget(target, kHitChanceMedium);
+						}
+						else
+						{
+							R->CastOnTarget(target, kHitChanceHigh);
 						}
 					}
 
@@ -160,25 +164,33 @@ public:
 
 				if (Rdelay->GetInteger() == 0)
 				{
-					if (Predic->Enabled())
+					if (Predic->GetInteger() == 2)
 					{
 						R->CastOnTarget(target, kHitChanceHigh);
 					}
-					else
+					else if (Predic->GetInteger() == 1)
 					{
 						R->CastOnTarget(target, kHitChanceMedium);
+					}
+					else
+					{
+						R->CastOnTarget(target, kHitChanceHigh);
 					}
 				}
 
 				else if (GGame->Time() - RCastSpell > 0.001 * Rdelay->GetInteger())
 				{
-					if (Predic->Enabled())
+					if (Predic->GetInteger() == 2)
 					{
 						R->CastOnTarget(target, kHitChanceHigh);
 					}
-					else
+					else if (Predic->GetInteger() == 1)
 					{
 						R->CastOnTarget(target, kHitChanceMedium);
+					}
+					else
+					{
+						R->CastOnTarget(target, kHitChanceHigh);
 					}
 				}
 
@@ -233,13 +245,37 @@ public:
 	{
 		if (Q->IsCharging() || (Q->GetChargePercent() == 100 && !Q->IsCharging()))
 		{
-			if (Predic->Enabled())
+			float Distance = GetDistance(GEntityList->Player(), target);
+			float Extend = 0;
+
+			if (Distance < 300) { Extend = 40; }
+			else if (Distance >= 300 && Distance < 500){ Extend = 60; }
+			else if (Distance >= 500 && Distance < 700){ Extend = 80; }
+			else if (Distance >= 700 && Distance < Q->Range()){ Extend = 100; }
+
+			Vec3 position;
+			auto delay = Q->GetDelay() + Distance / Q->Speed();
+			GPrediction->GetFutureUnitPosition(target, 0.5, true, position);
+
+			Vec3 PositionTarget = position.Extend(GEntityList->Player()->GetPosition(), -Extend);			
+			
+			Q->FindTarget(SpellDamage);
 			{
-				Q->CastOnTarget(target, kHitChanceHigh);
-			}
-			else
-			{
-				Q->CastOnTarget(target, kHitChanceMedium);
+				if (Predic->GetInteger() == 2)
+				{
+					Q->CastOnTarget(target, kHitChanceHigh);
+				}
+				else if (Predic->GetInteger() == 1)
+				{
+					Q->CastOnTarget(target, kHitChanceMedium);
+				}
+				else
+				{
+					if (Distance < Q->Range())
+					{
+						Q->CastOnPosition(PositionTarget);
+					}
+				}
 			}
 		}
 
@@ -250,8 +286,8 @@ public:
 				Q->StartCharging();
 			}
 		}
-	}
-
+	}	
+	
 	static void CastQPos(Vec3 target)
 	{
 		if (Q->IsCharging() || (Q->GetChargePercent() == 100 && !Q->IsCharging()))
@@ -314,37 +350,49 @@ public:
 		{
 			if (CheckShielded(target) && CheckShield->Enabled())
 			{
-				if (Predic->Enabled())
+				if (Predic->GetInteger() == 2)
 				{
 					E->CastOnTarget(target, kHitChanceHigh);
 				}
-				else
+				else if (Predic->GetInteger() == 1)
 				{
 					E->CastOnTarget(target, kHitChanceMedium);
+				}
+				else
+				{
+					E->CastOnTarget(target, kHitChanceHigh);
 				}
 			}
 			else
 			{
-				if (Predic->Enabled())
+				if (Predic->GetInteger() == 2)
 				{
 					E->CastOnTarget(target, kHitChanceHigh);
 				}
-				else
+				else if (Predic->GetInteger() == 1)
 				{
 					E->CastOnTarget(target, kHitChanceMedium);
+				}
+				else
+				{
+					E->CastOnTarget(target, kHitChanceHigh);
 				}
 			}
 		}
 
 		if (ComboW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && GEntityList->Player()->GetMana() > Q->ManaCost() + W->ManaCost() && !Q->IsCharging())
 		{
-			if (Predic->Enabled())
+			if (Predic->GetInteger() == 2)
 			{
 				W->CastOnTarget(target, kHitChanceHigh);
 			}
-			else
+			else if (Predic->GetInteger() == 1)
 			{
 				W->CastOnTarget(target, kHitChanceMedium);
+			}
+			else
+			{
+				W->CastOnTarget(target, kHitChanceHigh);
 			}
 		}			
 
@@ -369,13 +417,17 @@ public:
 
 		if (HarassW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && !Q->IsCharging())
 		{
-			if (Predic->Enabled())
+			if (Predic->GetInteger() == 2)
 			{
 				W->CastOnTarget(target, kHitChanceHigh);
 			}
-			else
+			else if (Predic->GetInteger() == 1)
 			{
 				W->CastOnTarget(target, kHitChanceMedium);
+			}
+			else
+			{
+				W->CastOnTarget(target, kHitChanceHigh);
 			}
 		}
 	}
