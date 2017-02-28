@@ -232,20 +232,17 @@ public:
 
 		if (axeTower->Enabled() && modokey == kModeCombo && IsUnderTurretPos(target->GetPosition()))
 		{
-			GOrbwalking->SetOverridePosition(GGame->CursorPosition());
-			return;
+			GOrbwalking->SetOverridePosition(GGame->CursorPosition());			
 		}
 
 		else if (axeTower2->Enabled() && modokey == kModeLaneClear  && IsUnderTurretPos(target->GetPosition()))
 		{
-			GOrbwalking->SetOverridePosition(GGame->CursorPosition());
-			return;
+			GOrbwalking->SetOverridePosition(GGame->CursorPosition());			
 		}
 
 		else if (axeEnemy->Enabled() && CountEnemy(target->GetPosition(), 550) > 2)
 		{
-			GOrbwalking->SetOverridePosition(GGame->CursorPosition());
-			return;
+			GOrbwalking->SetOverridePosition(GGame->CursorPosition());			
 		}
 		else
 		{
@@ -387,14 +384,15 @@ public:
 		else
 		{
 			auto bestAxe = axeListTeste.front();
-			for (auto obj : axeListTeste)
+			/*for (auto obj : axeListTeste)
 			{
-				/*if (GetDistanceVectors(GGame->CursorPosition(), bestAxe->GetPosition()) > GetDistanceVectors(GGame->CursorPosition(), obj->GetPosition()))
+				if (GetDistanceVectors(GGame->CursorPosition(), bestAxe->GetPosition()) > GetDistanceVectors(GGame->CursorPosition(), obj->GetPosition()))
 				{
 				bestAxe = obj;
-				}*/
-			}
+				}
+			}*/
 
+			GOrbwalking->DisableNextAttack();
 			CatchAxe(bestAxe);
 		}
 	}
