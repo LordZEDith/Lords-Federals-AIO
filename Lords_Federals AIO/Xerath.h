@@ -93,19 +93,26 @@ public:
 		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, true, kCollidesWithYasuoWall);
 		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
 		R = GPluginSDK->CreateSpell2(kSlotR, kCircleCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
-		Q->SetOverrideRange(1500);
-		W->SetOverrideRange(1100);
-		E->SetOverrideRange(1050);
-		R->SetOverrideRange(3520);
+
+		Q->SetOverrideRange(1550);
 		Q->SetOverrideDelay(0.6f);
+		Q->SetOverrideRadius(100);
+		Q->SetOverrideSpeed(1000);
+
+		W->SetOverrideRange(1000);
 		W->SetOverrideDelay(0.7f);
-		E->SetOverrideDelay(0.25f);
-		R->SetOverrideDelay(0.7f);
-		Q->SetOverrideRadius(95);
-		W->SetOverrideRadius(125);
+		W->SetOverrideRadius(200);
+		W->SetOverrideSpeed(1000);
+
+		E->SetOverrideRange(1150);
+		E->SetOverrideDelay(0.2f);
 		E->SetOverrideRadius(60);
-		R->SetOverrideRadius(130);
-		E->SetOverrideSpeed(1400);		
+		E->SetOverrideSpeed(1400);
+
+		R->SetOverrideRange(5600);
+		R->SetOverrideDelay(0.7f);		
+		R->SetOverrideRadius(120);
+		R->SetOverrideSpeed(1000);
 	}
 
 	static void SkinChanger()
@@ -255,7 +262,7 @@ public:
 
 			Vec3 position;
 			auto delay = Q->GetDelay() + Distance / Q->Speed();
-			GPrediction->GetFutureUnitPosition(target, 0.5, true, position);
+			GPrediction->GetFutureUnitPosition(target, delay, true, position);
 
 			Vec3 PositionTarget = position.Extend(GEntityList->Player()->GetPosition(), -Extend);			
 			
@@ -283,7 +290,7 @@ public:
 		{
 			if (target->IsValidTarget(GEntityList->Player(), Q->Range() - 50))
 			{
-				Q->StartCharging();
+				Q->StartCharging();				
 			}
 		}
 	}	
@@ -539,7 +546,7 @@ public:
 				{
 					Vec3 posQ;
 					int hitQ;
-					GPrediction->FindBestCastPosition(1500, Q->Radius(), false, true, false, posQ, hitQ);
+					GPrediction->FindBestCastPosition(1550, Q->Radius(), false, true, false, posQ, hitQ);
 					
 					if (hitQ >= MinionsQ->GetInteger())
 					{
