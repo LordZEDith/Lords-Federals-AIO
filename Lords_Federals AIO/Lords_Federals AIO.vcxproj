@@ -152,6 +152,7 @@
     <ClInclude Include="AutoLevelers.h" />
     <ClInclude Include="AutoSmite.h" />
     <ClInclude Include="BaseMenu.h" />
+    <ClInclude Include="Caitlyn.h" />
     <ClInclude Include="Champions.h" />
     <ClInclude Include="ChampTemplate.h" />
     <ClInclude Include="Color.h" />

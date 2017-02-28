@@ -177,6 +177,9 @@
     <ClInclude Include="zTristana.h">
       <Filter>Header Files\Champions\ADC</Filter>
     </ClInclude>
+    <ClInclude Include="Caitlyn.h">
+      <Filter>Header Files\Champions\ADC</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">

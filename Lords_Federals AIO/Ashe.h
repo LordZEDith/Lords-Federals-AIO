@@ -90,8 +90,8 @@ public:
 	static void InitializeSpells()
 	{
 		Q = GPluginSDK->CreateSpell2(kSlotQ, kTargetCast, false, false, kCollidesWithNothing);		
-		W = GPluginSDK->CreateSpell2(kSlotW, kConeCast, false, true, kCollidesWithYasuoWall);
-		W->SetSkillshot(0.25f, 60.f, 2000.f, 1240.f);		
+		W = GPluginSDK->CreateSpell2(kSlotW, kConeCast, false, false, kCollidesWithYasuoWall);
+		W->SetSkillshot(0.25f, 60.f, 1500.f, 1240.f);		
 		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, kCollidesWithNothing);
 		E->SetSkillshot(0.25f, 300.f, 1400.f, 2500.f);
 		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, false, false, kCollidesWithYasuoWall);
@@ -237,16 +237,11 @@ public:
 				{
 					if (LaneClearW->Enabled() && W->IsReady() && GEntityList->Player()->GetMana() > R->ManaCost() + Q->ManaCost() + W->ManaCost() && GEntityList->Player()->IsValidTarget(Minion, W->Range()) && !FoundMinionsNeutral(W->Range() - 300))
 					{
-						if (GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger())
-						{
-							Vec3 pos;
-							int count;
-							W->FindBestCastPosition(true, true, pos, count);
-
-							if (count >= MinionsW->GetInteger() && W->CastOnPosition(pos))
-							{
-								return;
-							}
+						if (GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger() && 
+							CountMinions(Minion->GetPosition(), 350) >= MinionsW->GetInteger() &&
+							GetDistance(GEntityList->Player(), Minion) >= GOrbwalking->GetAutoAttackRange(GEntityList->Player()))
+						{							
+							W->CastOnUnit(Minion);
 						}
 					}
 				}

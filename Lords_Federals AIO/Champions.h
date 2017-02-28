@@ -8,6 +8,7 @@
 #include "Corki.h"
 #include "Tristana.h"
 #include "zTristana.h"
+#include "Caitlyn.h"
 
 
 // Champions Midlane

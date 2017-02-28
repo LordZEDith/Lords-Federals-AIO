@@ -2295,6 +2295,99 @@ public:
 	}
 };
 
+class cCaitlyn : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		Message().ADCLaneSeries();
+		Message().ChampionLoadMessage();
+		Caitlyn().InitializeMenu();
+		Caitlyn().LoadSpells();
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+	}
+
+	virtual void OnRender() override
+	{
+		//Caitlyn().Drawing();
+		AutoSmite().DrawingsSmite();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		{
+			return;
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		{
+			//Caitlyn().Combo();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		{
+			//Caitlyn().Harass();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		{
+			//Caitlyn().LaneClear();
+			//Caitlyn().JungleClear();
+		}
+
+		Caitlyn().AutoTrap();		
+		Caitlyn().SkinChanger();		
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+		//Caitlyn().OnGapcloser(Args);
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+		//Caitlyn().OnAfterAttack(Source, Target);
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+		Caitlyn().OnCreateObject(Source);
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+		//Caitlyn().OnInterruptible(Args);
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+};
+
 class cTwistedFate : public IChampion
 {
 public:
@@ -2463,6 +2556,8 @@ void LoadChampion()
 		pChampion = new cTristana;
 	else if (szChampion == "Ezreal")
 		pChampion = new cEzreal;
+	else if (szChampion == "Caitlyn")
+		pChampion = new cCaitlyn;
 	// Midlane
 	else if (szChampion == "Ahri")
 		pChampion = new cAhri;
