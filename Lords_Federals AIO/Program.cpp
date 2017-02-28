@@ -2208,15 +2208,15 @@ public:
 	{
 		Message().ADCLaneSeries();
 		Message().ChampionLoadMessage();
-		Tristana().Menu();
-		Tristana().LoadSpells();
+		zTristana().InitializeMenu();
+		zTristana().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 	}
 
 	virtual void OnRender() override
 	{
-		Tristana().Drawing();
+		zTristana().Drawing();
 		AutoSmite().DrawingsSmite();
 	}
 
@@ -2229,30 +2229,32 @@ public:
 
 		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
-			Tristana().Combo();
+			zTristana().Combo();
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 		{
-			Tristana().HarassE2();
+			zTristana().Harass();
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 		{
-
+			zTristana().LaneClear();
+			zTristana().JungleClear();
 		}
-		Tristana().SelfR();
-		Tristana().Automatic();
-		Tristana().Automatic2();
-
+		
+		zTristana().RMiscs();
+		zTristana().WAntiMelee();
+		zTristana().SkinChanger();
+		zTristana().FocusTargetE();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
-
+		zTristana().OnGapcloser(Args);
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
 	{
-		Tristana().AfterAttack();
+		zTristana().OnAfterAttack(Source, Target);
 	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
@@ -2270,7 +2272,7 @@ public:
 	}
 	void OnInterruptible(InterruptibleSpell const& Args) override
 	{
-
+		zTristana().OnInterruptible(Args);
 	}
 
 	void OnDash(UnitDash* Args) override

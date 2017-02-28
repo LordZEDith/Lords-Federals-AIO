@@ -190,6 +190,7 @@
     <ClInclude Include="Warwick.h" />
     <ClInclude Include="Xerath.h" />
     <ClInclude Include="Ziggs.h" />
+    <ClInclude Include="zTristana.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PluginSDK.cpp" />

@@ -7,6 +7,7 @@
 //#include "Kogmaw.h"
 #include "Corki.h"
 #include "Tristana.h"
+#include "zTristana.h"
 
 
 // Champions Midlane

@@ -304,6 +304,9 @@ IUnit* EMissile;
 //std::vector<IUnit*> axeList;
 std::list<IUnit*> axeListTeste;
 std::map<int, IMenuOption*> MenuDontUlt;
+std::map<int, IMenuOption*> ChampionUse;
+std::map<int, IMenuOption*> ChampionAntiMelee;
+std::map<int, IMenuOption*> GapCloserList;
 
 bool FoundSmite = false;
 int tempaxe = 0;

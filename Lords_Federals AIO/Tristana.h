@@ -11,6 +11,7 @@ public:
 	void  Menu()
 	{
 		MainMenu = GPluginSDK->AddMenu("Lords & Federals Tristana");
+
 		QMenu = MainMenu->AddMenu("Q Settings");
 		WMenu = MainMenu->AddMenu("W Settings");
 		EMenu = MainMenu->AddMenu("E Settings");
@@ -141,15 +142,26 @@ public:
 				{
 					if (enemy != nullptr || enemy->IsDead() || enemy->IsInvulnerable() || enemy->HasBuffOfType(BUFF_SpellImmunity))
 						return;
-					auto eDamage = GHealthPrediction->GetKSDamage(enemy, kSlotR, R->GetDelay(), false);
-					if (eDamage >= enemy->GetHealth())
-					{
-						R->CastOnTarget(enemy);
+					auto eDamage = GDamage->GetSpellDamage(GEntityList->Player(), enemy, kSlotR);
+					if (enemy->HasBuff("tristanaecharge")) {
+						auto eDamage2 = GDamage->GetSpellDamage(GEntityList->Player(), enemy, kSlotE);
+						eDamage2 = eDamage2 * (0.3 * enemy->GetBuffCount("tristanaecharge"));
+						eDamage += eDamage2;
 					}
+						{
+							if (eDamage > enemy->GetHealth() + 50)
+							{
+								if (R->CastOnTarget(enemy))
+								{
+									return;
+								}
+							}
+						}
 				}
 			}
 		}
 	}
+
 	void Automatic2()
 	{
 		if (R->IsReady() && AutoUlt->Enabled())
