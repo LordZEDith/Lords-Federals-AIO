@@ -459,8 +459,7 @@ public:
 				{
 					auto dashpos = GEntityList->Player()->ServerPosition();
 					auto extend = dashpos.Extend(target->GetPosition(), -W->Range());
-
-					GGame->PrintChat(target->ChampionName());
+					
 					if (!GNavMesh->IsPointWall(extend) && (CountEnemy(extend, 1000) == 0 || CountAlly(extend, 1000) > CountEnemy(extend, 1000)))
 					{						
 						if (ChampionAntiMelee[target->GetNetworkId()]->Enabled())

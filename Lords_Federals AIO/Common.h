@@ -435,7 +435,8 @@ inline Vec3 GetTrapPos(float range)
 
 				auto name = object->GetObjectName();
 
-				if (strstr(object->GetObjectName(), "gatemarker_red.troy") || strstr(object->GetObjectName(), "global_ss_teleport_target_red.troy") ||
+				if (strstr(object->GetObjectName(), "Pantheon_Base_R_indicator_red.troy") || strstr(object->GetObjectName(), "gatemarker_red.troy") || 
+					strstr(object->GetObjectName(), "global_ss_teleport_target_red.troy") ||
 					strstr(object->GetObjectName(), "lifeaura") && GetDistance(trap, object) < 200 || strstr(object->GetObjectName(), "r_indicator_red.troy"))
 				{
 					return object->GetPosition();

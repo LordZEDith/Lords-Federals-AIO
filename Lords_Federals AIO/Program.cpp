@@ -2311,7 +2311,7 @@ public:
 
 	virtual void OnRender() override
 	{
-		//Caitlyn().Drawing();
+		Caitlyn().Drawing();
 		AutoSmite().DrawingsSmite();
 	}
 
@@ -2324,11 +2324,11 @@ public:
 
 		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
-			//Caitlyn().Combo();
+			Caitlyn().Combo();
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 		{
-			//Caitlyn().Harass();
+			Caitlyn().Harass();
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 		{
@@ -2336,18 +2336,20 @@ public:
 			//Caitlyn().JungleClear();
 		}
 
-		Caitlyn().AutoTrap();		
+		Caitlyn().Automatic();
+		Caitlyn().AutoTrap();
+		Caitlyn().DashToMouse();
 		Caitlyn().SkinChanger();		
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
-		//Caitlyn().OnGapcloser(Args);
+		Caitlyn().OnGapcloser(Args);
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
 	{
-		//Caitlyn().OnAfterAttack(Source, Target);
+		
 	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
@@ -2365,16 +2367,17 @@ public:
 	}
 	void OnInterruptible(InterruptibleSpell const& Args) override
 	{
-		//Caitlyn().OnInterruptible(Args);
+
 	}
 
 	void OnDash(UnitDash* Args) override
 	{
+		Caitlyn().OnDash(Args);
 	}
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-
+		Caitlyn().OnProcessSpell(Args);
 	}
 
 	void OnExitVisible(IUnit* Source) override
