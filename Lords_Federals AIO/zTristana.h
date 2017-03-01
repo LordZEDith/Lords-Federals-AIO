@@ -511,7 +511,7 @@ public:
 			}
 			break;
 		case kModeMixed:
-			if (RangeE->Enabled() && E->IsReady())
+			if (RangeE->Enabled() && E->IsReady() && target->IsHero())
 			{
 				if (GEntityList->Player()->ManaPercent() >= HarassMana->GetInteger())
 				{
