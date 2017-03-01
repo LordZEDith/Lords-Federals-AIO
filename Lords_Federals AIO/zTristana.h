@@ -394,6 +394,12 @@ public:
 	
 	static void RMiscs()
 	{	
+		float lvl = 7 * (GEntityList->Player()->GetLevel() - 1);
+		auto Range = 620 + lvl;
+
+		E->SetOverrideRange(Range);
+		R->SetOverrideRange(Range);
+		
 		if (R->IsReady() && ComboR->Enabled())
 		{
 			for (auto target : GEntityList->GetAllHeros(false, true))
@@ -420,7 +426,7 @@ public:
 						R->CastOnUnit(target);
 						//GGame->PrintChat("Target go to Tower");
 					}
-
+					
 					if (ComboRKill->Enabled())
 					{
 						auto rdamage = GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false);
