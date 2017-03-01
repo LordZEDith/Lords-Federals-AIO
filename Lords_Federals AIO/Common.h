@@ -83,7 +83,7 @@ inline double GetRDamage(IUnit* target)
 
 inline bool CheckTarget(IUnit* target)
 {
-	if (target != nullptr && !target->IsDead() && !target->IsInvulnerable())
+	if (target != nullptr && !target->IsDead() && !target->IsInvulnerable() && target->IsVisible())
 	{
 		return true;
 	}

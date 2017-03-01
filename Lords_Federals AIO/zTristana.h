@@ -116,7 +116,7 @@ public:
 		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 		E->SetOverrideDelay(0.25f);
 		E->SetOverrideRange(550);
-		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
+		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 	}
 
 	static void Combo()
@@ -409,16 +409,16 @@ public:
 					auto push = 400 + (GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) * 200);
 					auto finalPosition = prediction.TargetPosition.Extend(GEntityList->Player()->GetPosition(), -push);
 
-					if (RAllys->Enabled() && CountAlly(finalPosition, 500) > 1 && CountAlly(target->GetPosition(), 350) == 0)
+					if (RAllys->Enabled() && CountAlly(finalPosition, 500) > 1 && CountAlly(target->GetPosition(), 400) == 0 && CountEnemy(finalPosition, 500) + 1 < CountAlly(finalPosition, 500))
 					{
 						R->CastOnUnit(target);
-						GGame->PrintChat("Target go to Allys");
+						//GGame->PrintChat("Target go to Allys");
 					}
 
 					if (inUnderTower->Enabled() && IsUnderTurretPosAlly(finalPosition) && !IsUnderTurretPosAlly(target->GetPosition()) && !IsUnderTurretPosAlly(GEntityList->Player()->GetPosition()))
 					{
 						R->CastOnUnit(target);
-						GGame->PrintChat("Target go to Tower");
+						//GGame->PrintChat("Target go to Tower");
 					}
 
 					if (ComboRKill->Enabled())
@@ -430,7 +430,7 @@ public:
 						if (rdamage > target->GetHealth() && edmg < target->GetHealth() && ValidUlt(target) && target->HasBuff("tristanaechargesound"))
 						{
 							R->CastOnUnit(target);
-							GGame->PrintChat("Target EQ Combo to Kill");
+							//GGame->PrintChat("Target EQ Combo to Kill");
 						}
 					}
 
@@ -441,7 +441,7 @@ public:
 						if (rdamage > target->GetHealth() && CalcEDmg(target) < target->GetHealth() && ValidUlt(target))
 						{
 							R->CastOnUnit(target);
-							GGame->PrintChat("Target Killsteal");
+							//GGame->PrintChat("Target Killsteal");
 						}
 					}
 				}
@@ -462,7 +462,7 @@ public:
 					
 					if (!GNavMesh->IsPointWall(extend) && (CountEnemy(extend, 1000) == 0 || CountAlly(extend, 1000) > CountEnemy(extend, 1000)))
 					{						
-						if (ChampionAntiMelee[target->GetNetworkId()]->Enabled())
+						if (ChampionAntiMelee[target->GetNetworkId()]->Enabled() && CheckTarget(target))
 						{							
 							W->CastOnPosition(extend);
 						}
@@ -474,9 +474,9 @@ public:
 
 	static void OnGapcloser(GapCloserSpell const& args)
 	{
-		if (RGapCloser->Enabled() && R->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < R->Range())
+		if (RGapCloser->Enabled() && R->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.Sender->GetPosition()) < R->Range())
 		{
-			if (GapCloserList[args.Sender->GetNetworkId()]->Enabled())
+			if (args.Sender->IsValidTarget(GEntityList->Player(), R->Range()) && GapCloserList[args.Sender->GetNetworkId()]->Enabled() && CheckTarget(args.Sender))
 			{
 				R->CastOnUnit(args.Sender);
 			}
@@ -485,7 +485,7 @@ public:
 
 	static void OnInterruptible(InterruptibleSpell const& Args)
 	{
-		if (RInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < R->Range() && R->IsReady())
+		if (RInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < R->Range() && R->IsReady() && CheckTarget(Args.Target))
 		{
 			R->CastOnUnit(Args.Target);
 		}
