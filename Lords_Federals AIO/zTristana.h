@@ -156,7 +156,7 @@ public:
 				{
 					Q->CastOnPlayer();
 				}
-			}
+			}			
 		}
 	}
 
@@ -324,6 +324,8 @@ public:
 		{
 			for (auto enemy : GEntityList->GetAllHeros(false, true))
 			{
+				if (!CheckTarget(enemy)) return;
+
 				if (GetDistance(GEntityList->Player(), enemy) <= GOrbwalking->GetAutoAttackRange(GEntityList->Player()) && enemy->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())) &&
 					enemy->HasBuff("tristanaechargesound") && enemy->IsEnemy(GEntityList->Player()))
 				{
@@ -333,6 +335,8 @@ public:
 			
 			for (auto minion : GEntityList->GetAllMinions(false, true, true))
 			{
+				if (!CheckTarget(minion)) return;
+
 				if (GetDistance(GEntityList->Player(), minion) <= GOrbwalking->GetAutoAttackRange(GEntityList->Player()) && minion->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())) &&
 					minion->HasBuff("tristanaechargesound"))
 				{	
@@ -347,11 +351,10 @@ public:
 	{
 		if (AutoE->Enabled())
 		{
-
 			for (auto tower : GEntityList->GetAllTurrets(false, true))
 			{
 
-				if (!tower->IsDead() && tower->GetHealth() > 100 && tower->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())))
+				if (!tower->IsDead() && tower->GetHealth() > 100 && tower->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())) && tower->IsVisible())
 				{
 					E->CastOnUnit(tower);
 				}
@@ -499,7 +502,7 @@ public:
 
 	static void OnAfterAttack(IUnit* source, IUnit* target)
 	{
-		if (source != GEntityList->Player() || target == nullptr || !target->IsValidTarget(GEntityList->Player(), E->Range()))
+		if (source != GEntityList->Player() || target == nullptr || !target->IsValidTarget(GEntityList->Player(), E->Range()) || !target->IsVisible())
 			return;
 
 		switch (GOrbwalking->GetOrbwalkingMode())
