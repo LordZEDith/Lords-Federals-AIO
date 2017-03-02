@@ -271,6 +271,7 @@ public:
 			Q->CastOnTarget(qtarget, kHitChanceHigh);
 		}
 	}
+
 	static void AutoWCC()
 	{
 		if (wCCed->Enabled() && ComboW->Enabled())
@@ -287,6 +288,7 @@ public:
 			}
 		}
 	}
+
 	static void LordWTest()
 	{
 		if (ComboW->Enabled() && W->IsReady())
@@ -294,7 +296,7 @@ public:
 			auto wTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
 			if (GGame->TickCount() - LastWTick > 1500)
 			{
-				if (wTarget->IsFacing(GEntityList->Player()))
+				if (wTarget->IsFacing(GEntityList->Player()) && CheckTarget(wTarget))
 				{
 					if (wTarget->IsMelee() && GetDistance(GEntityList->Player(), wTarget) < wTarget->AttackRange() + 100)
 					{
@@ -315,6 +317,7 @@ public:
 			//}
 		}
 	}
+
 	static void TrapRevelerBush()
 	{
 		if (WBush->Enabled() && W->IsReady())
@@ -341,9 +344,8 @@ public:
 
 		auto Wposition = GetTrapPos(W->Range());
 
-		if (Wposition.x > 0 && Wposition.y > 0 && W->IsReady())
-		{
-			
+		if (Wposition.x > 0 && Wposition.y > 0 && W->IsReady() && WTele->Enabled() && GGame->TickCount() - LastWTick > 1500)
+		{			
 			auto finalPosition = Wposition.Extend(GEntityList->Player()->GetPosition(), 50);
 			
 			W->CastOnPosition(finalPosition);			
