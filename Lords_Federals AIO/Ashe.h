@@ -79,12 +79,7 @@ public:
 			DrawW = DrawingSettings->CheckBox("Draw W", true);
 			DrawE = DrawingSettings->CheckBox("Draw E", false);			
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
-		}
-
-		SkinsChange = MainMenu->AddMenu("Skins Changer");
-		{
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 8, 1);
-		}
+		}		
 	}
 
 	static void InitializeSpells()
@@ -96,15 +91,7 @@ public:
 		E->SetSkillshot(0.25f, 300.f, 1400.f, 2500.f);
 		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, false, false, kCollidesWithYasuoWall);
 		R->SetSkillshot(0.25f, 130.f, 1600.f, 5000.f);
-	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
-	}
+	}	
 
 	static void Automatic()
 	{

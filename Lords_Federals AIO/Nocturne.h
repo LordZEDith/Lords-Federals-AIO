@@ -51,17 +51,12 @@ public:
 			DrawE = DrawingSettings->CheckBox("Draw E", false);
 			DrawR = DrawingSettings->CheckBox("Draw R", false);			
 			Drawkill = DrawingSettings->CheckBox("Killable Enemy Notification", true);
-		}
-
-		SkinsChange = MainMenu->AddMenu("Skins Changer");
-		{
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 7, 1);
-		}
+		}		
 	}
 
 	static void LoadSpells()
 	{		
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, true, kCollidesWithYasuoWall);
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, kCollidesWithYasuoWall);
 		Q->SetSkillshot(0.25f, 60.f, 1400.f, 1125.f);
 		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, kCollidesWithNothing);
 		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, kCollidesWithNothing);
@@ -70,15 +65,7 @@ public:
 		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, kCollidesWithNothing);
 		R->SetOverrideRange(4000);
 		R->SetOverrideDelay(0.75);
-	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
-	}
+	}	
 
 	static void RangeUltimate()
 	{
@@ -293,11 +280,23 @@ public:
 
 	static void LaneClear()
 	{
+		if (LaneClearQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= LaneClearMana->GetInteger() && !FoundMinionsNeutral(E->Range() + 100) && CountMinions(GEntityList->Player()->GetPosition(), Q->Range()) >= MinionsQ->GetInteger())
+		{
+			Vec3 pos;
+			int count;
+			Q->FindBestCastPosition(true, true, pos, count);
+
+			if (count >= 3 && Q->CastOnPosition(pos))
+			{
+				return;
+			}			
+		}	
+
 		if (LaneClearQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= LaneClearMana->GetInteger() && !FoundMinionsNeutral(E->Range() + 100))
 		{
 			Vec3 pos;
 			int count;
-			Q->FindBestCastPosition(true, false, pos, count);
+			Q->FindBestCastPosition(true, true, pos, count);
 
 			if (count >= MinionsQ->GetInteger() && Q->CastOnPosition(pos))
 			{

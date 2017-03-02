@@ -66,12 +66,7 @@ public:
 			DrawR = DrawingSettings->CheckBox("Draw R", false);
 			DrawAxe = DrawingSettings->CheckBox("Draw Passive", true);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
-		}
-
-		SkinsChange = MainMenu->AddMenu("Skins Changer");
-		{
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 13, 1);
-		}
+		}		
 	}
 
 	static void LoadSpells()
@@ -85,15 +80,7 @@ public:
 		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, false, true, kCollidesWithNothing);
 		R->SetSkillshot(0.50f, 500.f, 1400.f, 425.f);
 		R->SetCharged(425.f, 1400.f, 1.0f);
-	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
-	}
+	}	
 
 	static void Combo()
 	{

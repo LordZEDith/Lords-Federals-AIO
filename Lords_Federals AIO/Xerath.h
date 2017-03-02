@@ -78,12 +78,7 @@ public:
 			DrawEA = DrawingSettings->CheckBox("Draw R target radius", true);
 			DrawR = DrawingSettings->CheckBox("Draw R", false);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
-		}
-
-		SkinsChange = MainMenu->AddMenu("Skins Changer");
-		{
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 4, 1);
-		}
+		}		
 	}
 
 	void static InitializeSpells()
@@ -113,15 +108,7 @@ public:
 		R->SetOverrideDelay(0.7f);		
 		R->SetOverrideRadius(120);
 		R->SetOverrideSpeed(1000);
-	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
-	}
+	}	
 
 	static float RealRange()
 	{		

@@ -3,7 +3,7 @@
 #include "Color.h"
 #include "Champions.h"
 #include "AutoSmite.h"
-#include "Toxic.h"
+#include "SkinsChange.h"
 #include "Version Checker.h"
 
 
@@ -235,6 +235,7 @@ public:
 		Ziggs().InitializeMenu();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -257,13 +258,13 @@ public:
 		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 		{
 
-		}
-		
-		//Ziggs().SkinChanger();
+		}	
+
 		Ziggs().LogicW();
 		Ziggs().CheckKeyPresses();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Skins().SkinChanger();
 	}
 
 	void OnGapCloser(GapCloserSpell const& Args) override
@@ -325,7 +326,7 @@ public:
 		Ashe().InitializeMenu();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -352,7 +353,7 @@ public:
 		Ashe().LogicR();
 		Ashe().LogicW();
 		Ashe().Automatic();		
-		Ashe().SkinChanger();
+		Skins().SkinChanger();
 		Ashe().KeyPressUltimate();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
@@ -417,6 +418,7 @@ public:
 		Draven().InitializeMenu();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -445,7 +447,7 @@ public:
 		Draven().LogicR();
 		Draven().LogicE();
 		Draven().KeyPressUltimate();
-		Draven().SkinChanger();
+		Skins().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 	}
@@ -506,7 +508,8 @@ public:
 		//Message().MidLaneSeries();
 		Message().ChampionLoadMessage();
 		Ezreal().InitializeSpells();
-		Ezreal().InitializeMenu();	
+		Ezreal().InitializeMenu();
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -541,7 +544,7 @@ public:
 		Ezreal().EAntiMelee();
 		Ezreal().StackMuneItem();
 		Ezreal().KsJungle();
-		Ezreal().SkinChanger();		
+		Skins().SkinChanger();		
 	}
 
 	void OnGapCloser(GapCloserSpell const& Args) override
@@ -603,6 +606,7 @@ public:
 		Ahri().InitializeMenu();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -632,7 +636,7 @@ public:
 		}
 		
 		Ahri().Automatic();		
-		Ahri().SkinChanger();	
+		Skins().SkinChanger();	
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 	}
@@ -695,6 +699,7 @@ public:
 		Message().ChampionLoadMessage();
 		Lux().InitializeMenu();
 		Lux().LoadSpells();
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -723,7 +728,7 @@ public:
 			Lux().LaneClear();
 		}
 
-		Lux().SkinChanger();
+		Skins().SkinChanger();
 		Lux().AutoRKS();
 		Lux().AutoCCed();
 		Lux().KsJungle();
@@ -790,7 +795,8 @@ public:
 		Olaf().LoadSpells();
 
 		AutoSmite().SpellsSmite();
-		AutoSmite().MenuSmite();		
+		AutoSmite().MenuSmite();
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -822,7 +828,7 @@ public:
 		}
 
 		Olaf().Automatic();
-		Olaf().SkinChanger();
+		Skins().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 	}
@@ -887,6 +893,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -919,7 +926,7 @@ public:
 		}
 
 		DrMundo().Automatic();
-		DrMundo().SkinChanger();
+		Skins().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 	}
@@ -984,6 +991,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -1015,7 +1023,7 @@ public:
 		
 		Maokai().AutoUlt();
 		Maokai().AutoUnderTower();
-		Maokai().SkinChanger();
+		Skins().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 	}
@@ -1080,6 +1088,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -1109,7 +1118,7 @@ public:
 			Poppy().JungleClear();
 		}
 
-		Poppy().SkinChanger();
+		Skins().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 	}
@@ -1176,6 +1185,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -1207,7 +1217,7 @@ public:
 
 		Nocturne().RangeUltimate();
 		Nocturne().Automatic();
-		Nocturne().SkinChanger();
+		Skins().SkinChanger();
 		Nocturne().KeyPressUltimate();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
@@ -1272,6 +1282,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -1302,7 +1313,7 @@ public:
 		}
 		
 		Hecarim().Automatic();
-		Hecarim().SkinChanger();		
+		Skins().SkinChanger();		
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 	}
@@ -1367,6 +1378,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -1396,7 +1408,7 @@ public:
 			Elise().JungleClear();
 		}
 		
-		Elise().SkinChanger();
+		Skins().SkinChanger();
 		Elise().EliseRappel();
 		Elise().Cooldowns();
 		AutoSmite().AutomaticSmite();
@@ -1651,6 +1663,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -1682,7 +1695,7 @@ public:
 
 		Xerath().Ultimate();
 		Xerath().Automatic();
-		Xerath().SkinChanger();
+		Skins().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 	}
@@ -2212,6 +2225,7 @@ public:
 		zTristana().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -2242,11 +2256,11 @@ public:
 		}
 		
 		zTristana().RMiscs();
-		zTristana().WAntiMelee();
-		zTristana().SkinChanger();
+		zTristana().WAntiMelee();		
 		zTristana().FocusTargetE();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Skins().SkinChanger();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -2307,6 +2321,7 @@ public:
 		Caitlyn().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
 	}
 
 	virtual void OnRender() override
@@ -2339,7 +2354,7 @@ public:
 		Caitlyn().Automatic();
 		Caitlyn().AutoTrap();
 		Caitlyn().DashToMouse();
-		Caitlyn().SkinChanger();		
+		Skins().SkinChanger();		
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 	}

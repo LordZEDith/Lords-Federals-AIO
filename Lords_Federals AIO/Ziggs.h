@@ -81,12 +81,7 @@ public:
 			DrawE = DrawingSettings->CheckBox("Draw E", false);
 			DrawR = DrawingSettings->CheckBox("Draw R", false);
 			noti = DrawingSettings->CheckBox("Show notification", false);
-		}
-
-		SkinsChange = MainMenu->AddMenu("Skins Changer");
-		{
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 7, 1);
-		}
+		}		
 	}
 
 	static void InitializeSpells()
@@ -104,16 +99,7 @@ public:
 		E->SetSkillshot(0.50f, 235.f, 1750.f, 900.f);
 		R = GPluginSDK->CreateSpell2(kSlotR, kCircleCast, false, false, kCollidesWithYasuoWall);
 		R->SetSkillshot(0.25f, 500.f, 1000.f, 5300.f);	
-	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
-	}
-
+	}	
 
 	static bool FoundEnemies(IUnit* source, float range)
 	{

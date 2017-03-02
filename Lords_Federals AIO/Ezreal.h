@@ -87,12 +87,6 @@ public:
 			DrawE = DrawingSettings->CheckBox("Draw E", false);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
 		}
-
-		SkinsChange = MainMenu->AddMenu("Skins Changer");
-		{
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 18, 1);
-		}
-
 	}
 	void static InitializeSpells()
 	{
@@ -113,15 +107,7 @@ public:
 		Q->SetOverrideSpeed(2000);
 		W->SetOverrideSpeed(1600);
 		R->SetOverrideSpeed(2000);
-	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
-	}
+	}	
 
 	void static Drawing()
 	{

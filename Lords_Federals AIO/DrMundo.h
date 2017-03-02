@@ -73,12 +73,7 @@ public:
 		{
 			DrawReady = DrawingSettings->CheckBox("Draw Only Ready Spells", true);
 			DrawQ = DrawingSettings->CheckBox("Draw Q", true);
-		}
-
-		SkinsChange = MainMenu->AddMenu("Skins Changer");
-		{
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 10, 8);
-		}
+		}		
 	}
 
 	static void LoadSpells()
@@ -89,14 +84,6 @@ public:
 		W->SetOverrideRange(325.f);
 		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, kCollidesWithNothing);
 		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, kCollidesWithNothing);
-	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
 	}	
 
 	static bool IsBurning()

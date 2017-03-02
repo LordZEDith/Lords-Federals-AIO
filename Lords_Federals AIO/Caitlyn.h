@@ -104,12 +104,7 @@ public:
 			DrawE = DrawingSettings->CheckBox("Draw E", false);
 			DrawR = DrawingSettings->CheckBox("Draw R", false);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
-		}
-
-		SkinsChange = MainMenu->AddMenu("Skins Changer");
-		{
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 14, 1);
-		}
+		}		
 	}
 
 	static void LoadSpells()
@@ -123,15 +118,7 @@ public:
 		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 		R->SetSkillshot(0.25f, 0.f, 1000.f, 3000.f);
 
-	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
-	}
+	}	
 
 	static void Drawing()
 	{
@@ -166,7 +153,7 @@ public:
 	static void Automatic()
 	{
 		WAntiMelee();
-		//TrapRevelerBush();
+		//TrapRevelerBush();		
 		
 		if (AutoHarass->Enabled())
 		{
@@ -196,7 +183,7 @@ public:
 					
 					if (GetDistance(GEntityList->Player(), target) > RWall->GetInteger() && GetDistance(GEntityList->Player(), target) < RMax->GetInteger())
 					{
-						R->CastOnUnit(target);
+						//R->CastOnUnit(target);						
 					}				
 				}
 
@@ -215,6 +202,7 @@ public:
 	
 	static void Combo()
 	{
+		
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 
 		if (!CheckTarget(target)) return;
@@ -238,6 +226,7 @@ public:
 
 			if (etarget->IsValidTarget(GEntityList->Player(), E->Range()) && Q->IsReady() && E->IsReady())
 			{
+				
 				E->CastOnTarget(etarget, kHitChanceHigh);
 			}
 
@@ -430,8 +419,7 @@ public:
 			for (auto target : GEntityList->GetAllHeros(false, true))
 			{
 				if (target->IsMelee() && GetDistance(GEntityList->Player(), target) < 300 && !target->IsDead() && target->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())))
-				{
-					
+				{					
 					auto dashpos = GEntityList->Player()->ServerPosition();
 					auto extend = dashpos.Extend(target->GetPosition(), -E->Range());					
 					

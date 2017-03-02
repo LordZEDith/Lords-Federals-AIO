@@ -87,12 +87,7 @@ public:
 			DrawW = DrawingSettings->CheckBox("Draw W", true);
 			DrawE = DrawingSettings->CheckBox("Draw E", true);
 			DrawR = DrawingSettings->CheckBox("Draw R", true);
-		}
-
-		SkinsChange = MainMenu->AddMenu("Skins Changer");
-		{
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 7, 3);
-		}
+		}		
 	}
 
 	static void Drawing()
@@ -112,14 +107,7 @@ public:
 			if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), R->Range()); }
 		}
 	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
-	}	
+	
 	static void Automatic()
 	{
 		// Killsteal

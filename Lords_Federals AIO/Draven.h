@@ -73,12 +73,7 @@ public:
 			DrawAxe = DrawingSettings->CheckBox("Draw Axe position", true);
 			DrawAxerange = DrawingSettings->CheckBox("Draw Axe Catch Range", true);
 			Drawkill = DrawingSettings->CheckBox("Draw R helper", true);
-		}
-
-		SkinsChange = MainMenu->AddMenu("Skins Changer");
-		{
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 7, 1);
-		}
+		}		
 	}
 
 	static void Drawing()
@@ -114,15 +109,7 @@ public:
 				GRender->DrawOutlinedCircle(GGame->CursorPosition(), Vec4(0, 191, 255, 255), gotoAxeMaxDist->GetInteger());
 			}
 		}
-	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
-	}
+	}	
 
 	static void KeyPressUltimate()
 	{

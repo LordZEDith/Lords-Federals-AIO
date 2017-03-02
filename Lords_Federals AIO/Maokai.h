@@ -62,12 +62,7 @@ public:
 			DrawW = DrawingSettings->CheckBox("Draw W", false);
 			DrawE = DrawingSettings->CheckBox("Draw E", false);			
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
-		}
-
-		SkinsChange = MainMenu->AddMenu("Skins Changer");
-		{
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 7, 1);
-		}
+		}		
 	}
 
 	static void LoadSpells()
@@ -81,14 +76,6 @@ public:
 		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, kCollidesWithNothing);
 		R->SetOverrideRange(450.f);
 	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
-	}	
 
 	static bool maoR()
 	{

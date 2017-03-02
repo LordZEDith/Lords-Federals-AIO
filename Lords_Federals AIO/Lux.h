@@ -76,12 +76,7 @@ public:
 			DrawE = DrawingSettings->CheckBox("Draw E", false);
 			DrawR = DrawingSettings->CheckBox("Draw R", false);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
-		}
-
-		SkinsChange = MainMenu->AddMenu("Skins Changer");
-		{
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 7, 1);
-		}
+		}		
 	}
 
 	static void LoadSpells()
@@ -95,15 +90,7 @@ public:
 		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, false, true, kCollidesWithYasuoWall);
 		R->SetSkillshot(1.35f, 190.f, 2000.f, 3000.f);
 	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
-	}
-
+	
 	static void KsJungle()
 	{
 		if (AutoRjungle->Enabled())

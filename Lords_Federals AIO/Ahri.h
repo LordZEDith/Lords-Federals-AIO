@@ -76,12 +76,7 @@ public:
 			DrawE = DrawingSettings->CheckBox("Draw E", false);
 			DrawR = DrawingSettings->CheckBox("Draw R", false);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
-		}
-
-		SkinsChange = MainMenu->AddMenu("Skins Changer");
-		{
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 14, 1);
-		}
+		}		
 	}
 
 	static void LoadSpells()
@@ -94,15 +89,7 @@ public:
 		E->SetSkillshot(0.25f, 60.f, 1550.f, 950.f);
 		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, kCollidesWithNothing);
 		R->SetOverrideRange(600);
-	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
-	}
+	}	
 
 	static Vec3 CalculateReturnPos(IUnit* Target)
 	{

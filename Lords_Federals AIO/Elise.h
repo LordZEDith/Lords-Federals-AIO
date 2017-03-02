@@ -57,12 +57,7 @@ public:
 			DrawTimex = DrawingSettings->AddInteger("Pos X", 1, 3000, 800);
 			DrawTimey = DrawingSettings->AddInteger("Pos Y", 1, 3000, 900);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
-		}
-
-		SkinsChange = MainMenu->AddMenu("Skins Changer");
-		{
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 5, 1);
-		}
+		}		
 	}
 
 	static void LoadSpells()
@@ -81,15 +76,7 @@ public:
 		E2 = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, kCollidesWithNothing);
 		E2->SetOverrideRange(750.f);
 		
-	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
-	}	
+	}		
 		
 	static bool EliseHuman()
 	{
@@ -175,20 +162,14 @@ public:
 		if (EliseSpider())
 			if (!Q2->IsReady() && !W2->IsReady() && !GEntityList->Player()->HasBuff("EliseSpiderW"))
 			{
-				if ((_humaQcd <= 0.f) || ((_humaWcd <= 1.5f) && (_humaEcd <= 0.8f)))
+				if (_humaQcd <= 0.f && _humaEcd <= 1.0f && _humaWcd <= 1.5f)
 				{
-					if ((Target2->GetHealth() <= GDamage->GetSpellDamage(GEntityList->Player(), Target2, kSlotQ)) &&
-						(_spideQcd <= 1.4f) &&
-						((_spideQcd <= 1.0f) || (_spideWcd > 1.9f)))
-					{
-						return;
-					}
-					else
-					{
+					if ((!(Target2->GetHealth() <= GDamage->GetSpellDamage(GEntityList->Player(), Target2, kSlotQ)) || !(_spideQcd <= 1.0f)) && !(_spideWcd <= 1.4f))
+					{						
 						R->CastOnPlayer();
 					}
 				}
-			}
+			}	
 	}
 
 	static void CastSpiderAutoE()
@@ -217,11 +198,11 @@ public:
 
 			if (Target != nullptr)
 			{
-				if (CanMove(Target) && (GetDistance(GEntityList->Player(), Target) < E2->Range() - 10))
+				if (CanMove(Target) && GetDistance(GEntityList->Player(), Target) < E2->Range() - 10 && GetDistance(GEntityList->Player(), Target) > Q2->Range() - 50)
 				{
 					E2->CastOnUnit(Target);
 				}
-				if (!CanMove(Target))
+				if (!CanMove(Target) && GetDistance(GEntityList->Player(), Target) < E2->Range())
 				{
 					E2->CastOnUnit(Target);
 				}
@@ -229,15 +210,16 @@ public:
 
 			if (EQtarget != nullptr)
 			{
-				if (CanMove(EQtarget) && (GetDistance(GEntityList->Player(), EQtarget) < E2->Range() + Q2->Range() - 10))
+				if (CanMove(EQtarget) && (GetDistance(GEntityList->Player(), EQtarget) < E2->Range() + Q2->Range() - 20))
 				{
 					for (auto minion : GEntityList->GetAllMinions(false, true, true))
 					{
-						if (minion != nullptr && minion->IsValidTarget(GEntityList->Player(), E2->Range() + Q->Range()))
+						if (minion != nullptr && minion->IsValidTarget(GEntityList->Player(), E2->Range()))
 						{
-							if (GetDistance(GEntityList->Player(), minion) < E->Range())
+							if (GetDistance(GEntityList->Player(), minion) < E->Range() && GetDistance(minion, EQtarget) <= Q2->Range() - 20 && Q2->IsReady())
 							{
 								E2->CastOnUnit(minion);
+								Q2->CastOnUnit(EQtarget);
 							}
 						}
 					}
@@ -285,8 +267,7 @@ public:
 					Q2->CastOnUnit(target);;
 				}
 				if (Espider->Enabled() && E2->IsReady())
-				{
-					//E2->CastOnUnit(target);
+				{					
 					CastSpiderE();
 				}
 				if (ComboR->Enabled())
@@ -423,40 +404,40 @@ public:
 			{			
 				if (strstr(Args.Name_, "EliseHumanQ"))
 				{
-					_humQcd = GGame->Time() +7.f;
+					_humQcd = GGame->Time() + GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotQ) + 1.f;
 				}
 
 				if (strstr(Args.Name_, "EliseHumanW"))
 				{
-					_humWcd = GGame->Time() + 13.f;
+					_humWcd = GGame->Time() + GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotW) + 1.f;
 				}
 
 				if (strstr(Args.Name_, "EliseHumanE"))
 				{
-					_humEcd = GGame->Time() + 15.f;
+					_humEcd = GGame->Time() + GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotE) + 1.f;
 				}
 			}
 			if (EliseSpider())
 			{
 				if (strstr(Args.Name_, "EliseSpiderQCast"))
 				{
-					_spidQcd = GGame->Time() + 7.f;
+					_spidQcd = GGame->Time() + GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotQ) + 1.f;					
 				}
 
 				if (strstr(Args.Name_, "EliseSpiderW"))
 				{
-					_spidWcd = GGame->Time() + 13.f;
+					_spidWcd = GGame->Time() + GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotW) + 1.f;
 				}
 
 				if (strstr(Args.Name_, "EliseSpiderEInitial"))
 				{
-					_spidEcd = GGame->Time() + 27.f;
+					_spidEcd = GGame->Time() + GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotE) + 1.f;
 				}
 			}
 
 			if (strstr(Args.Name_, "EliseRSpider") || strstr(Args.Name_, "EliseR"))
 			{
-				_Rcd = GGame->Time() + 5.f;
+				_Rcd = GGame->Time() + GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotR) + 1.f;
 			}			
 		}
 	}

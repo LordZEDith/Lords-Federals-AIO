@@ -180,6 +180,9 @@
     <ClInclude Include="Caitlyn.h">
       <Filter>Header Files\Champions\ADC</Filter>
     </ClInclude>
+    <ClInclude Include="SkinsChange.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">

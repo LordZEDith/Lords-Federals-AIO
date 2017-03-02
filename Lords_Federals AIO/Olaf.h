@@ -97,12 +97,7 @@ public:
 			DrawAxe = DrawingSettings->CheckBox("Draw Axe position", true);
 			DrawTemp = DrawingSettings->CheckBox("Draw Axe Time", true);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
-		}
-
-		SkinsChange = MainMenu->AddMenu("Skins Changer");
-		{
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 7, 1);
-		}
+		}		
 	}
 
 	static void LoadSpells()
@@ -114,15 +109,7 @@ public:
 		E->SetOverrideRange(325.f);
 		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, kCollidesWithNothing);
 
-	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
-	}
+	}	
 
 	static void Automatic()
 	{

@@ -54,6 +54,7 @@ IMenu* SmallMobs;
 IMenu* SkinsChange;
 
 IMenuOption* MiscSkin;
+IMenuOption* MiscSkinON;
 
 IMenu* DmgInd;
 IMenu* Keystones;
