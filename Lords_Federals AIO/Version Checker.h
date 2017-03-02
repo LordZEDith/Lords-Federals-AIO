@@ -28,7 +28,7 @@ public:
 
 			auto dwGitVersion = atoi(szData.c_str());
 
-			return (dwGitVersion <= 2);
+			return (dwGitVersion <= 3);
 		}
 
 		return true;
