@@ -282,6 +282,18 @@ inline int GetEnemiesInRange(float range)
 	return enemies;
 }
 
+inline float GetDistance(IUnit* source, IUnit* target)
+{
+	auto x1 = source->GetPosition().x;
+	auto x2 = target->GetPosition().x;
+	auto y1 = source->GetPosition().y;
+	auto y2 = target->GetPosition().y;
+	auto z1 = source->GetPosition().z;
+	auto z2 = target->GetPosition().z;
+	return static_cast<float>(sqrt(pow((x2 - x1), 2.0) + pow((y2 - y1), 2.0) + pow((z2 - z1), 2.0)));
+}
+
+
 inline int GetMinionsInRange(Vec3 Position, float Range)
 {
 	auto mingons = GEntityList->GetAllMinions(false, true, false);
@@ -351,16 +363,7 @@ inline int CountMinionsNeutral(Vec3 Location, int range)
 	return (Count);
 }
 
-inline float GetDistance(IUnit* source, IUnit* target)
-{
-	auto x1 = source->GetPosition().x;
-	auto x2 = target->GetPosition().x;
-	auto y1 = source->GetPosition().y;
-	auto y2 = target->GetPosition().y;
-	auto z1 = source->GetPosition().z;
-	auto z2 = target->GetPosition().z;
-	return static_cast<float>(sqrt(pow((x2 - x1), 2.0) + pow((y2 - y1), 2.0) + pow((z2 - z1), 2.0)));
-}
+
 
 inline float GetDistanceVectors(Vec3 from, Vec3 to)
 {

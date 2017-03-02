@@ -78,6 +78,7 @@ public:
 		MiscSettings = MainMenu->AddMenu("Misc Settings");
 		{					
 			CCedQ = MiscSettings->CheckBox("Auto Q on CC", true);
+			ComboW = MiscSettings->CheckBox("Lords W Test", false);
 			AntiDash = MiscSettings->CheckBox("Anti Dash", true);
 			EGapCloser = MiscSettings->CheckBox("E GapCloser | Anti Meele", true);
 			for (auto enemy : GEntityList->GetAllHeros(false, true))
@@ -193,7 +194,7 @@ public:
 				{
 					Q->CastOnTarget(target, kHitChanceMedium);
 				}
-
+				AutoWCC();
 				if (wCCed->Enabled() && target->IsValidTarget(GEntityList->Player(), W->Range() - 50) && W->IsReady() && !CanMove(target) && !target->IsDead() && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > W->ManaCost())
 				{
 					W->CastOnPosition(target->GetPosition());
@@ -218,7 +219,7 @@ public:
 		{
 			Q->CastOnTarget(target, kHitChanceHigh);
 		}
-
+		LordWTest();
 		if (ComboE2->Enabled() && GEntityList->Player()->GetMana() > Q->ManaCost() + E->ManaCost())
 		{
 			auto qtarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
@@ -230,8 +231,8 @@ public:
 			{
 				
 				E->CastOnTarget(etarget, kHitChanceHigh);
-			}
-
+			}		
+			
 			else if (!WForce->Enabled() && qtarget->IsValidTarget(GEntityList->Player(), Q->Range()) && Q->IsReady() && !E->IsReady())
 			{
 				Q->CastOnTarget(qtarget, kHitChanceHigh);				
@@ -270,7 +271,50 @@ public:
 			Q->CastOnTarget(qtarget, kHitChanceHigh);
 		}
 	}
-
+	static void AutoWCC()
+	{
+		if (wCCed->Enabled() && ComboW->Enabled())
+		{
+			for (auto target : GEntityList->GetAllHeros(false, true))
+			{
+				if (GEntityList->Player()->IsValidTarget(target, W->Range() && !CanMove(target) && !target->HasBuff("CaitlynYordleTrapInternal")))
+				{
+					if (GGame->TickCount() - LastWTick > 1500)
+					{
+						W->CastOnPosition(target->GetPosition());
+					}
+				}
+			}
+		}
+	}
+	static void LordWTest()
+	{
+		if (ComboW->Enabled() && W->IsReady())
+		{
+			auto wTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
+			if (GGame->TickCount() - LastWTick > 1500)
+			{
+				if (wTarget->IsFacing(GEntityList->Player()))
+				{
+					if (wTarget->IsMelee() && GetDistance(GEntityList->Player(), wTarget) < wTarget->AttackRange() + 100)
+					{
+						W->CastOnPosition(wTarget->GetPosition());
+					}
+				}
+				else
+				{
+					if (GEntityList->Player()->IsValidTarget(wTarget, W->Range()))
+					{
+						W->CastOnTarget(wTarget, kHitChanceVeryHigh);
+					}
+				}
+			}
+			//else
+			//{
+			//W->CastOnPosition(wTarget->GetPosition() + Vec3->VectorNormalize(wTarget->ServerPosition() - GEntityList->Player()->ServerPosition())*100);
+			//}
+		}
+	}
 	static void TrapRevelerBush()
 	{
 		if (WBush->Enabled() && W->IsReady())
@@ -379,6 +423,10 @@ public:
 		if (WForce->Enabled() && strstr(Args.Name_, "CaitlynYordleTrap"))
 		{			
 						
+		}
+		if (GSpellData->GetSlot(Args.Data_) == kSlotW)
+		{
+			LastWTick = GGame->TickCount();
 		}
 		
 	}

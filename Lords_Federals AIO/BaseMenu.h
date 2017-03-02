@@ -317,6 +317,7 @@ float DragonDmg = 0;
 double DragonTime = 0;
 int QLastCast = 0;
 bool WSpellStatus;
+int LastWTick;
 
 short keystate;
 bool smiteKeyWasDown = false;
