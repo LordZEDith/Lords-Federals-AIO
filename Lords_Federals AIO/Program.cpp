@@ -6,7 +6,6 @@
 #include "SkinsChange.h"
 #include "Version Checker.h"
 
-
 #pragma region Events
 PLUGIN_EVENT(void) OnOrbwalkBeforeAttack(IUnit* Target)
 {
@@ -2656,7 +2655,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Welcome to Lords & Federals AIO");
 	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "News: Me and Federal decided to merge to bring you the best Scripts");
 
-	GUtility->CreateDebugConsole();	
+	//GUtility->CreateDebugConsole();	
 }
 
 // Called when plugin is unloaded

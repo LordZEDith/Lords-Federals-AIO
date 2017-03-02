@@ -474,8 +474,7 @@ public:
 	{
 		if (GetDistance(GEntityList->Player(), Source) < 500)
 		{
-			//GGame->PrintChat(Source->GetObjectName());
-			GUtility->LogConsole("Name: %s", Source->GetObjectName());
+			//GGame->PrintChat(Source->GetObjectName());			
 		}
 
 		if (WRevive->Enabled() && GGame->TickCount() - LastWTick > 1500)
