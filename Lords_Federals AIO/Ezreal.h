@@ -349,6 +349,20 @@ public:
 		}
 	}
 
+	static void JungleClear()
+	{
+		if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() > JungleMana->GetInteger())
+		{
+			for (auto minion : GEntityList->GetAllMinions(false, false, true))
+			{
+				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+				{
+					Q->CastOnUnit(minion);
+				}
+			}
+		}
+	}
+
 	static void LaneClear()
 	{
 		if (LaneClearQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger())

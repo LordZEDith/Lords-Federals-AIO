@@ -538,6 +538,7 @@ public:
 		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 		{
 			Ezreal().LaneClear();
+			Ezreal().JungleClear();
 		}
 		
 		Ezreal().Automatic();
