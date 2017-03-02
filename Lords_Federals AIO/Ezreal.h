@@ -90,7 +90,7 @@ public:
 	}
 	void static InitializeSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, kCollidesWithYasuoWall);
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
 		W = GPluginSDK->CreateSpell2(kSlotW, kLineCast, false, true, kCollidesWithYasuoWall);
 		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, kCollidesWithNothing);
 		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, true, true, kCollidesWithYasuoWall);
