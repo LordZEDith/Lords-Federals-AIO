@@ -186,7 +186,7 @@ public:
 					
 					if (GetDistance(GEntityList->Player(), target) > RWall->GetInteger() && GetDistance(GEntityList->Player(), target) < RMax->GetInteger())
 					{
-						//R->CastOnUnit(target);						
+						R->CastOnUnit(target);						
 					}				
 				}
 
