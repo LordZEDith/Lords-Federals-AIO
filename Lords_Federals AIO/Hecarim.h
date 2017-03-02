@@ -115,7 +115,7 @@ public:
 		{
 			for (auto hero : GEntityList->GetAllHeros(false, true))
 			{
-				if (KillstealQ->Enabled() && Q->IsReady() && hero != nullptr && hero->IsValidTarget(GEntityList->Player(), Q->Range() - 50) && !hero->IsInvulnerable())
+				if (KillstealQ->Enabled() && Q->IsReady() && hero != nullptr && hero->IsValidTarget(GEntityList->Player(), Q->Range() - 50) && !hero->IsInvulnerable() && !hero->IsDead() && hero->IsVisible())
 				{
 					auto damage = GHealthPrediction->GetKSDamage(hero, kSlotQ, Q->GetDelay(), false);
 
@@ -124,7 +124,7 @@ public:
 						Q->CastOnPlayer();
 					}
 				}
-				else if (KillstealR->Enabled() && R->IsReady() && Q->IsReady() && hero != nullptr && hero->IsValidTarget(GEntityList->Player(), KillstealRange->GetInteger()) && !hero->IsInvulnerable())
+				else if (KillstealR->Enabled() && R->IsReady() && Q->IsReady() && hero != nullptr && hero->IsValidTarget(GEntityList->Player(), KillstealRange->GetInteger()) && !hero->IsInvulnerable() && !hero->IsDead() && hero->IsVisible())
 				{
 					auto damage = GHealthPrediction->GetKSDamage(hero, kSlotR, R->GetDelay(), false);
 
