@@ -185,20 +185,17 @@ public:
 			{
 				if (checkRrange(target) && KillstealR->Enabled() && R->IsReady() && target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) > target->GetHealth())
 				{
-					R->CastOnTarget(target, kHitChanceHigh);
-					return;
+					R->CastOnTarget(target, kHitChanceHigh);					
 				}
 				
 				if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
 				{
-					Q->CastOnTarget(target, kHitChanceHigh);
-					return;
+					Q->CastOnTarget(target, kHitChanceHigh);					
 				}
 
 				if (KillstealW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && GHealthPrediction->GetKSDamage(target, kSlotW, W->GetDelay(), false) > target->GetHealth())
 				{
-					W->CastOnTarget(target, kHitChanceHigh);
-					return;
+					W->CastOnTarget(target, kHitChanceHigh);					
 				}
 
 				if (KillstealE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()) && GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) > target->GetHealth())

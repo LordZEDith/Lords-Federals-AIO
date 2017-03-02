@@ -2348,8 +2348,8 @@ public:
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 		{
-			//Caitlyn().LaneClear();
-			//Caitlyn().JungleClear();
+			Caitlyn().LaneClear();
+			Caitlyn().JungleClear();
 		}
 
 		Caitlyn().Automatic();
@@ -2655,7 +2655,8 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	pChampion->OnLoad();	
 	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Welcome to Lords & Federals AIO");
 	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "News: Me and Federal decided to merge to bring you the best Scripts");
-	
+
+	GUtility->CreateDebugConsole();	
 }
 
 // Called when plugin is unloaded

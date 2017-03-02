@@ -63,14 +63,14 @@ public:
 		LaneClearSettings = MainMenu->AddMenu("LaneClear Settings");
 		{
 			LaneClearQ = LaneClearSettings->CheckBox("Use Q in laneclear", true);
-			MinionsQ = LaneClearSettings->AddInteger("Minimum minions to Q in laneclear", 1, 10, 4);			
+			MinionsQ = LaneClearSettings->AddInteger("Minimum minions to Q in laneclear", 1, 10, 4);
+			LaneClearE = LaneClearSettings->CheckBox("Use E Kill Out Rage & 'Q cd", false);
 			LaneClearMana = LaneClearSettings->AddInteger("Minimum MP% to laneclear", 1, 100, 60);
 		}
 
 		JungleClearSettings = MainMenu->AddMenu("JungleClear Settings");
 		{
-			JungleQ = JungleClearSettings->CheckBox("Use Q in Jungle", true);
-			JungleW = JungleClearSettings->CheckBox("Use W in Jungle", true);
+			JungleQ = JungleClearSettings->CheckBox("Use Q in Jungle", true);			
 			JungleE = JungleClearSettings->CheckBox("Use E in Jungle", false);			
 			JungleMana = JungleClearSettings->AddInteger("Min Mana to Jungle", 1, 100, 40);
 		}
@@ -110,7 +110,7 @@ public:
 
 	static void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 		Q->SetSkillshot(0.65f, 60.f, 2200.f, 1250.f);
 		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, false, kCollidesWithNothing);
 		W->SetSkillshot(1.5f, 100.f, 3200.f, 800.f);
@@ -194,10 +194,13 @@ public:
 				{
 					Q->CastOnTarget(target, kHitChanceMedium);
 				}
-				AutoWCC();
-				if (wCCed->Enabled() && target->IsValidTarget(GEntityList->Player(), W->Range() - 50) && W->IsReady() && !CanMove(target) && !target->IsDead() && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > W->ManaCost())
+				
+				if (wCCed->Enabled() && target->IsValidTarget(GEntityList->Player(), W->Range() - 50) && W->IsReady() && !CanMove(target) && !target->IsDead() && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > W->ManaCost() && !target->HasBuff("CaitlynYordleTrapInternal"))
 				{
-					W->CastOnPosition(target->GetPosition());
+					if (GGame->TickCount() - LastWTick > 1500)
+					{
+						W->CastOnPosition(target->GetPosition());
+					}
 				}
 			}
 		}
@@ -272,17 +275,93 @@ public:
 		}
 	}
 
-	static void AutoWCC()
+	static void JungleClear()
 	{
-		if (wCCed->Enabled() && ComboW->Enabled())
+		if (JungleMana->GetInteger() < GEntityList->Player()->ManaPercent())
 		{
-			for (auto target : GEntityList->GetAllHeros(false, true))
+			for (auto minion : GEntityList->GetAllMinions(false, false, true))
 			{
-				if (GEntityList->Player()->IsValidTarget(target, W->Range() && !CanMove(target) && !target->HasBuff("CaitlynYordleTrapInternal")))
+
+				if (JungleE->Enabled() && E->IsReady() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
 				{
-					if (GGame->TickCount() - LastWTick > 1500)
+
+					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
 					{
-						W->CastOnPosition(target->GetPosition());
+						if (strstr(minion->GetObjectName(), "Dragon") || strstr(minion->GetObjectName(), "Baron") ||
+							strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "RiftHerald"))
+						{
+							if (GEntityList->Player()->IsValidTarget(minion, 400))
+							{
+								E->CastOnUnit(minion);
+							}
+						}
+						else
+						{
+							E->CastOnUnit(minion);
+						}
+					}
+				}
+
+				else if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
+				{
+					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+					{
+						Vec3 posQ;
+						int hitQ;
+
+						if (strstr(minion->GetObjectName(), "Dragon") || strstr(minion->GetObjectName(), "Baron") ||
+							strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "RiftHerald"))
+						{
+							GPrediction->FindBestCastPosition(500, Q->Radius(), true, true, false, posQ, hitQ);
+						}
+						else
+						{
+							GPrediction->FindBestCastPosition(Q->Range() - 50, Q->Radius(), true, true, false, posQ, hitQ);
+						}
+
+						if (hitQ > 1)
+						{
+							Q->CastOnPosition(posQ);
+						}
+						else
+						{
+							Q->CastOnUnit(minion);
+						}
+					}
+				}								
+			}
+		}
+	}
+
+	static void LaneClear()
+	{
+		if (GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger())
+		{
+			for (auto minion : GEntityList->GetAllMinions(false, true, false))
+			{
+				if (LaneClearQ->Enabled() && Q->IsReady() && !FoundMinionsNeutral(E->Range()) && GetMinionsInRange(GEntityList->Player()->GetPosition(), Q->Range()) >= MinionsQ->GetInteger())
+				{
+					Vec3 pos;
+					int count;
+					Q->FindBestCastPosition(true, false, pos, count);
+
+					if (count >= 3)
+					{
+						Q->CastOnPosition(pos);
+					}
+				}
+
+				if (LaneClearE->Enabled() && E->IsReady() && !FoundMinionsNeutral(E->Range() + 100))
+				{
+					if (!Q->IsReady() || !LaneClearQ->Enabled())
+					{
+						auto damage = GHealthPrediction->GetKSDamage(minion, kSlotE, E->GetDelay(), false);
+
+						if (damage > minion->GetHealth() && minion->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())))
+						{
+							GOrbwalking->ResetAA();
+							E->CastOnTarget(minion);
+						}
 					}
 				}
 			}
@@ -291,7 +370,7 @@ public:
 
 	static void LordWTest()
 	{
-		if (ComboW->Enabled() && W->IsReady())
+		if (ComboW->Enabled() && W->IsReady() && !WForce->Enabled())
 		{
 			auto wTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
 			if (GGame->TickCount() - LastWTick > 1500)
@@ -342,14 +421,14 @@ public:
 	{
 		//GetBuffName();
 
-		auto Wposition = GetTrapPos(W->Range());
+		/*auto Wposition = GetTrapPos(W->Range());
 
 		if (Wposition.x > 0 && Wposition.y > 0 && W->IsReady() && WTele->Enabled() && GGame->TickCount() - LastWTick > 1500)
 		{			
 			auto finalPosition = Wposition.Extend(GEntityList->Player()->GetPosition(), 50);
 			
 			W->CastOnPosition(finalPosition);			
-		}
+		}*/
 	}
 
 	static void DashToMouse()
@@ -396,12 +475,24 @@ public:
 		if (GetDistance(GEntityList->Player(), Source) < 500)
 		{
 			//GGame->PrintChat(Source->GetObjectName());
+			GUtility->LogConsole("Name: %s", Source->GetObjectName());
 		}
 
-		if (WRevive->Enabled())
+		if (WRevive->Enabled() && GGame->TickCount() - LastWTick > 1500)
 		{
 			if (strstr(Source->GetObjectName(), "LifeAura.troy") || strstr(Source->GetObjectName(), "ZileanBase_R_Buf.troy"))
 			{
+				if (W->IsReady() && Source->IsEnemy(GEntityList->Player()))
+				{
+					W->CastOnUnit(Source);
+				}
+			}
+		}
+
+		if (WTele->Enabled() && GGame->TickCount() - LastWTick > 1500)
+		{
+			if (strstr(Source->GetObjectName(), "global_ss_teleport_arrive_red.troy"))
+			{				
 				if (W->IsReady() && Source->IsEnemy(GEntityList->Player()))
 				{
 					W->CastOnUnit(Source);
