@@ -115,10 +115,9 @@ public:
 		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, false, kCollidesWithNothing);
 		W->SetSkillshot(1.5f, 100.f, 3200.f, 800.f);
 		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
-		E->SetSkillshot(0.25f, 90.f, 1600.f, 950.f);
+		E->SetSkillshot(0.25f, 90.f, 1600.f, 750.f);
 		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 		R->SetSkillshot(0.25f, 0.f, 1000.f, 3000.f);
-
 	}	
 
 	static void Drawing()
@@ -157,7 +156,7 @@ public:
 	{
 		WAntiMelee();
 		//TrapRevelerBush();		
-		
+
 		if (AutoHarass->Enabled())
 		{
 			Harass();
@@ -168,52 +167,57 @@ public:
 
 			if (!target->HasBuff("ChronoShift") && Killsteal->Enabled())
 			{
-				if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
+				if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && 
+					GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
 				{
 					Q->CastOnTarget(target, kHitChanceHigh);
-					return;
 				}
 
-				if (KillstealE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()) && GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) > target->GetHealth())
+				if (KillstealE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()) && 
+					GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) > target->GetHealth())
 				{
 					E->CastOnTarget(target, kHitChanceHigh);
 				}
 
 				auto delay = R->GetDelay() + GetDistance(GEntityList->Player(), target) / R->Speed();
-				if (ComboR->Enabled() && R->IsReady() && target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && GHealthPrediction->GetKSDamage(target, kSlotR, delay, false) > target->GetHealth())
+
+				if (ComboR->Enabled() && R->IsReady() && target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && 
+					GHealthPrediction->GetKSDamage(target, kSlotR, delay, false) > target->GetHealth() + 50)
 				{
 					if (IsUnderTurret(GEntityList->Player()) && inUnderTower->Enabled()) { return; }
-					
-					if (GetDistance(GEntityList->Player(), target) > RWall->GetInteger() && GetDistance(GEntityList->Player(), target) < RMax->GetInteger())
-					{
-						R->CastOnUnit(target);						
-					}				
-				}
 
-				if (CCedQ->Enabled() && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50) && Q->IsReady() && !CanMove(target) && !target->IsDead() && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > Q->ManaCost())
-				{
-					Q->CastOnTarget(target, kHitChanceMedium);
-				}
-				
-				if (wCCed->Enabled() && target->IsValidTarget(GEntityList->Player(), W->Range() - 50) && W->IsReady() && !CanMove(target) && !target->IsDead() && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > W->ManaCost() && !target->HasBuff("CaitlynYordleTrapInternal"))
-				{
-					if (GGame->TickCount() - LastWTick > 1500)
+					if (GetDistance(GEntityList->Player(), target) > RWall->GetInteger() && 
+						GetDistance(GEntityList->Player(), target) < RMax->GetInteger())
 					{
-						W->CastOnPosition(target->GetPosition());
+						R->CastOnUnit(target);
 					}
+				}
+			}
+
+			if (CCedQ->Enabled() && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50) && 
+				Q->IsReady() && !CanMove(target) && CheckTarget(target) && GEntityList->Player()->GetMana() > Q->ManaCost())
+			{
+				Q->CastOnTarget(target, kHitChanceMedium);
+			}
+
+			if (wCCed->Enabled() && target->IsValidTarget(GEntityList->Player(), W->Range() - 50) && W->IsReady() && !CanMove(target) && 
+				CheckTarget(target) && GEntityList->Player()->GetMana() > W->ManaCost() && !target->HasBuff("CaitlynYordleTrapInternal"))
+			{
+				if (GGame->TickCount() - LastWTick > 1500)
+				{
+					W->CastOnPosition(target->GetPosition());
 				}
 			}
 		}
 	}
 	
 	static void Combo()
-	{
-		
+	{		
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 
 		if (!CheckTarget(target)) return;
 
-		if (!ComboE2->Enabled() && ComboE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range() - 50))
+		if (!ComboE2->Enabled() && ComboE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()))
 		{
 			E->CastOnTarget(target, kHitChanceHigh);
 		}
@@ -222,7 +226,7 @@ public:
 		{
 			Q->CastOnTarget(target, kHitChanceHigh);
 		}
-		LordWTest();
+		
 		if (ComboE2->Enabled() && GEntityList->Player()->GetMana() > Q->ManaCost() + E->ManaCost())
 		{
 			auto qtarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
@@ -231,8 +235,7 @@ public:
 			if (!CheckTarget(qtarget) || !CheckTarget(etarget)) return;
 
 			if (etarget->IsValidTarget(GEntityList->Player(), E->Range()) && Q->IsReady() && E->IsReady())
-			{
-				
+			{				
 				E->CastOnTarget(etarget, kHitChanceHigh);
 			}		
 			
@@ -255,6 +258,8 @@ public:
 				}
 			}			
 		}
+
+		LordWTest();
 	}
 
 	static void Harass()
@@ -337,19 +342,20 @@ public:
 	{
 		if (GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger())
 		{
+			if (LaneClearQ->Enabled() && Q->IsReady() && !FoundMinionsNeutral(E->Range()) && GetMinionsInRange(GEntityList->Player()->GetPosition(), Q->Range()) >= MinionsQ->GetInteger())
+			{
+				if (MinionsQ->GetInteger() >= 3)
+				{
+					Q->AttackMinions(3);
+				}
+				else
+				{
+					Q->AttackMinions(MinionsQ->GetInteger());
+				}
+			}
+
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (LaneClearQ->Enabled() && Q->IsReady() && !FoundMinionsNeutral(E->Range()) && GetMinionsInRange(GEntityList->Player()->GetPosition(), Q->Range()) >= MinionsQ->GetInteger())
-				{
-					Vec3 pos;
-					int count;
-					Q->FindBestCastPosition(true, false, pos, count);
-
-					if (count >= 3)
-					{
-						Q->CastOnPosition(pos);
-					}
-				}
 
 				if (LaneClearE->Enabled() && E->IsReady() && !FoundMinionsNeutral(E->Range() + 100))
 				{
@@ -472,11 +478,6 @@ public:
 
 	static void OnCreateObject(IUnit* Source)
 	{
-		if (GetDistance(GEntityList->Player(), Source) < 500)
-		{
-			//GGame->PrintChat(Source->GetObjectName());			
-		}
-
 		if (WRevive->Enabled() && GGame->TickCount() - LastWTick > 1500)
 		{
 			if (strstr(Source->GetObjectName(), "LifeAura.troy") || strstr(Source->GetObjectName(), "ZileanBase_R_Buf.troy"))
@@ -502,11 +503,6 @@ public:
 
 	static void OnProcessSpell(CastedSpell const& Args)
 	{
-		if (Args.Caster_ == GEntityList->Player())
-		{
-			//GGame->PrintChat(Args.Name_);			
-		}
-
 		if (strstr(Args.Name_, "CaitlynEntrapment") && WForce->Enabled())
 		{
 			WSpellStatus = true;
@@ -516,9 +512,15 @@ public:
 		{			
 						
 		}
+
 		if (GSpellData->GetSlot(Args.Data_) == kSlotW)
 		{
 			LastWTick = GGame->TickCount();
+		}
+
+		if (GSpellData->GetSlot(Args.Data_) == kSlotQ)
+		{
+			LastQTick = GGame->TickCount();
 		}
 		
 	}
@@ -575,7 +577,5 @@ public:
 				}
 			}
 		}
-	}
-
-	
+	}	
 };
