@@ -228,7 +228,7 @@ public:
 
 	virtual void OnLoad() override
 	{
-		//Message().MidLaneSeries();
+		Message().MidLaneSeries();
 		Message().ChampionLoadMessage();
 		Ziggs().InitializeSpells();
 		Ziggs().InitializeMenu();
@@ -259,7 +259,7 @@ public:
 
 		}	
 
-		Ziggs().LogicW();
+	    Ziggs().LogicW();
 		Ziggs().CheckKeyPresses();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();

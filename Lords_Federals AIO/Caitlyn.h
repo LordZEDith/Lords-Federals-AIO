@@ -24,7 +24,6 @@ public:
 			wCCed = WSettings->CheckBox("Auto Trap on CC", true);
 			WTele = WSettings->CheckBox("Auto Trap on Teleport", true);
 			WRevive = WSettings->CheckBox("Auto Trap on Revive", true);			
-			
 			WForce = WSettings->CheckBox("Force Trap Before E", true);
 			for (auto enemy : GEntityList->GetAllHeros(false, true))
 			{
@@ -36,6 +35,8 @@ public:
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{
 			ComboQ = ComboSettings->CheckBox("Use Q", true);	
+			ComboW = ComboSettings->CheckBox("Use W", true);
+			//WAmmo = ComboSettings->AddInteger("Use W | x >=", 1, 5, 2);
 			ComboE = ComboSettings->CheckBox("Use E", true);
 			ComboE2 = ComboSettings->CheckBox("Force Combo E + Q", true);
 			ComboR = ComboSettings->CheckBox("Auto R to Kill", true);			
@@ -78,7 +79,6 @@ public:
 		MiscSettings = MainMenu->AddMenu("Misc Settings");
 		{					
 			CCedQ = MiscSettings->CheckBox("Auto Q on CC", true);
-			ComboW = MiscSettings->CheckBox("Lords W Test", false);
 			AntiDash = MiscSettings->CheckBox("Anti Dash", true);
 			EGapCloser = MiscSettings->CheckBox("E GapCloser | Anti Meele", true);
 			for (auto enemy : GEntityList->GetAllHeros(false, true))
@@ -156,7 +156,7 @@ public:
 	{
 		WAntiMelee();
 		//TrapRevelerBush();		
-
+		
 		if (AutoHarass->Enabled())
 		{
 			Harass();
@@ -213,8 +213,9 @@ public:
 	
 	static void Combo()
 	{		
+		
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-
+		LordWTest(target);
 		if (!CheckTarget(target)) return;
 
 		if (!ComboE2->Enabled() && ComboE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()))
@@ -259,7 +260,7 @@ public:
 			}			
 		}
 
-		LordWTest();
+		
 	}
 
 	static void Harass()
@@ -374,32 +375,44 @@ public:
 		}
 	}
 
-	static void LordWTest()
+	static void LordWTest(IUnit* target)
 	{
-		if (ComboW->Enabled() && W->IsReady() && !WForce->Enabled())
+		if (CheckTarget(target) && ComboW->Enabled() && W->IsReady() && /*((GEntityList->Player()->GetSpellBook()->GetAmmo(kSlotW) >= WAmmo->GetInteger())*/  GEntityList->Player()->IsValidTarget(target, W->Range()))
 		{
-			auto wTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
+			//auto wTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
 			if (GGame->TickCount() - LastWTick > 1500)
 			{
-				if (wTarget->IsFacing(GEntityList->Player()) && CheckTarget(wTarget))
+				if (target->IsFacing(GEntityList->Player()))
 				{
-					if (wTarget->IsMelee() && GetDistance(GEntityList->Player(), wTarget) < wTarget->AttackRange() + 100)
+					if (target->IsMelee() && GetDistance(GEntityList->Player(), target) < target->AttackRange() + 100)
 					{
-						W->CastOnPosition(wTarget->GetPosition());
+						W->CastOnPosition(GEntityList->Player()->ServerPosition());
+					}
+
+					else
+					{
+						auto pred = new AdvPredictionOutput();
+						if (W->RunPrediction(target, false, kCollidesWithNothing, pred))
+						{
+							if (pred->HitChance >= kHitChanceVeryHigh && GEntityList->Player()->IsValidTarget(target, W->Range()))
+							{
+								W->CastOnPosition(pred->CastPosition);
+							}
+						}
 					}
 				}
 				else
 				{
-					if (GEntityList->Player()->IsValidTarget(wTarget, W->Range()))
+					auto pred2 = new AdvPredictionOutput();
+					if (W->RunPrediction(target, false, kCollidesWithNothing, pred2))
 					{
-						W->CastOnTarget(wTarget, kHitChanceVeryHigh);
+						if (pred2->HitChance >= kHitChanceVeryHigh && GEntityList->Player()->IsValidTarget(target, W->Range()))
+						{
+							W->CastOnPosition(pred2->CastPosition + ((target->ServerPosition() - GEntityList->Player()->ServerPosition()).VectorNormalize()) * 100);
+						}
 					}
 				}
 			}
-			//else
-			//{
-			//W->CastOnPosition(wTarget->GetPosition() + Vec3->VectorNormalize(wTarget->ServerPosition() - GEntityList->Player()->ServerPosition())*100);
-			//}
 		}
 	}
 
