@@ -67,7 +67,7 @@ public:
 
 		MiscSettings = MainMenu->AddMenu("Misc Settings");
 		{
-			Predic = MiscSettings->CheckBox("HitChance - Off: Medium | On: Hight", true);
+			Predic = MiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
 			UltEnemies = MiscSettings->AddInteger("Auto R Aoe", 0, 5, 3);
 			CCedR = MiscSettings->CheckBox("Auto R When Enemies Cant Move", false);
 			RangeR = MiscSettings->AddInteger("Min R range", 0, 3000, 900);
@@ -174,6 +174,24 @@ public:
 		}
 	}
 
+	static int PredicChange()
+	{
+		if (Predic->GetInteger() == 0)
+		{
+			return mypredic = kHitChanceMedium;
+		}
+		if (Predic->GetInteger() == 1)
+		{
+			return mypredic = kHitChanceHigh;
+		}
+		if (Predic->GetInteger() == 2)
+		{
+			return mypredic = kHitChanceVeryHigh;
+		}
+
+		return mypredic = kHitChanceLow;
+	}
+
 	static void Automatic()
 	{
 		
@@ -185,17 +203,17 @@ public:
 			{
 				if (checkRrange(target) && KillstealR->Enabled() && R->IsReady() && target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) > target->GetHealth())
 				{
-					R->CastOnTarget(target, kHitChanceHigh);					
+					R->CastOnTarget(target, PredicChange());
 				}
 				
 				if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
 				{
-					Q->CastOnTarget(target, kHitChanceHigh);					
+					Q->CastOnTarget(target, PredicChange());
 				}
 
 				if (KillstealW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && GHealthPrediction->GetKSDamage(target, kSlotW, W->GetDelay(), false) > target->GetHealth())
 				{
-					W->CastOnTarget(target, kHitChanceHigh);					
+					W->CastOnTarget(target, PredicChange());
 				}
 
 				if (KillstealE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()) && GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) > target->GetHealth())
@@ -208,26 +226,19 @@ public:
 			{
 				if (target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && !CanMove(target) && !target->IsDead() && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > R->ManaCost())
 				{
-					R->CastOnTarget(target, kHitChanceHigh);
+					R->CastOnTarget(target, PredicChange());
 				}
 				
 			}
 
 			if (AutoHarass->Enabled() && Q->IsReady() && HarassMana->GetInteger() < GEntityList->Player()->ManaPercent() && CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), Q->Range()))
 			{
-				if (Predic->Enabled())
-				{
-					Q->CastOnTarget(target, kHitChanceHigh);
-				}
-				else
-				{
-					Q->CastOnTarget(target, kHitChanceMedium);
-				}				
+				Q->CastOnTarget(target, PredicChange());				
 			}
 
 			if (UltEnemies->GetInteger() > 0 && R->IsReady() && target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > R->ManaCost())
 			{
-				R->CastOnTargetAoE(target, 3, kHitChanceMedium);
+				R->CastOnTargetAoE(target, 3, PredicChange());
 			}
 		}
 	}
@@ -239,27 +250,13 @@ public:
 		if (!CheckTarget(target)) return;		
 
 		if (ComboQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GEntityList->Player()->GetMana() > Q->ManaCost() + W->ManaCost())
-		{
-			if (Predic->Enabled())
-			{
-				Q->CastOnTarget(target, kHitChanceHigh);
-			}
-			else
-			{
-				Q->CastOnTarget(target, kHitChanceMedium);
-			}
+		{			
+			Q->CastOnTarget(target, PredicChange());			
 		}
 
 		if (ComboW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && GEntityList->Player()->GetMana() > Q->ManaCost() + W->ManaCost() + R->ManaCost())
 		{
-			if (Predic->Enabled())
-			{
-				W->CastOnTarget(target, kHitChanceHigh);
-			}
-			else
-			{
-				W->CastOnTarget(target, kHitChanceMedium);
-			}
+			W->CastOnTarget(target, PredicChange());			
 		}
 
 		if (ComboR->Enabled() && R->IsReady())
@@ -272,14 +269,7 @@ public:
 
 				if (damageCombo > target->GetHealth())
 				{
-					if (Predic->Enabled())
-					{
-						R->CastOnTarget(target, kHitChanceHigh);
-					}
-					else
-					{
-						R->CastOnTarget(target, kHitChanceMedium);
-					}
+					R->CastOnTarget(target, PredicChange());					
 				}
 			}			
 		}
@@ -295,26 +285,12 @@ public:
 
 		if (HarassQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()))
 		{
-			if (Predic->Enabled())
-			{
-				Q->CastOnTarget(target, kHitChanceHigh);
-			}
-			else
-			{
-				Q->CastOnTarget(target, kHitChanceMedium);
-			}
+			Q->CastOnTarget(target, PredicChange());			
 		}
 		
 		if (HarassW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()))
 		{
-			if (Predic->Enabled())
-			{
-				W->CastOnTarget(target, kHitChanceHigh);
-			}
-			else
-			{
-				W->CastOnTarget(target, kHitChanceMedium);
-			}
+			W->CastOnTarget(target, PredicChange());			
 		}		
 	}
 

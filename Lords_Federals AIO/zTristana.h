@@ -404,7 +404,9 @@ public:
 					auto push = 400 + (GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) * 200);
 					auto finalPosition = prediction.TargetPosition.Extend(GEntityList->Player()->GetPosition(), -push);
 
-					if (RAllys->Enabled() && CountAlly(finalPosition, 500) > 1 && CountAlly(target->GetPosition(), 400) == 0 && CountEnemy(finalPosition, 500) + 1 < CountAlly(finalPosition, 500))
+					if (RAllys->Enabled() && CountAlly(finalPosition, 500) > 1 && 
+						CountAlly(target->GetPosition(), 400) == 0 && 
+						 CountEnemy(finalPosition, 500) + 1 < CountAlly(finalPosition, 500))
 					{
 						R->CastOnUnit(target);
 						//GGame->PrintChat("Target go to Allys");

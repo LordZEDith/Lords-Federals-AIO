@@ -13,7 +13,8 @@ ISpell2* E2;
 
 ISpell* Smite;
 ISpell* Ignite;
-
+ISpell* Flash;
+ISpell* Wards;
 
 IMenu* HarassMenu;
 IMenu* ComboMenu;
@@ -87,6 +88,7 @@ IMenuOption* QEnemies1;
 IMenuOption* QGapCloser;
 IMenuOption* QInterrupter;
 IMenuOption* LaneClearQ;
+IMenuOption* LaneClearQ2;
 IMenuOption* LastHitQ;
 IMenuOption* CCedQ;
 IMenuOption* RangeQ;
@@ -187,6 +189,9 @@ IMenuOption* DrawE2;
 IMenuOption* DrawTime;
 IMenuOption* DrawTimex;
 IMenuOption* DrawTimey;
+IMenuOption* DrawWard;
+IMenuOption* DrawEsca;
+IMenuOption* DrawEscaW;
 
 IMenuOption* HealthPercent;
 IMenuOption* HealthQ;
@@ -225,6 +230,8 @@ IMenuOption* SmiteText;
 IMenuOption* SmiteDamage;
 IMenuOption* SmiteKeyToggle;
 IMenuOption* SmiteAmmo;
+IMenuOption* SmiteLowHp;
+IMenuOption* LowHPpct;
 
 IMenuOption* FastCombo;
 IMenuOption* ComboA;
@@ -287,12 +294,23 @@ IMenuOption* Debug;
 IInventoryItem* Tiamat;
 IInventoryItem* Hydra;
 IInventoryItem* Ravenous;
+IInventoryItem* WardTrinket;
+IInventoryItem* RedVision;
+IInventoryItem* BlueVision;
+IInventoryItem* JWards;
+IInventoryItem* JWardsEv1;
+IInventoryItem* JWardsEv2;
+IInventoryItem* JWardsEv3;
+IInventoryItem* JWardsEv4;
+IInventoryItem* myWards;
 
 Vec2 HeroCoordsVec2;
 Vec3 lastQpos;
 Vec3 lastQpos2;
 Vec3 MissileEndPos;
 Vec3 extz;
+Vec3 WardPos;
+Vec3 JumpPos;
 
 IUnit* Teamate01;
 IUnit* Teamate02;
@@ -310,6 +328,7 @@ std::map<int, IMenuOption*> ChampionAntiMelee;
 std::map<int, IMenuOption*> GapCloserList;
 
 bool FoundSmite = false;
+bool FoundFlash = false;
 int tempaxe = 0;
 bool temp = false;
 int cnumber = 0;
@@ -319,6 +338,12 @@ int QLastCast = 0;
 bool WSpellStatus;
 int LastWTick;
 int LastQTick;
+int LastQ2Tick;
+int LastRTick;
+int LastWardTime;
+int LastFlashTime;
+bool EhWard;
+bool testflash;
 
 short keystate;
 bool smiteKeyWasDown = false;
@@ -330,6 +355,38 @@ const char* LastSpellName;
 int LastSpellTime = 0;
 
 enum HitChance; 
+
+//Lee
+bool castQAgain;
+int PassiveStacksNum;
+bool isInQ2;
+bool escActive;
+int LastWard;
+int mypredic;
+bool WardCheck;
+bool enemyscheck;
+
+IMenuOption* PassiveStacks;
+IMenuOption* jPassiveStacks;
+IMenuOption* lPassiveStacks;
+IMenuOption* StartComboKey;
+IMenuOption* InstaFlashKey;
+IMenuOption* InsecKey;
+IMenuOption* EscapeKey;
+IMenuOption* JumpMinion;
+IMenuOption* JumpAllys;
+IMenuOption* kickKill;
+IMenuOption* kickHit;
+IMenuOption* SmiteQ1;
+IMenuOption* clickInsec;
+IMenuOption* ExtraDist;
+
+IMenuOption* KickAndFlash;
+std::string InsecText, InsecType = "Wait";
+int InsecTime;
+
+IUnit* otherT = nullptr;
+IUnit* otherTM = nullptr;
 
 // Elise
 float _humQcd, _humWcd, _humEcd;

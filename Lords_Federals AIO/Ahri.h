@@ -3,6 +3,7 @@
 #include "BaseMenu.h"
 #include "Common.h"
 #include <string>
+#include "HpBarIndicator.h"
 
 class Ahri
 {
@@ -419,7 +420,7 @@ public:
 			{
 				GRender->DrawOutlinedCircle(extz, Vec4(255, 255, 255, 255), 100);
 			}
-		}
+		}		
 	}
 
 	static void OnGapcloser(GapCloserSpell const& args)
