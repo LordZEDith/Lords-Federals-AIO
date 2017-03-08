@@ -126,12 +126,7 @@ public:
 	virtual bool IsShopOpen() = 0;
 	virtual bool IsScoreboardOpen() = 0;
 	virtual void ScreenToWorld(Vec2 const& ScreenPosition, Vec3* WorldPosition) = 0;
-	virtual bool WithinFogOfWar(Vec3 const& Position) = 0;
-<<<<<<< HEAD
-=======
-	virtual bool IsShopOpen() = 0;
-	virtual bool IsScoreboardOpen() = 0;
->>>>>>> 4a3bda34ba31ba6f331229409132970a6477f46a
+	virtual bool WithinFogOfWar(Vec3 const& Position) = 0;	
 	virtual bool IssueOrderEx(IUnit* Source, eGameObjectOrder Order, Vec3 const& Position, bool TriggerEvents) = 0;
 	virtual bool IssueOrderEx(IUnit* Source, eGameObjectOrder Order, IUnit* Target, bool TriggerEvents) = 0;
 };
@@ -154,8 +149,6 @@ public:
 	virtual IUnit* FindTarget(eTargetPriority Priority, eDamageType Type, float Range) = 0;
 	virtual IUnit* GetFocusedTarget() = 0;
 	virtual void SetOverrideFocusedTarget(IUnit* Focused) = 0;
-<<<<<<< HEAD
-=======
 
 	/// <summary>
 	/// Finds the best target
@@ -168,7 +161,6 @@ public:
 	/// <param name="IgnoredChamps">Champions to ignore</param>
 	/// <param name="Conditions">Currently unused</param>
 	/// <returns>Best target found or nullptr</returns>
->>>>>>> 4a3bda34ba31ba6f331229409132970a6477f46a
 	virtual IUnit* FindTargetEx(eTargetPriority Priority, eDamageType Type, float Range, Vec3* RangeCheckFrom = nullptr, bool IgnoreSpellShields = true, std::vector<IUnit*>* IgnoredChamps = nullptr, void* Conditions = nullptr) = 0;
 };
 
