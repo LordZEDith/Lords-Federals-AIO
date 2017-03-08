@@ -9,21 +9,13 @@ public:
 
 	static void InitializeMenu()
 	{
-		//Menu
+		MainMenu = GPluginSDK->AddMenu("Lords & Federals Template");
 	}
 
 	static void LoadSpells()
 	{
 		//Spell
-	}
-
-	static void SkinChanger()
-	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
-		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
-		}
-	}
+	}	
 
 	static void Automatic()
 	{
@@ -65,6 +57,14 @@ public:
 
 	static void OnCreateObject(IUnit* Source)
 	{
+		if (strstr(Source->GetObjectName(), "Fizz_Base_W_DmgMarkerMaintain.troy"))
+		{
+			if (GOrbwalking->GetOrbwalkingMode() == kModeCombo &&
+				GetDistance(GEntityList->Player(), Source) < GOrbwalking->GetAutoAttackRange(GEntityList->Player()) + 50)
+			{
+				W->CastOnPlayer();
+			}
+		}
 
 	}
 

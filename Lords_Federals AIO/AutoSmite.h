@@ -5,12 +5,11 @@
 #include <string>
 
 class AutoSmite
-{
-public:
+{	
 
-	std::string NameChampion = GEntityList->Player()->ChampionName();
+public:	
 
-	void MenuSmite()
+	static void MenuSmite()
 	{
 		if (FoundSmite)
 		{
@@ -48,17 +47,19 @@ public:
 				SmiteDraw = SmiteSettings->AddMenu("Smite Drawings");
 				{
 					SmiteRange = SmiteDraw->CheckBox("Draw Smite Range", false);
-					SmiteText = SmiteDraw->CheckBox("Draw Smite Text", false);
-					SmiteDamage = SmiteDraw->CheckBox("Draw Smite Damage", false);
+					SmiteText = SmiteDraw->CheckBox("Draw Smite Text", true);
+					SmiteDamage = SmiteDraw->CheckBox("Draw Smite Damage", true);
 				}
 
 				SmiteActive = SmiteSettings->CheckBox("Use Smite", true);
+				SmiteLowHp = SmiteSettings->CheckBox("Use Smite you Low HP", true);
+				LowHPpct = SmiteSettings->AddInteger("Low HP %", 1, 100, 10);
 				SmiteKeyToggle = SmiteSettings->AddKey("Stop Smite Toggle", 17);
 			}
 		}
 	}
 
-	void SpellsSmite()
+	static void SpellsSmite()
 	{
 		if (strstr(GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1), "SummonerSmite"))
 		{
@@ -82,7 +83,7 @@ public:
 		}
 	}
 
-	void KeyPressSmite()
+	static void KeyPressSmite()
 	{
 		if (FoundSmite)
 		{
@@ -112,16 +113,16 @@ public:
 		}
 	}
 
-	void AutomaticSmite()
+	static void AutomaticSmite()
 	{
 		//GGame->PrintChat(std::to_string(GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot1)).data());		
 
 		if (FoundSmite && Smite->IsReady() && SmiteActive->Enabled() && KillstealSmite->Enabled())
 		{
-			if (SmiteAmmo->Enabled() && (GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot1) == 1 || GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot2) == 1))
+			/*if (SmiteAmmo->Enabled() && (GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot1) == 1 || GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot2) == 1))
 			{
 				return;
-			}
+			}	*/		
 
 			for (auto hero : GEntityList->GetAllHeros(false, true))
 			{
@@ -163,6 +164,11 @@ public:
 					auto damage = GDamage->GetSummonerSpellDamage(GEntityList->Player(), minion, kSummonerSpellSmite);
 					auto damageCombo = GDamage->GetSpellDamage(GEntityList->Player(), minion, kSlotE);
 
+					if (SmiteLowHp->Enabled() && GEntityList->Player()->HealthPercent() < LowHPpct->GetInteger())
+					{
+						Smite->CastOnUnit(minion);
+					}
+
 					if (SmiteDragon->Enabled() && strstr(minion->GetObjectName(), "Dragon") ||
 						SmiteBaron->Enabled() && strstr(minion->GetObjectName(), "Baron") ||
 						SmiteRed->Enabled() && strstr(minion->GetObjectName(), "Red") ||
@@ -174,6 +180,9 @@ public:
 						SmiteKrug->Enabled() && strstr(minion->GetObjectName(), "SRU_Krug") ||
 						SmiteWolves->Enabled() && strstr(minion->GetObjectName(), "SRU_Murkwolf2"))
 					{
+						std::string NameChampion = GEntityList->Player()->ChampionName();
+						
+						
 						if (NameChampion == "Olaf")
 						{
 
@@ -200,7 +209,7 @@ public:
 		}
 	}
 
-	void DrawingsSmite()
+	static void DrawingsSmite()
 	{
 		if (FoundSmite)
 		{

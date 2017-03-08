@@ -1,6 +1,7 @@
 #pragma once
 #include "PluginSDK.h"
 #include "BaseMenu.h"
+#include <string>
 
 
 inline double GetCorrectDamage(IUnit* target)
@@ -509,10 +510,80 @@ static bool CheckWallsVectores(Vec3 from, Vec3 to)
 
 static bool CheckShielded(IUnit* target)
 {
-	if (!target->HasBuff("BlackShield") && !target->HasBuff("bansheesveil") && !target->HasBuff("itemmagekillerveil"))
+	if (!target->HasBuff("BlackShield") && !target->HasBuff("bansheesveil") && !target->HasBuff("itemmagekillerveil") && !target->HasBuffOfType(BUFF_SpellShield) &&
+		!target->HasBuffOfType(BUFF_SpellImmunity) && !target->HasBuff("OlafRagnarok") && !target->HasBuff("SionR"))
 	{
 		return true;
 	}
 
 	return false;
 }
+
+static Vec3 Get3DPoint(Vec2 const& Position)
+{
+	return Vec3(Position.x, GNavMesh->GetHeightForPoint(Position), Position.y);
+}
+
+static void DrawLine(Vec2 const Start, Vec2 const End, Vec4 const Color)
+{
+	Vec3 vecStart3D = Get3DPoint(Start);
+	Vec3 vecEnd3D = Get3DPoint(End);
+
+	Vec3 vecOut1;
+	GGame->Projection(vecStart3D, &vecOut1);
+
+	Vec3 vecOut2;
+	GGame->Projection(vecEnd3D, &vecOut2);
+
+	if (vecOut1.z < 1.f && vecOut2.z < 1.f)
+		GRender->DrawLine(Vec2(vecOut1.x, vecOut1.y), Vec2(vecOut2.x, vecOut2.y), Color);
+}
+
+static int GetWardSlot()
+{
+	static IInventoryItem* pWardItems[] = { nullptr };
+
+	if (pWardItems[0] == nullptr)
+	{
+		int wardIds[] =
+		{
+			2045, 2049, 2050, 2301, 2302, 2303, 3340, 3361, 3362, 3711, 1408, 1409, 1410, 1411, 2043, 2055
+		};
+
+		for (auto i = 0; i < 16; i++)
+		{
+			pWardItems[i] = GPluginSDK->CreateItemForId(i, 590);
+			//GGame->PrintChat(std::to_string(wardIds[i]).data());
+		}
+	}
+
+	for (auto i : pWardItems)
+	{
+		if (i->IsOwned() && i->IsReady())
+		{		
+			//GGame->PrintChat(std::to_string(i->ItemId()).data());
+			return i->ItemSpellSlot();
+		}
+	}
+
+	return kSlotUnknown;
+}
+
+std::vector<Vec3> JunglePos =
+{
+	Vec3(6271.479f, 56.47668f, 12181.25f),
+	Vec3(6971.269f, 55.2f, 10839.12f),
+	Vec3(8006.336f, 52.31763f, 9517.511f),
+	Vec3(10995.34f, 61.61731f, 8408.401f),
+	Vec3(10895.08f, 51.72278f, 7045.215f),
+	Vec3(12665.45f, 51.70544f, 6466.962f),
+	Vec3(4966.042f, 71.24048f, 10475.51f),
+	Vec3(39000.529f, 51.84973f, 7901.832f),
+	Vec3(2106.111f, 51.77686f, 8388.643f),
+	Vec3(3753.737f, 52.46301f, 6454.71f),
+	Vec3(6776.247f, 55.27625f, 5542.872f),
+	Vec3(7811.688f, 53.79456f, 4152.602f),
+	Vec3(8528.921f, 50.92188f, 2822.875f),
+	Vec3(9850.102f, 71.24072f, 4432.272f),
+	Vec3(3926.0f, 51.74162f, 7918.0f)
+};
