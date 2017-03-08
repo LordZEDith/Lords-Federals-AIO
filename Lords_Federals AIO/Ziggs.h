@@ -5,6 +5,7 @@
 
 
 
+
 bool jumpKeyWasDown = false;
 bool wAtivo;
 

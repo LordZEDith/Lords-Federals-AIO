@@ -36,7 +36,7 @@ public:
 		{
 			ComboQ = ComboSettings->CheckBox("Use Q", true);	
 			ComboW = ComboSettings->CheckBox("Use W", true);
-			WAmmo = ComboSettings->AddInteger("Use W | x >=", 1, 5, 2);
+			//WAmmo = ComboSettings->AddInteger("Use W | x >=", 1, 5, 2);
 			ComboE = ComboSettings->CheckBox("Use E", true);
 			ComboE2 = ComboSettings->CheckBox("Force Combo E + Q", true);
 			ComboR = ComboSettings->CheckBox("Auto R to Kill", true);			
@@ -156,7 +156,7 @@ public:
 	{
 		WAntiMelee();
 		//TrapRevelerBush();		
-
+		
 		if (AutoHarass->Enabled())
 		{
 			Harass();
@@ -213,6 +213,7 @@ public:
 	
 	static void Combo()
 	{		
+		
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 		LordWTest(target);
 		if (!CheckTarget(target)) return;
@@ -376,7 +377,7 @@ public:
 
 	static void LordWTest(IUnit* target)
 	{
-		if (CheckTarget(target) && ComboW->Enabled() && W->IsReady() && (GEntityList->Player()->GetSpellBook()->GetAmmo(kSlotW) >= WAmmo->GetInteger() && GEntityList->Player()->IsValidTarget(target, W->Range())))
+		if (CheckTarget(target) && ComboW->Enabled() && W->IsReady() && /*((GEntityList->Player()->GetSpellBook()->GetAmmo(kSlotW) >= WAmmo->GetInteger())*/  GEntityList->Player()->IsValidTarget(target, W->Range()))
 		{
 			//auto wTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
 			if (GGame->TickCount() - LastWTick > 1500)
