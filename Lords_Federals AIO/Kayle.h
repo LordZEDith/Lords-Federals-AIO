@@ -83,7 +83,7 @@ public:
 		for (auto ally : GEntityList->GetAllHeros(true, false))
 		{
 
-			if (GEntityList->Player()->IsValidTarget(ally, W->Range()) && W->IsReady() && (ally->HealthPercent() <= UltPercent->GetFloat()) && FarmW->Enabled())
+			if (GEntityList->Player()->IsValidTarget(ally, W->Range()) && W->IsReady() && (ally->HealthPercent() <= UltPercent->GetFloat()) && FarmW->Enabled() && !GEntityList->Player()->IsRecalling())
 			{
 				W->CastOnTarget(ally);
 			}
