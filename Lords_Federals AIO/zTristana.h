@@ -7,9 +7,10 @@
 class zTristana
 {
 public:
-
+	 
 	static void InitializeMenu()
 	{
+		std::vector<std::string> EMode = { "E", "Use E After AA" };
 		MainMenu = GPluginSDK->AddMenu("Lords & Federals Tristana");
 
 		WSettings = MainMenu->AddMenu("W Settings");
@@ -21,8 +22,9 @@ public:
 		{
 			ComboQ = ComboSettings->CheckBox("Use Q", true);
 			QEnemies = ComboSettings->CheckBox("Use Q only with E", true);
-			ComboE = ComboSettings->CheckBox("Use E", true);
-			ComboE2 = ComboSettings->CheckBox("Use E only After AA", true);
+
+			ComboE2 = ComboSettings->CheckBox("Use E", true);
+			ComboE = ComboSettings->AddSelection("E Mode:", 0, EMode);
 			ComboR = ComboSettings->CheckBox("Use R ", true);
 			ComboAA = ComboSettings->CheckBox("Focus Target with E", true);
 			killstealR = ComboSettings->CheckBox("R Killsteal", false);
@@ -115,7 +117,7 @@ public:
 
 	static void Combo()
 	{
-		if (ComboE->Enabled() && !ComboE2->Enabled())
+		if (ComboE2->Enabled() && E->IsReady() && ComboE->GetInteger() == 0)
 		{
 			if (E->IsReady())
 			{
@@ -496,7 +498,7 @@ public:
 		switch (GOrbwalking->GetOrbwalkingMode())
 		{
 		case kModeCombo:
-			if (ComboE2->Enabled() && E->IsReady() )
+			if (ComboE2->Enabled() && E->IsReady() && ComboE->GetInteger() == 1 )
 			{
 				E->CastOnUnit(target);
 			}
