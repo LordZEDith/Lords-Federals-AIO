@@ -76,7 +76,7 @@ public:
 
 		InsecSettings = MainMenu->AddMenu("Insec Settings");
 		{
-			InsecSelect = InsecSettings->CheckBox("Select Target to Insec", true);
+			InsecSelect = InsecSettings->AddSelection("Target to Insec", 0, std::vector<std::string>({ "Selected Target", "Target Selector" }));
 			InsecOrbwalk = InsecSettings->CheckBox("Orbwalk to Mouse", true);
 			KickAndFlash = InsecSettings->CheckBox("Priorize Kick + Flash", false);			
 			useFlash = InsecSettings->CheckBox("Use Flash if no Wards", true);
@@ -1302,7 +1302,7 @@ public:
 				GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
 			}
 
-			if (InsecSelect->Enabled())
+			if (InsecSelect->GetInteger() == 0)
 			{
 				GetTarget = GGame->GetSelectedTarget();
 			}
@@ -1326,7 +1326,7 @@ public:
 					}
 
 					R->CastOnUnit(GetTarget);
-					InsecTime = GGame->TickCount() + 3000;
+					InsecTime = GGame->TickCount() + 2000;
 				}
 			}
 
@@ -1791,7 +1791,7 @@ public:
 
 		if (DrawSelect->Enabled() || DrawPosInsec->Enabled())
 		{
-			if (InsecSelect->Enabled())
+			if (InsecSelect->GetInteger() == 0)
 			{
 				GetTargetDraw = GGame->GetSelectedTarget();
 			}
