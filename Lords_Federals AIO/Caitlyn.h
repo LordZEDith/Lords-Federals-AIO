@@ -167,7 +167,8 @@ public:
 
 		for (auto target : GEntityList->GetAllHeros(false, true))
 		{
-
+			if (!CheckTarget(target)) return;
+			
 			if (!target->HasBuff("ChronoShift") && Killsteal->Enabled())
 			{
 				if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && 
