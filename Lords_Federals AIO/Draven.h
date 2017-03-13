@@ -351,12 +351,9 @@ public:
 
 		for (auto hero : GEntityList->GetAllHeros(false, true))
 		{
-			if (hero == nullptr || !hero->IsValidTarget() || GetDistance(GEntityList->Player(), hero) > 800 || hero->IsInvulnerable() || hero->IsDead())
-			{
-				return;
-			}
+			//if (!CheckTarget(hero)) return;
 
-			if (axeKill->Enabled() && GetDistance(GEntityList->Player(), hero) > 400 && (GDamage->GetAutoAttackDamage(GEntityList->Player(), hero, false) * 2) > hero->GetHealth())
+			if (axeKill->Enabled() && GetDistance(GEntityList->Player(), hero) > 400 && GDamage->GetAutoAttackDamage(GEntityList->Player(), hero, false) * 2 > hero->GetHealth() && !hero->IsDead())
 			{
 				GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 				return;
