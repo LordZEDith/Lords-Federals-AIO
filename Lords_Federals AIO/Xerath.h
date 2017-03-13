@@ -62,7 +62,7 @@ public:
 
 		MiscSettings = MainMenu->AddMenu("Misc Settings");
 		{
-			Predic = MiscSettings->AddInteger("HitChance - 0: Medium | 1: Hight | 3: Future", 0, 3, 3);
+			Predic = MiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
 			EGapCloser = MiscSettings->CheckBox("Automatically E GapCloser", true);
 			EInterrupter = MiscSettings->CheckBox("Automatically E Interrupt Spell", true);
 			CCedQ = MiscSettings->CheckBox("Auto Q When Enemies Cant Move", true);
@@ -83,7 +83,8 @@ public:
 
 	void static InitializeSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, true, kCollidesWithYasuoWall);
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, kCollidesWithNothing);
+		Q->SetSkillshot(0.6f, 100.f, 1000.f, 1600.f);
 		Q->SetCharged(750.f, 1550.f, 1.5f);
 		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, true, kCollidesWithYasuoWall);
 		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
@@ -123,6 +124,24 @@ public:
 		}	
 
 		return false;
+	}
+
+	static int PredicChange()
+	{
+		if (Predic->GetInteger() == 0)
+		{
+			return mypredic = kHitChanceMedium;
+		}
+		if (Predic->GetInteger() == 1)
+		{
+			return mypredic = kHitChanceHigh;
+		}
+		if (Predic->GetInteger() == 2)
+		{
+			return mypredic = kHitChanceVeryHigh;
+		}
+
+		return mypredic = kHitChanceLow;
 	}
 
 	static void LogicUltimate()
@@ -237,38 +256,13 @@ public:
 
 	static void CastQ(IUnit* target)
 	{
-		if (Q->IsCharging() || (Q->GetChargePercent() == 100 && !Q->IsCharging()))
-		{
-			float Distance = GetDistance(GEntityList->Player(), target);
-			float Extend = 0;
-
-			if (Distance < 300) { Extend = 40; }
-			else if (Distance >= 300 && Distance < 500){ Extend = 60; }
-			else if (Distance >= 500 && Distance < 700){ Extend = 80; }
-			else if (Distance >= 700 && Distance < Q->Range()){ Extend = 100; }
-
-			Vec3 position;
-			auto delay = Q->GetDelay() + Distance / Q->Speed();
-			GPrediction->GetFutureUnitPosition(target, delay, true, position);
-
-			Vec3 PositionTarget = position.Extend(GEntityList->Player()->GetPosition(), -Extend);			
-			
+		if (Q->IsCharging())
+		{			
 			Q->FindTarget(SpellDamage);
 			{
-				if (Predic->GetInteger() == 2)
+				if (GetEnemiesInRange(Q->Range()) >= 1)
 				{
-					Q->CastOnTarget(target, kHitChanceHigh);
-				}
-				else if (Predic->GetInteger() == 1)
-				{
-					Q->CastOnTarget(target, kHitChanceMedium);
-				}
-				else
-				{
-					if (Distance < Q->Range())
-					{
-						Q->CastOnPosition(PositionTarget);
-					}
+					Q->CastOnTarget(target, kHitChanceCollision);
 				}
 			}
 		}
@@ -279,6 +273,10 @@ public:
 			{
 				Q->StartCharging();				
 			}
+		}
+		else
+		{
+			return;
 		}
 	}	
 	
