@@ -40,15 +40,14 @@ public:
 	}
 	void LoadSpells()
 	{
-		/*Q = GPluginSDK->CreateSpell2(kSlotQ, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, static_cast<eCollisionFlags> (kCollidesWithNothing));
 		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 		Q->SetOverrideRange(670);
 		W->SetOverrideRange(900);
 		E->SetOverrideRange(660);
-		R->SetOverrideRange(900);*/
-		SpellLib().Kayle();
+		R->SetOverrideRange(900);		
 	}
 	void LogicQC()
 	{
