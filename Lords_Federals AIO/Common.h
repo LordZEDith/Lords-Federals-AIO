@@ -350,6 +350,20 @@ inline int CountMinions(Vec3 Location, int range)
 	 return (Count);
  }
 
+inline int CountMinionsWithBuff(Vec3 Location, int range, const char* buff)
+{
+	int Count = 0;
+
+	for (auto Minions : GEntityList->GetAllMinions(false, true, false))
+	{
+		if ((Minions->GetPosition() - Location).Length() < range && Minions->IsValidTarget() && !Minions->IsDead() && Minions->HasBuff(buff))
+		{
+			Count++;
+		}
+	}
+	return (Count);
+}
+
 inline int CountMinionsNeutral(Vec3 Location, int range)
 {
 	int Count = 0;
@@ -587,3 +601,125 @@ std::vector<Vec3> JunglePos =
 	Vec3(9850.102f, 71.24072f, 4432.272f),
 	Vec3(3926.0f, 51.74162f, 7918.0f)
 };
+
+template<class T>
+vector<T> Add(vector<T> vec, T i)
+{
+	vector<T> newvec;
+	newvec = vec;
+	newvec.push_back(i);
+	return newvec;
+}
+template<class T>
+vector<T> AddRange(vector<T> vec, vector<T> vecToAdd)
+{
+	vector<T> newvec;
+	newvec = vec;
+	newvec.insert(newvec.end(), vecToAdd.begin(), vecToAdd.end());
+	return newvec;
+}
+template<class T>
+vector<T> RemoveAll(vector<T> vec, function<bool(T)> removefunc)
+{
+	vector<T> newvec;
+	for each (T i in vec)
+	{
+		if (!removefunc(i))
+			newvec.push_back(i);
+	}
+	return newvec;
+}
+template<class T>
+vector<T> Where(vector<T> vec, function<bool(T)> wherefunc)
+{
+	vector<T> newvec;
+	for each (T i in vec)
+	{
+		if (wherefunc(i))
+			newvec.push_back(i);
+	}
+	return newvec;
+}
+template<class T>
+bool Any(vector<T> vec, function<bool(T)> anyfunc)
+{
+	vector<T> newvec;
+	newvec = vec;
+	newvec = Where(newvec, anyfunc);
+	return !newvec.empty();
+}
+template<class T>
+bool Any(vector<T> vec)
+{
+	vector<T> newvec;
+	newvec = vec;
+	return !newvec.empty();
+}
+template<class T, class T2>
+vector<T2> Select(vector<T> vec, function<T2(T)> selectfunc)
+{
+	vector<T> newvec;
+	newvec = vec;
+	vector<T2> returnvec;
+	for each (T i in newvec)
+	{
+		returnvec.push_back(selectfunc(i));
+	}
+	return returnvec;
+}
+template<class T>
+T FirstOrDefault(vector<T> vec, function<bool(T)> fst_function)
+{
+	vector<T> newvec;
+	newvec = vec;
+
+	newvec = Where(newvec, fst_function);
+	if (newvec.empty())
+		return T();
+	return newvec.front();
+}
+template<class T>
+T LastOrDefault(vector<T> vec, function<bool(T)> lst_function)
+{
+	vector<T> newvec;
+	newvec = vec;
+
+	newvec = Where(newvec, lst_function);
+	if (newvec.empty())
+		return T();
+	return newvec.back();
+}
+template<class T, class T2>
+T MinOrDefault(vector<T> vec, function<T2(T)> min_function)
+{
+	vector<T> newvec;
+	newvec = vec;
+	T returnelem;
+	returnelem = T();
+	if (newvec.empty())
+		return returnelem;
+	returnelem = newvec.begin();
+	for each (T i in newvec)
+	{
+		if (min_function(i) < min_function(returnelem))
+			returnelem = i;
+	}
+	return returnelem;
+}
+template<class T, class T2>
+T MaxOrDefault(vector<T> vec, function<T2(T)> max_function)
+{
+	vector<T> newvec;
+	newvec = vec;
+	T returnelem;
+	returnelem = T();
+	if (newvec.empty())
+		return returnelem;
+	returnelem = newvec.begin();
+	for each (T i in newvec)
+	{
+		if (max_function(i) < max_function(returnelem))
+			returnelem = i;
+	}
+	return returnelem;
+}

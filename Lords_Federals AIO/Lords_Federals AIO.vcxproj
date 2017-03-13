@@ -155,6 +155,7 @@
     <ClInclude Include="Caitlyn.h" />
     <ClInclude Include="Champions.h" />
     <ClInclude Include="ChampTemplate.h" />
+    <ClInclude Include="Clipper.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Corki.h" />
@@ -164,6 +165,8 @@
     <ClInclude Include="DrMundo.h" />
     <ClInclude Include="Elise.h" />
     <ClInclude Include="Ezreal.h" />
+    <ClInclude Include="LeeSin.h" />
+    <ClInclude Include="Polygons.h" />
     <ClInclude Include="SkinsChange.h" />
     <ClInclude Include="Hecarim.h" />
     <ClInclude Include="Karthus.h" />
@@ -182,6 +185,7 @@
     <ClInclude Include="Riven.h" />
     <ClInclude Include="Shen.h" />
     <ClInclude Include="Sona.h" />
+    <ClInclude Include="Template.h" />
     <ClInclude Include="TextHeader.h" />
     <ClInclude Include="Toxic.h" />
     <ClInclude Include="Tristana.h" />
@@ -195,6 +199,7 @@
     <ClInclude Include="zTristana.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Clipper.cpp" />
     <ClCompile Include="PluginSDK.cpp" />
     <ClCompile Include="Program.cpp" />
   </ItemGroup>

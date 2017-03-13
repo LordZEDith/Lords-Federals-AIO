@@ -34,6 +34,8 @@ public:
 	virtual void OnExitVisible(IUnit* Source) = 0;
 	virtual void OnUnitDeath(IUnit* Source) = 0;	
 	virtual void OnLoad() = 0;
+	virtual void OnBuffAdd(IUnit* Source, void* BuffData) = 0;
+	virtual void OnBuffRemove(IUnit* Source, void* BuffData) = 0;
 	//virtual void OnUnLoad() = 0;
 	virtual void OnRender() = 0;
 };
@@ -126,6 +128,14 @@ public:
 	{
 
 	}	
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
 };
 
 class cVarus : public IChampion
@@ -220,6 +230,14 @@ public:
 	{
 
 	}	
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
 };
 
 class cZiggs : public IChampion
@@ -310,6 +328,14 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
 	}
 };
 
@@ -403,6 +429,14 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
 };
 
 class cDraven : public IChampion
@@ -495,6 +529,14 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
 	}
 };
 
@@ -592,6 +634,14 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
 };
 
 class cAhri : public IChampion
@@ -687,6 +737,14 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
 };
 
 class cLux : public IChampion
@@ -780,6 +838,14 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
 	}
 };
 
@@ -877,6 +943,14 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
 	}
 };
 
@@ -976,6 +1050,14 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
 };
 
 class cMaokai : public IChampion
@@ -1072,6 +1154,14 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
 	}
 };
 
@@ -1170,6 +1260,14 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
 };
 
 class cNocturne : public IChampion
@@ -1267,6 +1365,14 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
 };
 
 class cHecarim : public IChampion
@@ -1361,6 +1467,14 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
 	}
 };
 
@@ -1458,6 +1572,14 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
 	}
 };
 
@@ -1557,6 +1679,14 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
 };
 
 class cMalphite : public IChampion
@@ -1647,6 +1777,14 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
 	}
 };
 
@@ -1744,6 +1882,14 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
 };
 
 class cSona : public IChampion
@@ -1835,6 +1981,14 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
 	}
 };
 
@@ -1935,6 +2089,14 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
 };
 
 class cWarwick : public IChampion
@@ -2026,6 +2188,14 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
 	}
 };
 
@@ -2119,6 +2289,14 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
 };
 
 class cKayle : public IChampion
@@ -2210,6 +2388,14 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
 	}
 };
 
@@ -2306,6 +2492,14 @@ public:
 	void OnUnitDeath(IUnit* Source) override
 	{
 
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
 	}
 };
 
@@ -2404,6 +2598,14 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
 };
 
 class cTwistedFate : public IChampion
@@ -2495,6 +2697,126 @@ public:
 	{
 
 	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
+};
+
+class cLeeSin : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		Message().JungleLaneSeries();
+		Message().ChampionLoadMessage();
+		LeeSin().InitializeMenu();
+		LeeSin().LoadSpells();
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+		Skins().Menu();
+
+		//GUtility->CreateDebugConsole();
+	}
+
+	virtual void OnRender() override
+	{
+		LeeSin().Drawing();
+		AutoSmite().DrawingsSmite();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		{
+			return;
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		{
+			LeeSin().Combo();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		{
+			LeeSin().Harass();
+			LeeSin().LastHit();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		{
+			LeeSin().JungleClear();
+			LeeSin().LaneClear();
+		}
+
+		LeeSin().StarCombo();
+		LeeSin().EscapeJungle();
+		LeeSin().InsecRework();
+		LeeSin().WardJumpMouse();
+		LeeSin().Automatic();
+		LeeSin().KickBehind();
+		Skins().SkinChanger();
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+		LeeSin().OnCreateObject(Source);
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+		LeeSin().OnProcessSpell(Args);
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+		LeeSin().OnBuffAdd(Source, BuffData);
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+		LeeSin().OnBuffRemove(Source, BuffData);
+	}
 };
 
 IChampion* pChampion = nullptr;
@@ -2559,6 +2881,17 @@ PLUGIN_EVENT(void) OnDash(UnitDash* Source)
 	pChampion->OnDash(Source);
 }
 
+PLUGIN_EVENT(void) OnBuffAdd(IUnit* Source, void* BuffData)
+{
+	pChampion->OnBuffAdd(Source, BuffData);
+}
+
+PLUGIN_EVENT(void) OnBuffRemove(IUnit* Source, void* BuffData)
+{
+	pChampion->OnBuffRemove(Source, BuffData);
+}
+
+
 void LoadChampion()
 {
 	std::string szChampion = GEntityList->Player()->ChampionName();
@@ -2602,6 +2935,8 @@ void LoadChampion()
 		pChampion = new cWarwick;
 	else if (szChampion == "Elise")
 		pChampion = new cElise;
+	else if (szChampion == "LeeSin")
+		pChampion = new cLeeSin;
 	// Toplane
 	else if (szChampion == "DrMundo")
 		pChampion = new cDrMundo;
@@ -2633,8 +2968,8 @@ void LoadChampion()
 		GEventManager->AddEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);		
 		GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 		GEventManager->AddEventHandler(kEventOnLevelUp, OnLevelUp);
-		//GEventManager->AddEventHandler(kEventOnBuffAdd, OnBuffAdd);
-		//GEventManager->AddEventHandler(kEventOnBuffRemove, OnBuffRemove);
+		GEventManager->AddEventHandler(kEventOnBuffAdd, OnBuffAdd);
+		GEventManager->AddEventHandler(kEventOnBuffRemove, OnBuffRemove);
 		GEventManager->AddEventHandler(kEventOnSpellCast, OnProcessSpell);
 		GEventManager->AddEventHandler(kEventOnCreateObject, OnCreateObject);
 		GEventManager->AddEventHandler(kEventOnDestroyObject, OnDeleteObject);
@@ -2671,8 +3006,8 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);	
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->RemoveEventHandler(kEventOnLevelUp, OnLevelUp);
-	//GEventManager->RemoveEventHandler(kEventOnBuffAdd, OnBuffAdd);
-	//GEventManager->RemoveEventHandler(kEventOnBuffRemove, OnBuffRemove);
+	GEventManager->RemoveEventHandler(kEventOnBuffAdd, OnBuffAdd);
+	GEventManager->RemoveEventHandler(kEventOnBuffRemove, OnBuffRemove);
 	GEventManager->RemoveEventHandler(kEventOnSpellCast, OnProcessSpell);
 	GEventManager->RemoveEventHandler(kEventOnCreateObject, OnCreateObject);
 	GEventManager->RemoveEventHandler(kEventOnDestroyObject, OnDeleteObject);

@@ -1,5 +1,6 @@
 #pragma once
 #include "PluginSDK.h"
+#include "Template.h"
 #include <list>
 #include <map>
 
@@ -37,6 +38,7 @@ IMenu* HarassSettings;
 IMenu* ComboSettings;
 IMenu* KillstealSettings;
 IMenu* MiscSettings;
+IMenu* InsecSettings;
 IMenu* QSettings;
 IMenu* WSettings;
 IMenu* ESettings;
@@ -192,6 +194,9 @@ IMenuOption* DrawTimey;
 IMenuOption* DrawWard;
 IMenuOption* DrawEsca;
 IMenuOption* DrawEscaW;
+IMenuOption* DrawSelect;
+IMenuOption* DrawPosInsec;
+IMenuOption* DrawNear;
 
 IMenuOption* HealthPercent;
 IMenuOption* HealthQ;
@@ -294,14 +299,22 @@ IMenuOption* Debug;
 IInventoryItem* Tiamat;
 IInventoryItem* Hydra;
 IInventoryItem* Ravenous;
-IInventoryItem* WardTrinket;
-IInventoryItem* RedVision;
-IInventoryItem* BlueVision;
-IInventoryItem* JWards;
-IInventoryItem* JWardsEv1;
-IInventoryItem* JWardsEv2;
-IInventoryItem* JWardsEv3;
-IInventoryItem* JWardsEv4;
+IInventoryItem* Ward1;
+IInventoryItem* Ward2;
+IInventoryItem* Ward3;
+IInventoryItem* Ward4;
+IInventoryItem* Ward5;
+IInventoryItem* Ward6;
+IInventoryItem* Ward7;
+IInventoryItem* Ward8;
+IInventoryItem* Ward9;
+IInventoryItem* Ward10;
+IInventoryItem* Ward11;
+IInventoryItem* Ward12;
+IInventoryItem* Ward13;
+IInventoryItem* Ward14;
+IInventoryItem* Ward15;
+IInventoryItem* Ward16;
 IInventoryItem* myWards;
 
 Vec2 HeroCoordsVec2;
@@ -311,6 +324,10 @@ Vec3 MissileEndPos;
 Vec3 extz;
 Vec3 WardPos;
 Vec3 JumpPos;
+Vec3 InsecST;
+Vec3 InsecED;
+Vec3 InsecPOS;
+Vec3 TestPOS;
 
 IUnit* Teamate01;
 IUnit* Teamate02;
@@ -340,8 +357,10 @@ int LastWTick;
 int LastQTick;
 int LastQ2Tick;
 int LastRTick;
+int LastETick;
 int LastWardTime;
 int LastFlashTime;
+int LastSpellTick;
 bool EhWard;
 bool testflash;
 
@@ -359,12 +378,16 @@ enum HitChance;
 //Lee
 bool castQAgain;
 int PassiveStacksNum;
-bool isInQ2;
+bool isDashingQ;
 bool escActive;
+bool escActivedraw;
 int LastWard;
+int LastCheckWard;
+bool goWard = false;
 int mypredic;
-bool WardCheck;
+bool WardCheck = true;
 bool enemyscheck;
+bool goUltimate = false;
 
 IMenuOption* PassiveStacks;
 IMenuOption* jPassiveStacks;
@@ -373,20 +396,39 @@ IMenuOption* StartComboKey;
 IMenuOption* InstaFlashKey;
 IMenuOption* InsecKey;
 IMenuOption* EscapeKey;
+IMenuOption* WardJumpKey;
 IMenuOption* JumpMinion;
 IMenuOption* JumpAllys;
 IMenuOption* kickKill;
 IMenuOption* kickHit;
+IMenuOption* kickBehind;
 IMenuOption* SmiteQ1;
 IMenuOption* clickInsec;
 IMenuOption* ExtraDist;
+IMenuOption* jumpMinion;
+IMenuOption* jumpAliado;
+IMenuOption* AutoStartKill;
+IMenuOption* AutoStartWard;
+IMenuOption* useFlash;
+IMenuOption* InsecSelect;
+IMenuOption* InsecOrbwalk;
+IMenuOption* Flashdistance;
 
 IMenuOption* KickAndFlash;
-std::string InsecText, InsecType = "Wait";
+std::string InsecText = "";
+std::string InsecType = "";
+
 int InsecTime;
 
 IUnit* otherT = nullptr;
 IUnit* otherTM = nullptr;
+IUnit* AliadoPos = nullptr;
+IUnit* AllySoloPos = nullptr;
+IUnit* TorrePos = nullptr;
+IUnit* ComboTarget = nullptr;
+IUnit* SmiteQu = nullptr;
+IUnit* GetTarget = nullptr;
+IUnit* GetTargetDraw = nullptr;
 
 // Elise
 float _humQcd, _humWcd, _humEcd;

@@ -183,6 +183,18 @@
     <ClInclude Include="SkinsChange.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="LeeSin.h">
+      <Filter>Header Files\Champions\Jungle</Filter>
+    </ClInclude>
+    <ClInclude Include="Clipper.h">
+      <Filter>Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="Polygons.h">
+      <Filter>Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="Template.h">
+      <Filter>Header Files\Custom/Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">
@@ -190,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="PluginSDK.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Clipper.cpp">
+      <Filter>Header Files\SDK</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
