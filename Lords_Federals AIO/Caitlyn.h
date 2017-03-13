@@ -2,7 +2,6 @@
 #include "PluginSDK.h"
 #include "BaseMenu.h"
 #include "Common.h"
-#include "SpellLib.h"
 
 IMenuOption* wCCed;
 IMenuOption* WTele;
@@ -111,16 +110,14 @@ public:
 
 	static void LoadSpells()
 	{
-		/*Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 		Q->SetSkillshot(0.65f, 60.f, 2200.f, 1250.f);
 		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, false, kCollidesWithNothing);
 		W->SetSkillshot(1.5f, 100.f, 3200.f, 800.f);
-		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
+		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall | kCollidesWithHeroes));
 		E->SetSkillshot(0.25f, 90.f, 1600.f, 750.f);
-		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
-		R->SetSkillshot(0.25f, 0.f, 1000.f, 3000.f);*/
-		SpellLib().Caitlyn();
-	
+		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall | kCollidesWithHeroes));
+		R->SetSkillshot(0.25f, 0.f, 1000.f, 3000.f);		
 	}	
 
 	static void Drawing()
@@ -138,9 +135,7 @@ public:
 			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), W->Range()); }
 			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), E->Range()); }
 			if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), R->Range()); }
-		}
-
-		
+		}		
 	}
 
 	static void CastQ()
@@ -217,10 +212,11 @@ public:
 	
 	static void Combo()
 	{		
-		
-		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-		LordWTest(target);
+		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());		
+
 		if (!CheckTarget(target)) return;
+
+		LordWTest(target);
 
 		if (!ComboE2->Enabled() && ComboE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()))
 		{
