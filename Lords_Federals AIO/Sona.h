@@ -36,7 +36,7 @@ public:
 	}
 	void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kConeCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
+	/*	Q = GPluginSDK->CreateSpell2(kSlotQ, kConeCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 		W = GPluginSDK->CreateSpell2(kSlotW, kConeCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 		E = GPluginSDK->CreateSpell2(kSlotE, kConeCast, true, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
@@ -46,7 +46,8 @@ public:
 		R->SetOverrideRange(1000);
 		R->SetOverrideDelay(0.5f);
 		Q->SetOverrideRadius(125);
-		R->SetOverrideSpeed(3000);
+		R->SetOverrideSpeed(3000);*/
+		SpellLib().Sona();
 
 	}
 	int GetEnemiesInRange(float range)

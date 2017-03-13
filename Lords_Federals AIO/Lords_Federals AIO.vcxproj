@@ -186,6 +186,7 @@
     <ClInclude Include="Shen.h" />
     <ClInclude Include="Sona.h" />
     <ClInclude Include="Template.h" />
+    <ClInclude Include="SpellLib.h" />
     <ClInclude Include="TextHeader.h" />
     <ClInclude Include="Toxic.h" />
     <ClInclude Include="Tristana.h" />

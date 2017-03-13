@@ -40,14 +40,15 @@ public:
 	}
 	void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
+		/*Q = GPluginSDK->CreateSpell2(kSlotQ, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, static_cast<eCollisionFlags> (kCollidesWithNothing));
 		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 		Q->SetOverrideRange(670);
 		W->SetOverrideRange(900);
 		E->SetOverrideRange(660);
-		R->SetOverrideRange(900);
+		R->SetOverrideRange(900);*/
+		SpellLib().Kayle();
 	}
 	void LogicQC()
 	{
@@ -83,7 +84,7 @@ public:
 		for (auto ally : GEntityList->GetAllHeros(true, false))
 		{
 
-			if (GEntityList->Player()->IsValidTarget(ally, W->Range()) && W->IsReady() && (ally->HealthPercent() <= UltPercent->GetFloat()) && FarmW->Enabled())
+			if (GEntityList->Player()->IsValidTarget(ally, W->Range()) && W->IsReady() && (ally->HealthPercent() <= UltPercent->GetFloat()) && FarmW->Enabled() && !GEntityList->Player()->IsRecalling())
 			{
 				W->CastOnTarget(ally);
 			}

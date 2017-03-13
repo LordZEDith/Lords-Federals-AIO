@@ -193,6 +193,9 @@
       <Filter>Header Files\SDK</Filter>
     </ClInclude>
     <ClInclude Include="Template.h">
+	<Filter>Header Files\Custom/Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SpellLib.h">
       <Filter>Header Files\Custom/Common</Filter>
     </ClInclude>
   </ItemGroup>
