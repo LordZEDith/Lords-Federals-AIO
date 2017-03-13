@@ -49,7 +49,7 @@ public:
 		Hydra = GPluginSDK->CreateItemForId(3748, 400);
 		Ravenous = GPluginSDK->CreateItemForId(3074, 400);
 
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false,false, static_cast<eCollisionFlags>(kCollidesWithNothing));
+	/*	Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false,false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 		W = GPluginSDK->CreateSpell2(kSlotW, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 		//R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
@@ -62,7 +62,8 @@ public:
 		Q->SetOverrideRadius(70);
 		E->SetOverrideRadius(60);
 		Q->SetOverrideSpeed(1500);
-		E->SetOverrideSpeed(1550);
+		E->SetOverrideSpeed(1550);*/
+		SpellLib().Rengar();
 	}
 	bool CastingR() { if (GEntityList->Player()->HasBuff("RengarR")) { return true; } else { return false; } }
 	void Combo()

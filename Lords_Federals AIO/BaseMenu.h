@@ -10,6 +10,7 @@ ISpell2* R;
 ISpell2* Q2;
 ISpell2* W2;
 ISpell2* E2;
+ISpell2* R2;
 
 ISpell* Smite;
 ISpell* Ignite;

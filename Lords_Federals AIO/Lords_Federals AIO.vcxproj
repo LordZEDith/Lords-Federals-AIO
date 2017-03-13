@@ -182,6 +182,7 @@
     <ClInclude Include="Riven.h" />
     <ClInclude Include="Shen.h" />
     <ClInclude Include="Sona.h" />
+    <ClInclude Include="SpellLib.h" />
     <ClInclude Include="TextHeader.h" />
     <ClInclude Include="Toxic.h" />
     <ClInclude Include="Tristana.h" />

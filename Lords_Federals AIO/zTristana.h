@@ -1,6 +1,7 @@
 #pragma once
 #include "PluginSDK.h"
 #include "BaseMenu.h"
+#include "SpellLib.h"
 #include "Common.h"
 #include <iomanip>
 
@@ -102,7 +103,7 @@ public:
 
 	static void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
+		/*Q = GPluginSDK->CreateSpell2(kSlotQ, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 		Q->SetOverrideRange(870);
 		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 		W->SetOverrideDelay(0.50f);
@@ -112,7 +113,8 @@ public:
 		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 		E->SetOverrideDelay(0.25f);
 		E->SetOverrideRange(550);
-		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
+		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));*/
+		SpellLib().Tristana();
 	}
 
 	static void Combo()
