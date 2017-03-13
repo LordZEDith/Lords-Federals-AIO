@@ -475,7 +475,17 @@ public:
 		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 		{
 			Draven().AxeLogicFarm();
-		}		
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		{
+			Draven().AxeLogicFarm();
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLastHit)
+		{
+			Draven().AxeLogicFarm();
+		}
 		
 		Draven().LogicR();
 		Draven().LogicE();

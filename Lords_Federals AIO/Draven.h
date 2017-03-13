@@ -36,7 +36,9 @@ public:
 		QSettings = MainMenu->AddMenu("Q Settings");
 		{
 			ComboQ = QSettings->CheckBox("Auto Q Combo", true);
+			HarassQ = QSettings->CheckBox("Auto Q Harass", true);
 			LaneClearQ = QSettings->CheckBox("Auto Q in laneclear", true);
+			LastHitQ = QSettings->CheckBox("Auto Q in LastHit", true);
 		}
 
 		WSettings = MainMenu->AddMenu("W Settings");
@@ -312,7 +314,7 @@ public:
 
 		if (axeListTeste.size() == 0)
 		{
-			GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
+			GOrbwalking->SetOverridePosition(GGame->CursorPosition());
 			return;
 		}
 
@@ -406,6 +408,28 @@ public:
 					Q->CastOnPlayer();
 				}
 			}
+			break;
+		case kModeMixed:
+			if (HarassQ->Enabled() && Q->IsReady())
+			{
+				if (buffCount + axeListTeste.size() == 0)
+				{
+					Q->CastOnPlayer();
+				}
+			}
+			break;			
+		case kModeLastHit:
+				if (Q->IsReady() && LastHitQ->Enabled())
+				{
+					if (buffCount + axeListTeste.size() == 0 && GEntityList->Player()->GetMana() > R->ManaCost() + E->ManaCost() + W->ManaCost())
+					{
+						Q->CastOnPlayer();
+					}
+					else if (60 < GEntityList->Player()->ManaPercent() && buffCount == 0)
+					{
+						Q->CastOnPlayer();
+					}
+				}
 			break;
 		case kModeLaneClear:
 			if (Q->IsReady() && LaneClearQ->Enabled())
