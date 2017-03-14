@@ -80,7 +80,7 @@ public:
 			InsecOrbwalk = InsecSettings->CheckBox("Orbwalk to Mouse", true);
 			KickAndFlash = InsecSettings->CheckBox("Priorize Kick + Flash", false);			
 			useFlash = InsecSettings->CheckBox("Use Flash if no Wards", true);
-			Flashdistance = InsecSettings->CheckBox("Beta Use Ward + Flash", false);
+			Flashdistance = InsecSettings->CheckBox("Ward + Flash (Selected Target)", false);
 			InsecKey = InsecSettings->AddKey("Go Insec", 71);
 			InstaFlashKey = InsecSettings->AddKey("Flash + R to Mouse", 75);
 		}
@@ -440,7 +440,10 @@ public:
 
 			if (target->IsValidTarget(GEntityList->Player(), R->Range()) && ComboR->Enabled() && R->IsReady() && GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) > target->GetHealth())
 			{
-				R->CastOnUnit(target);
+				if (CheckShielded(target))
+				{
+					R->CastOnUnit(target);
+				}
 			}
 
 			if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
@@ -782,7 +785,7 @@ public:
 			float damage2 = GHealthPrediction->GetKSDamage(ComboTarget, kSlotQ, Q->GetDelay(), false) + GHealthPrediction->GetKSDamage(ComboTarget, kSlotR, R->GetDelay(), false) + GDamage->GetAutoAttackDamage(GEntityList->Player(), ComboTarget, false);
 
 			if (ComboTarget->GetHealth() > GDamage->GetSpellDamage(GEntityList->Player(), ComboTarget, kSlotQ) + GDamage->GetAutoAttackDamage(GEntityList->Player(), ComboTarget, false) &&
-				ComboTarget->GetHealth() <= damage2 + damage1)
+				ComboTarget->GetHealth() <= damage2 + damage1 && CheckShielded(ComboTarget))
 			{
 
 				R->CastOnUnit(ComboTarget);
@@ -827,7 +830,7 @@ public:
 			{
 				return;
 			}
-			if (!R->IsReady() || !Q->IsReady() || LeeQone() || !TargetHaveQ(target))
+			if (!R->IsReady() || !Q->IsReady() || LeeQone() || !TargetHaveQ(target) || !CheckShielded(target))
 			{
 				return;
 			}
@@ -960,7 +963,7 @@ public:
 
 	static void FlashAfterR(IUnit* target)
 	{
-		if (target->GetHealth() <= GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false))
+		if (target->GetHealth() <= GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) && !CheckShielded(target))
 		{
 			return;
 		}
@@ -1305,16 +1308,40 @@ public:
 			if (InsecSelect->GetInteger() == 0)
 			{
 				GetTarget = GGame->GetSelectedTarget();
+
+				if (!CheckTarget(GetTarget)) return;
+
+				if (!CheckShielded(GetTarget))
+				{
+					SArray<IUnit*> Enemys = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([&](IUnit* i) {return GetDistance(GetTarget, i) < 600 && CheckShielded(i); });
+
+					if (Enemys.Any())
+					{
+						GetTarget = Enemys.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GetTarget->GetPosition()); });
+					}
+				}
 			}
 			else
 			{
 				GetTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+
+				if (!CheckTarget(GetTarget)) return;
+
+				if (!CheckShielded(GetTarget))
+				{
+					SArray<IUnit*> Enemys = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([&](IUnit* i) {return GetDistance(GetTarget, i) < 600 && CheckShielded(i); });
+
+					if (Enemys.Any())
+					{
+						GetTarget = Enemys.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GetTarget->GetPosition()); });
+					}
+				}
 			}
 
 			if (!CheckTarget(GetTarget)) return;
 			
 			// Começa com Ultimate se Tiver Perto
-			if (GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) < 200 && (InsecType == "VamosInsec" || InsecType == "Ultimate"))
+			if (CheckShielded(GetTarget) && GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) < 200 && (InsecType == "VamosInsec" || InsecType == "Ultimate"))
 			{
 				GOrbwalking->ResetAA();
 
@@ -1719,9 +1746,8 @@ public:
 
 				SArray<IUnit*> Enemys = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([&](IUnit* i) {return cRect.IsInside(i); });
 
-				if (Enemys.Count() >= minREnemies)
+				if (Enemys.Count() >= minREnemies && CheckShielded(enemys))
 				{					
-					
 					R->CastOnUnit(enemys);
 				}
 			}

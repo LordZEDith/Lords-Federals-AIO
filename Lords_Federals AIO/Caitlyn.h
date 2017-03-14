@@ -65,7 +65,7 @@ public:
 		{
 			LaneClearQ = LaneClearSettings->CheckBox("Use Q in laneclear", true);
 			MinionsQ = LaneClearSettings->AddInteger("Minimum minions to Q in laneclear", 1, 10, 4);
-			LaneClearE = LaneClearSettings->CheckBox("Use E Kill Out Rage & 'Q cd", false);
+			LaneClearE = LaneClearSettings->CheckBox("Use E Kill Out Rage & Q cd", false);
 			LaneClearMana = LaneClearSettings->AddInteger("Minimum MP% to laneclear", 1, 100, 60);
 		}
 
@@ -364,7 +364,8 @@ public:
 					{
 						auto damage = GHealthPrediction->GetKSDamage(minion, kSlotE, E->GetDelay(), false);
 
-						if (damage > minion->GetHealth() && minion->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())))
+						if (damage > minion->GetHealth() && minion->IsValidTarget(GEntityList->Player(), R->Range()) &&
+							GetDistance(GEntityList->Player(), minion) > GOrbwalking->GetAutoAttackRange(GEntityList->Player()) + 50 )
 						{
 							GOrbwalking->ResetAA();
 							E->CastOnTarget(minion);

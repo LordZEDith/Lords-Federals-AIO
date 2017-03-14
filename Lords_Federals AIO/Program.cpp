@@ -269,16 +269,21 @@ public:
 
 		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
+			Ziggs().Combo();
+		}
 
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		{
+			Ziggs().Harass();
 		}
 
 		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 		{
-
+			Ziggs().CastEFarm();
 		}	
 
 	    Ziggs().LogicW();
-		Ziggs().CheckKeyPresses();
+		Ziggs().LogicE();		
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Skins().SkinChanger();
