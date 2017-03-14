@@ -851,7 +851,16 @@ public:
 		ComboTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 		if (!CheckTarget(ComboTarget)) return;
 
-		StartComboKill(ComboTarget);
+		StartComboKill(ComboTarget);		
+
+		if (!LeeQone() && ComboQH->Enabled() && Q->IsReady() && TargetHaveQ(ComboTarget) &&
+			((GDamage->GetAutoAttackDamage(GEntityList->Player(), ComboTarget, false) + GHealthPrediction->GetKSDamage(ComboTarget, kSlotQ, Q->GetDelay(), false) > ComboTarget->GetHealth()) ||
+			(GetDistance(GEntityList->Player(), ComboTarget) > GEntityList->Player()->GetRealAutoAttackRange(ComboTarget) + 100) ||
+				(PassiveStacksNum == 0) || (!R->IsReady() && LastRTick - GGame->TickCount() < 2500 && CastingR(ComboTarget))))
+		{
+			Q->CastOnPlayer();
+			LastSpellTick = GGame->TickCount();
+		}		
 
 		if (ComboQ->Enabled() && Q->IsReady())
 		{
@@ -874,22 +883,7 @@ public:
 				{
 					LastSpellTick = GGame->TickCount();					
 				}
-			}
-			else if (ComboQH->Enabled() && TargetHaveQ(ComboTarget) && ComboTarget->IsValidTarget(GEntityList->Player(), 1300) && GGame->TickCount() - LastSpellTick > 500)
-			{
-				if (ComboTarget != nullptr)
-				{
-					if ((ExpireQ(ComboTarget) || 
-						!R->IsReady() && LastRTick - GGame->TickCount() < 2500 && CastingR(ComboTarget) || 
-						ComboTarget->GetHealth() <= GHealthPrediction->GetKSDamage(ComboTarget, kSlotQ, Q->GetDelay(), false) + GDamage->GetAutoAttackDamage(GEntityList->Player(), ComboTarget, false) || 
-						((R->IsReady() || !ComboTarget->HasBuff("BlindMonkRKick") && !LastRTick - GGame->TickCount() > 1000)
-						&& GetDistance(ComboTarget, GEntityList->Player()) > ComboTarget->GetRealAutoAttackRange(GEntityList->Player()) + 100)
-						|| PassiveStacksNum == 0) && Q->CastOnPlayer())
-					{
-						LastSpellTick = GGame->TickCount();						
-					}
-				}
-			}
+			}			
 		}
 
 		if (ComboE->Enabled())
@@ -1303,7 +1297,7 @@ public:
 			if (InsecOrbwalk->Enabled())
 			{
 				GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
-			}
+			}			
 
 			if (InsecSelect->GetInteger() == 0)
 			{
@@ -1339,21 +1333,32 @@ public:
 			}
 
 			if (!CheckTarget(GetTarget)) return;
-			
-			// Começa com Ultimate se Tiver Perto
-			if (CheckShielded(GetTarget) && GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) < 200 && (InsecType == "VamosInsec" || InsecType == "Ultimate"))
-			{
-				GOrbwalking->ResetAA();
 
+			InsecPOS = GetInsecPos(GetTarget);
+			
+			if (Q->IsReady() && TargetHaveQ(GetTarget) && !R->IsReady() && LastRTick - GGame->TickCount() < 2000 && InsecText == "Q2Now" &&
+				(CastingR(GetTarget) || ExpireQ(GetTarget)))
+			{
+				Q->CastOnPlayer();
+			}
+
+			if (CheckShielded(GetTarget) && GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) < 200 &&
+				(InsecType == "VamosInsec" || InsecType == "Ultimate"))
+			{
 				if (GetDistance(GetTarget, GEntityList->Player()) <= 375)
 				{
-					if (Q->IsReady() && LeeQone())
+					if (Q->IsReady() && LeeQone() && R->IsReady())
 					{
+						GOrbwalking->ResetAA();
 						Q->CastOnTarget(GetTarget, PredicChange());
-					}
+						InsecText = "Q2Now";
+					}					
 
-					R->CastOnUnit(GetTarget);
-					InsecTime = GGame->TickCount() + 2000;
+					if (R->IsReady())
+					{
+						R->CastOnUnit(GetTarget);
+						InsecTime = GGame->TickCount() + 2000;
+					}
 				}
 			}
 
@@ -1366,7 +1371,10 @@ public:
 			// Add here Ward + Flash
 			else
 			{
-				if (Q->IsReady() && LeeQone() && (R->IsReady() || CastingR(GetTarget)) && InsecType != "ColoqueiWard")
+				if (!R->IsReady() || !Flash->IsReady() && !checkWardsTemp()) return;
+				
+				if (Q->IsReady() && LeeQone() && InsecType != "ColoqueiWard" &&
+					GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) > 680)
 				{
 					if (GetTarget->IsValidTarget(GEntityList->Player(), Q->Range()))
 					{
@@ -1422,7 +1430,7 @@ public:
 					}
 				}
 
-				if (!LeeQone() && (R->IsReady() || CastingR(GetTarget)) && InsecType != "ColoqueiWard")
+				if (!LeeQone() && Q->IsReady() && TargetHaveQ(GetTarget) && InsecType != "ColoqueiWard")
 				{
 					Q->CastOnPlayer();
 
@@ -1448,11 +1456,7 @@ public:
 					}
 
 					InsecTime = GGame->TickCount() + 3000;
-				}
-
-				InsecPOS = GetInsecPos(GetTarget);
-
-				if (!R->IsReady()) return;
+				}								
 
 				if (!KickAndFlash->Enabled() && InsecType == "goGapCloser" || InsecType == "goGapCloserFlashInCD")
 				{
