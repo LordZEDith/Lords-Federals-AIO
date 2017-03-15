@@ -2,10 +2,6 @@
 #include "PluginSDK.h"
 #include "BaseMenu.h"
 
-
-
-
-
 bool jumpKeyWasDown = false;
 bool wAtivo;
 
@@ -33,7 +29,7 @@ public:
 		QSettings = MainMenu->AddMenu("Q Settings");
 		{
 			autoQ = QSettings->CheckBox("Auto Q", true);
-			harassQ = QSettings->CheckBox("Harass Q", true);
+			HarassQ = QSettings->CheckBox("Harass Q", true);
 			minManaQHarass = QSettings->AddInteger("Min Mana Q Harass", 0, 100, 30);
 		}
 
@@ -52,8 +48,7 @@ public:
 			comboE = ESettings->CheckBox("E in Combo", true);
 			HarassE = ESettings->CheckBox("E in Harass", true);
 			minManaE = ESettings->AddInteger("Min Mana use E", 0, 100, 30);
-			gapcloserE = ESettings->CheckBox("Anti Gapcloser E", true);
-			opsE = ESettings->CheckBox("OnProcessSpellCastE", true);
+			gapcloserE = ESettings->CheckBox("Anti Gapcloser E", true);			
 			telE = ESettings->CheckBox("Auto E Teleport", true);
 		}
 
@@ -288,6 +283,11 @@ public:
 
 	static void Combo()
 	{		
+		if (autoQ->Enabled())
+		{
+			CastQ();
+		}
+
 		if (comboE->Enabled() && GEntityList->Player()->ManaPercent() > minManaE->GetInteger())
 		{
 			auto eTarget = GTargetSelector->FindTarget(QuickestKill, SpellDamage, E->Range());
@@ -343,6 +343,11 @@ public:
 
 	static void Harass()
 	{
+		if (HarassQ->Enabled() && GEntityList->Player()->ManaPercent() > minManaQHarass->GetInteger())
+		{
+			CastQ();
+		}
+
 		if (HarassE->Enabled() && GEntityList->Player()->ManaPercent() > minManaE->GetInteger())
 		{
 			auto eTarget = GTargetSelector->FindTarget(QuickestKill, SpellDamage, E->Range());
@@ -421,9 +426,13 @@ public:
 		return points;
 	}
 
-	static void CastQ(IUnit* target)
+	static void CastQ()
 	{
-		if (!Q1->IsReady() || target->IsDead() || target->IsInvulnerable()){ return; }
+		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q3->Range());
+
+		if (!CheckTarget(target)) return;
+
+		if (!Q1->IsReady()){ return; }
 
 		Vec3 predictionQ1, predictionQ2, predictionQ3;
 		Vec2 pos1, pos2, pos3;
