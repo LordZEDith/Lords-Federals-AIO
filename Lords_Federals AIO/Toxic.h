@@ -41,21 +41,21 @@ public:
 
 	static void MenuToxic()
 	{
-		GameEvents = MainMenu->AddMenu("Toxic & GGwp");
+		/*GameEvents = MainMenu->AddMenu("Toxic & GGwp");*/
 		
 		
-		EmoteSpam = GameEvents->AddMenu("Mastery Emote");
+		EmoteSpam = MainMenu->AddMenu("Mastery Emote Spam");
 		{
-			EmoteMode = EmoteSpam->AddSelection("Emote Mode ->", 2, std::vector<std::string>({ "MASTERY", "LAUGH", "DISABLED" }));
+			EmoteMode = EmoteSpam->AddSelection("Emote Mode ->", 0, std::vector<std::string>({ "MASTERY", "LAUGH", "DISABLED" }));
 			EmoteOnKill = EmoteSpam->CheckBox("After Kill", true);
-			EmoteOnAssis = EmoteSpam->CheckBox("After Assist", true);
-			EmoteOnDeath = EmoteSpam->CheckBox("After Death", true);
-			EmoteNearDead = EmoteSpam->CheckBox("Near Dead Bodies", true);			
+			EmoteOnAssis = EmoteSpam->CheckBox("After Assist", false);
+			EmoteOnDeath = EmoteSpam->CheckBox("After Death", false);
+			EmoteNearDead = EmoteSpam->CheckBox("Near Dead Bodies", false);			
 		}
 
-		GameChat = GameEvents->AddMenu("Start & End");
+		/*GameChat = GameEvents->AddMenu("Start & End");
 		{			
-			GameStart = GameChat->AddMenu("On Game Start");
+			GameStart = GameChat->AddMenu("OnGame Start");
 			{
 				Greeting = GameStart->AddSelection("Greetings", 1, std::vector<std::string>({ "gl & hf", "good luck & have fun" }));
 				SayGreeting = GameStart->CheckBox("Say Greeting", false);
@@ -63,7 +63,7 @@ public:
 				MuteAll = GameStart->CheckBox("Mute All", false);
 			}
 
-			GameEnd = GameChat->AddMenu("On Game Start");
+			GameEnd = GameChat->AddMenu("OnGame End");
 			{
 				Ending = GameEnd->AddSelection("Goodbyes", 1, std::vector<std::string>({ "gg", "gg wp", "well played" }));
 				SayEnding = GameEnd->CheckBox("Say Goodbye", false);
@@ -72,8 +72,7 @@ public:
 			}
 
 			cMode = GameChat->AddSelection("Enable Mode ->", 1, std::vector<std::string>({ "ENABLED", "DISABLED" }));
-		}
-
+		}*/
 	}
 
 	static void SendEmote()
@@ -126,9 +125,9 @@ public:
 			SendEmote();
 		}
 
-		if (!onStartDone)
+		/*if (!onStartDone)
 		{
-			if (GGame->Time() > CDelay->GetInteger())
+			if (GGame->Time() > CDelay->GetInteger() && GGame->Time() < 600)
 			{
 				if (SayGreeting->Enabled() && GEntityList->Player()->GetLevel() == 1)
 				{
@@ -149,12 +148,14 @@ public:
 
 				onStartDone = true;
 			}
-		}
+		}*/
+
+		//GUtility->LogConsole("GameTime: %f", GGame->Time());
 	}
 
 	static void OnGameEnd()
 	{
-		if (SayEnding->Enabled())
+		/*if (SayEnding->Enabled())
 		{
 			if (Ending->GetInteger() == 0)
 			{
@@ -175,6 +176,6 @@ public:
 			auto delay = QuitDelay->GetInteger() * 1000;
 
 			GPluginSDK->DelayFunctionCall(delay, []() { GGame->Quit(); });
-		}
+		}*/
 	}
 };

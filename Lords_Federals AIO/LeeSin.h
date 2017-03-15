@@ -1378,20 +1378,21 @@ public:
 				}
 			}
 			// Se tiver na distancia do WardJump
-			else if (GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) < 650 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
+			else if (GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) < 650 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
 				R->IsReady() && checkWardsTemp() && InsecType == "VamosInsec" && (!KickAndFlash->Enabled() || !Flash->IsReady()))
 			{
-				WardJump(InsecPOS, false, true);					
+				WardJump(GetInsecPos(GetTarget), false, true);
 			}			
 			else
-			{
-				if (!R->IsReady() || !Flash->IsReady() && !checkWardsTemp()) return;
+			{				
+				if (!R->IsReady() || !Flash->IsReady() && !checkWardsTemp()) return;				
 				
 				if (Q->IsReady() && LeeQone() && InsecType != "ColoqueiWard" &&
 					GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) > 680)
-				{
+				{					
+					
 					if (GetTarget->IsValidTarget(GEntityList->Player(), Q->Range()))
-					{
+					{						
 						SmiteQ(GetTarget);
 						Q->CastOnTarget(GetTarget, PredicChange());
 						InsecTime = GGame->TickCount() + 3000;
@@ -1881,6 +1882,5 @@ public:
 
 		/*GRender->DrawOutlinedCircle(TestPOS, Vec4(102, 255, 102, 255), 100);*/
 		
-	}
-
+	}	
 };
