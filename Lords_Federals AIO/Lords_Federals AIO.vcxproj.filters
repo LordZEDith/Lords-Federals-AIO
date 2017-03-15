@@ -138,9 +138,6 @@
     <ClInclude Include="Vector3.h">
       <Filter>Header Files\SDK</Filter>
     </ClInclude>
-    <ClInclude Include="Toxic.h">
-      <Filter>Header Files\Custom/Common</Filter>
-    </ClInclude>
     <ClInclude Include="AutoLeveler.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
@@ -193,10 +190,13 @@
       <Filter>Header Files\SDK</Filter>
     </ClInclude>
     <ClInclude Include="Template.h">
-	<Filter>Header Files\Custom/Common</Filter>
+      <Filter>Header Files\Custom/Common</Filter>
     </ClInclude>
     <ClInclude Include="SpellLib.h">
       <Filter>Header Files\Custom/Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Toxic.h">
+      <Filter>Header Files\Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

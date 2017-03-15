@@ -459,7 +459,7 @@ public:
 			InsecText = "";
 		}
 		
-		//GUtility->LogConsole("Tick: %i - Insec Etapas: %s (Wards: %i)", GGame->TickCount(), InsecType.data(), checkWardsTemp());
+		//GUtility->LogConsole("Tick: %i - Insec Etapas: %s (Wards: %i)", GGame->TickCount(), InsecText.data(), checkWardsTemp());
 		//GUtility->LogConsole("Skiis %s", GEntityList->Player()->GetSpellBook()->GetName(kSlotQ));		
 	}
 
@@ -968,6 +968,11 @@ public:
 		{
 			pos = GGame->CursorPosition();
 		}
+
+		if (IsKeyDown(InsecKey) && InsecText == "kickFlash" && KickAndFlash->Enabled())
+		{
+			pos = InsecST;
+		}
 		
 		if (pos.x > 0)
 		{
@@ -1332,7 +1337,8 @@ public:
 				}
 			}
 
-			if (!CheckTarget(GetTarget)) return;
+			if (!CheckTarget(GetTarget) || GHealthPrediction->GetKSDamage(GetTarget, kSlotR, R->GetDelay(), false) + 
+				(GHealthPrediction->GetKSDamage(GetTarget, kSlotQ, Q->GetDelay(), false) * 2) > GetTarget->GetHealth()) return;
 
 			InsecPOS = GetInsecPos(GetTarget);
 			
@@ -1362,13 +1368,21 @@ public:
 				}
 			}
 
+			else if (KickAndFlash->Enabled() && GetDistance(GEntityList->Player(), GetTarget) <= R->Range() && CheckShielded(GetTarget) && InsecType == "VamosInsec")
+			{
+				if (R->IsReady() && Flash->IsReady())
+				{
+					InsecTime = GGame->TickCount() + 1500;
+					InsecText = "kickFlash";
+					R->CastOnUnit(GetTarget);			
+				}
+			}
 			// Se tiver na distancia do WardJump
 			else if (GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) < 650 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
-				R->IsReady() && checkWardsTemp() && InsecType == "VamosInsec")
+				R->IsReady() && checkWardsTemp() && InsecType == "VamosInsec" && (!KickAndFlash->Enabled() || !Flash->IsReady()))
 			{
 				WardJump(InsecPOS, false, true);					
-			}
-			// Add here Ward + Flash
+			}			
 			else
 			{
 				if (!R->IsReady() || !Flash->IsReady() && !checkWardsTemp()) return;

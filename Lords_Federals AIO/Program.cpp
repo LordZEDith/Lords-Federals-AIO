@@ -4,6 +4,7 @@
 #include "Champions.h"
 #include "AutoSmite.h"
 #include "SkinsChange.h"
+#include "Toxic.h"
 #include "Version Checker.h"
 
 #pragma region Events
@@ -38,6 +39,7 @@ public:
 	virtual void OnBuffRemove(IUnit* Source, void* BuffData) = 0;
 	//virtual void OnUnLoad() = 0;
 	virtual void OnRender() = 0;
+	virtual void OnGameEnd() = 0;
 };
 class cTemplate : public IChampion
 {
@@ -51,6 +53,8 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -82,6 +86,8 @@ public:
 
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Skins().SkinChanger();
+		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -136,6 +142,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cVarus : public IChampion
@@ -149,6 +160,8 @@ public:
 		Varus().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -183,6 +196,8 @@ public:
 			Varus().KillSteal();		
 			AutoSmite().AutomaticSmite();
 			AutoSmite().KeyPressSmite();
+			Toxic().SpamEmote();
+			Skins().SkinChanger();
 		 
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
@@ -238,6 +253,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cZiggs : public IChampion
@@ -253,6 +273,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -287,6 +308,7 @@ public:
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Skins().SkinChanger();
+		Toxic().SpamEmote();
 	}
 
 	void OnGapCloser(GapCloserSpell const& Args) override
@@ -342,6 +364,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cAshe : public IChampion
@@ -357,6 +384,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -387,6 +415,7 @@ public:
 		Ashe().KeyPressUltimate();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
 	}
 
 	void OnGapCloser(GapCloserSpell const& Args) override
@@ -442,6 +471,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cDraven : public IChampion
@@ -457,6 +491,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -498,6 +533,7 @@ public:
 		Skins().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
 	}
 
 	void OnGapCloser(GapCloserSpell const& Args) override
@@ -553,6 +589,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cEzreal : public IChampion
@@ -566,6 +607,7 @@ public:
 		Ezreal().InitializeSpells();
 		Ezreal().InitializeMenu();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -601,7 +643,8 @@ public:
 		Ezreal().EAntiMelee();
 		Ezreal().StackMuneItem();
 		Ezreal().KsJungle();
-		Skins().SkinChanger();		
+		Skins().SkinChanger();
+		Toxic().SpamEmote();
 	}
 
 	void OnGapCloser(GapCloserSpell const& Args) override
@@ -657,6 +700,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cAhri : public IChampion
@@ -672,6 +720,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -704,6 +753,7 @@ public:
 		Skins().SkinChanger();	
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
 	}
 
 	void OnGapCloser(GapCloserSpell const& Args) override
@@ -760,6 +810,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cLux : public IChampion
@@ -773,6 +828,7 @@ public:
 		Lux().InitializeMenu();
 		Lux().LoadSpells();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -805,6 +861,7 @@ public:
 		Lux().AutoRKS();
 		Lux().AutoCCed();
 		Lux().KsJungle();
+		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -862,6 +919,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cOlaf : public IChampion
@@ -878,6 +940,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -912,6 +975,7 @@ public:
 		Skins().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -967,6 +1031,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cDrMundo : public IChampion
@@ -983,6 +1052,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -1018,6 +1088,7 @@ public:
 		Skins().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -1073,6 +1144,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cMaokai : public IChampion
@@ -1089,6 +1165,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -1123,6 +1200,7 @@ public:
 		Skins().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -1178,6 +1256,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cPoppy : public IChampion
@@ -1194,6 +1277,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -1226,6 +1310,7 @@ public:
 		Skins().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -1283,6 +1368,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cNocturne : public IChampion
@@ -1299,6 +1389,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -1334,6 +1425,7 @@ public:
 		Nocturne().KeyPressUltimate();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -1388,6 +1480,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cHecarim : public IChampion
@@ -1404,6 +1501,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -1437,6 +1535,7 @@ public:
 		Skins().SkinChanger();		
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -1491,6 +1590,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cElise : public IChampion
@@ -1508,6 +1612,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -1542,6 +1647,7 @@ public:
 		Elise().Cooldowns();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -1596,6 +1702,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cRengar : public IChampion
@@ -1611,6 +1722,8 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -1642,6 +1755,8 @@ public:
 
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+		Skins().SkinChanger();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -1702,6 +1817,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cMalphite : public IChampion
@@ -1716,6 +1836,8 @@ public:
 		Malphite().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -1747,6 +1869,8 @@ public:
 
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+		Skins().SkinChanger();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -1801,6 +1925,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cXerath : public IChampion
@@ -1817,6 +1946,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -1851,6 +1981,7 @@ public:
 		Skins().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -1905,6 +2036,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cSona : public IChampion
@@ -1920,6 +2056,8 @@ public:
 		Sona().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -1951,6 +2089,8 @@ public:
 
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+		Skins().SkinChanger();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -2005,6 +2145,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cDiana : public IChampion
@@ -2019,6 +2164,8 @@ public:
 		Diana().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -2058,6 +2205,8 @@ public:
 
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+		Skins().SkinChanger();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -2112,6 +2261,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cWarwick : public IChampion
@@ -2127,6 +2281,8 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -2158,6 +2314,8 @@ public:
 
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+		Skins().SkinChanger();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -2212,6 +2370,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cDarius : public IChampion
@@ -2226,6 +2389,8 @@ public:
 		Darius().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -2258,6 +2423,8 @@ public:
 
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+		Skins().SkinChanger();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -2312,6 +2479,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cKayle : public IChampion
@@ -2326,6 +2498,8 @@ public:
 		Kayle().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -2356,8 +2530,10 @@ public:
 			//Need to Add
 		}
 		Kayle().Combo();
+		Skins().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -2412,6 +2588,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cTristana : public IChampion
@@ -2427,6 +2608,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -2462,6 +2644,7 @@ public:
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Skins().SkinChanger();
+		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -2516,6 +2699,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cCaitlyn : public IChampion
@@ -2531,6 +2719,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		Skins().Menu();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -2566,6 +2755,7 @@ public:
 		Skins().SkinChanger();		
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -2621,6 +2811,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cTwistedFate : public IChampion
@@ -2635,6 +2830,7 @@ public:
 		Twisted().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
+		Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -2666,6 +2862,7 @@ public:
 
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -2720,6 +2917,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
 };
 
 class cLeeSin : public IChampion
@@ -2735,6 +2937,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		Skins().Menu();
+		Toxic().MenuToxic();
 
 		//GUtility->CreateDebugConsole();
 	}
@@ -2776,6 +2979,7 @@ public:
 		Skins().SkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -2831,6 +3035,11 @@ public:
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
 		LeeSin().OnBuffRemove(Source, BuffData);
+	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
 	}
 };
 
@@ -2904,6 +3113,11 @@ PLUGIN_EVENT(void) OnBuffAdd(IUnit* Source, void* BuffData)
 PLUGIN_EVENT(void) OnBuffRemove(IUnit* Source, void* BuffData)
 {
 	pChampion->OnBuffRemove(Source, BuffData);
+}
+
+PLUGIN_EVENT(void) OnGameEnd()
+{
+	pChampion->OnGameEnd();
 }
 
 
@@ -2991,6 +3205,7 @@ void LoadChampion()
 		GEventManager->AddEventHandler(kEventOnExitVisible, OnExitVisible);
 		GEventManager->AddEventHandler(kEventOnUnitDeath, OnUnitDeath);
 		GEventManager->AddEventHandler(kEventOnDash, OnDash);
+		GEventManager->AddEventHandler(kEventOnGameEnd, OnGameEnd);
 	}
 }
 
@@ -3029,4 +3244,5 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOnExitVisible, OnExitVisible);
 	GEventManager->RemoveEventHandler(kEventOnUnitDeath, OnUnitDeath);
 	GEventManager->RemoveEventHandler(kEventOnDash, OnDash);
+	GEventManager->RemoveEventHandler(kEventOnGameEnd, OnGameEnd);
 }
