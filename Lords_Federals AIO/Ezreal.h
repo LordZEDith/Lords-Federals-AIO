@@ -65,18 +65,18 @@ public:
 			Rally = JungleClearSettings->CheckBox("Ally Stealer", false);
 		}
 
-		MiscSettings = MainMenu->AddMenu("Misc Settings");
+		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			Predic = MiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
-			UltEnemies = MiscSettings->AddInteger("Auto R Aoe", 0, 5, 3);
-			CCedR = MiscSettings->CheckBox("Auto R When Enemies Cant Move", false);
-			RangeR = MiscSettings->AddInteger("Min R range", 0, 3000, 900);
-			RMax = MiscSettings->AddInteger("Max R range", 3000, 5000, 3000);	
-			EGapCloser = MiscSettings->CheckBox("E in Gapcloser", false);
-			AntiMelee = MiscSettings->CheckBox("E Anti Melee", false);
-			AntiGrab = MiscSettings->CheckBox("E Anti Grab ToDo", false);
-			StackMune = MiscSettings->CheckBox("Stack Tear", false);
-			AutoW = MiscSettings->CheckBox("Auto W Push Tower", true);			
+			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
+			UltEnemies = fedMiscSettings->AddInteger("Auto R Aoe", 0, 5, 3);
+			CCedR = fedMiscSettings->CheckBox("Auto R When Enemies Cant Move", false);
+			RangeR = fedMiscSettings->AddInteger("Min R range", 0, 3000, 900);
+			RMax = fedMiscSettings->AddInteger("Max R range", 3000, 5000, 3000);	
+			EGapCloser = fedMiscSettings->CheckBox("E in Gapcloser", false);
+			AntiMelee = fedMiscSettings->CheckBox("E Anti Melee", false);
+			AntiGrab = fedMiscSettings->CheckBox("E Anti Grab ToDo", false);
+			StackMune = fedMiscSettings->CheckBox("Stack Tear", false);
+			AutoW = fedMiscSettings->CheckBox("Auto W Push Tower", true);			
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");

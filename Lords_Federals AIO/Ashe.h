@@ -63,14 +63,14 @@ public:
 			JungleMana = JungleClearSettings->AddInteger("Min Mana to Jungle", 1, 100, 40);
 		}
 		
-		MiscSettings = MainMenu->AddMenu("Misc Settings");
+		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{			
-			RInterrupter = MiscSettings->CheckBox("Automatically R Interrupt Spell", true);
-			RGapCloser = MiscSettings->CheckBox("Automatically R GapCloser", true);			
-			CCedW = MiscSettings->CheckBox("Auto W When Enemies Cant Move", true);
-			CCedR = MiscSettings->CheckBox("Auto R When Enemies Cant Move", false);
-			AutoE = MiscSettings->CheckBox("Auto E target Brush", true);
-			Predic = MiscSettings->CheckBox("HitChance - Off: Medium | On: Hight", true);
+			RInterrupter = fedMiscSettings->CheckBox("Automatically R Interrupt Spell", true);
+			RGapCloser = fedMiscSettings->CheckBox("Automatically R GapCloser", true);			
+			CCedW = fedMiscSettings->CheckBox("Auto W When Enemies Cant Move", true);
+			CCedR = fedMiscSettings->CheckBox("Auto R When Enemies Cant Move", false);
+			AutoE = fedMiscSettings->CheckBox("Auto E target Brush", true);
+			Predic = fedMiscSettings->CheckBox("HitChance - Off: Medium | On: Hight", true);
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");

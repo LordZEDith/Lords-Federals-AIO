@@ -49,12 +49,12 @@ public:
 			KillstealRange = KillstealSettings->AddInteger("Use R | If Target Distance >=", 100, 1230, 600);
 		}
 
-		MiscSettings = MainMenu->AddMenu("Misc Settings");
+		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			EGapCloser = MiscSettings->CheckBox("Use E Anti GapCloset", true);
-			EInterrupter = MiscSettings->CheckBox("Use E Interrupt Spell", true);
-			RInterrupter = MiscSettings->CheckBox("Use R Interrupt Spell", true);
-			CCedR = MiscSettings->CheckBox("Use R on CC (ToDO )", false);
+			EGapCloser = fedMiscSettings->CheckBox("Use E Anti GapCloset", true);
+			EInterrupter = fedMiscSettings->CheckBox("Use E Interrupt Spell", true);
+			RInterrupter = fedMiscSettings->CheckBox("Use R Interrupt Spell", true);
+			CCedR = fedMiscSettings->CheckBox("Use R on CC (ToDO )", false);
 		}
 
 		LastHitSettings = MainMenu->AddMenu("Last Hit Settings");

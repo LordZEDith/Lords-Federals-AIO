@@ -34,14 +34,14 @@ public:
 			KillstealQ = KillstealSettings->CheckBox("Use Q to KillSteal", true);
 		}
 
-		MiscSettings = MainMenu->AddMenu("Misc Settings");
+		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			QGapCloser = MiscSettings->CheckBox("Automatically Q GapCloser", true);
-			AutoW = MiscSettings->CheckBox("Auto handle W", true);
-			AutoUlt = MiscSettings->CheckBox("Automatically use R", true);
-			REnemies = MiscSettings->CheckBox("If enemies nearby", true);
-			HealthR = MiscSettings->AddInteger("Minimum HP% to use R", 1, 60, 20);
-			Predic = MiscSettings->CheckBox("HitChance - Off: Medium | On: Hight", true);
+			QGapCloser = fedMiscSettings->CheckBox("Automatically Q GapCloser", true);
+			AutoW = fedMiscSettings->CheckBox("Auto handle W", true);
+			AutoUlt = fedMiscSettings->CheckBox("Automatically use R", true);
+			REnemies = fedMiscSettings->CheckBox("If enemies nearby", true);
+			HealthR = fedMiscSettings->AddInteger("Minimum HP% to use R", 1, 60, 20);
+			Predic = fedMiscSettings->CheckBox("HitChance - Off: Medium | On: Hight", true);
 		}
 
 		LastHitSettings = MainMenu->AddMenu("LastHit Settings");

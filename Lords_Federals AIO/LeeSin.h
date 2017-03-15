@@ -55,15 +55,15 @@ public:
 			JungleE = JungleClearSettings->CheckBox("Use E in Jungle", true);			
 		}
 
-		MiscSettings = MainMenu->AddMenu("Misc Settings");
+		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			Predic = MiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
-			KillstealQ = MiscSettings->CheckBox("Killsteal with Q", true);
-			WardJumpKey = MiscSettings->AddKey("Ward Jump", 90);
-			jumpMinion = MiscSettings->CheckBox("Jump in Minion", true);
-			jumpAliado = MiscSettings->CheckBox("Jump in Allys", true);
-			EscapeKey = MiscSettings->AddKey("Escape Jungle (Near Mouse)", 65);
-			SmiteQ1 = MiscSettings->CheckBox("Beta SmiteQ", true);
+			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
+			KillstealQ = fedMiscSettings->CheckBox("Killsteal with Q", true);
+			WardJumpKey = fedMiscSettings->AddKey("Ward Jump", 90);
+			jumpMinion = fedMiscSettings->CheckBox("Jump in Minion", true);
+			jumpAliado = fedMiscSettings->CheckBox("Jump in Allys", true);
+			EscapeKey = fedMiscSettings->AddKey("Escape Jungle (Near Mouse)", 65);
+			SmiteQ1 = fedMiscSettings->CheckBox("Beta SmiteQ", true);
 		}
 
 		RMenu = MainMenu->AddMenu("Ultimate Settings");
@@ -91,7 +91,7 @@ public:
 			DrawQ = DrawingSettings->CheckBox("Draw Q", true);
 			DrawW = DrawingSettings->CheckBox("Draw W", false);
 			DrawE = DrawingSettings->CheckBox("Draw E", false);
-			DrawR = DrawingSettings->CheckBox("Draw E", false);
+			DrawR = DrawingSettings->CheckBox("Draw R", false);
 			DrawWard = DrawingSettings->CheckBox("Draw Ward Range", false);
 			DrawEsca = DrawingSettings->CheckBox("Draw Escapes Spots", true);
 			DrawEscaW = DrawingSettings->CheckBox("Draw Q Line", true);
@@ -459,7 +459,7 @@ public:
 			InsecText = "";
 		}
 		
-		//GUtility->LogConsole("Tick: %i - Insec Etapas: %s (Wards: %i)", GGame->TickCount(), InsecText.data(), checkWardsTemp());
+		//GUtility->LogConsole("Tick: %i - Insec Etapas: %s -- Texto: %s (Wards: %i) - Distancia: %f max: %f", GGame->TickCount(), InsecType.data(), InsecText.data(), checkWardsTemp(), GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()), maxDistance());
 		//GUtility->LogConsole("Skiis %s", GEntityList->Player()->GetSpellBook()->GetName(kSlotQ));		
 	}
 
@@ -1047,7 +1047,7 @@ public:
 		auto basePos = GEntityList->Player()->GetPosition();
 		auto newPos = pos - GEntityList->Player()->GetPosition();
 
-		if (insec)
+		if (insec && GetDistanceVectors(GEntityList->Player()->GetPosition(), pos) <= 590)
 		{
 			JumpPos = pos;
 		}
@@ -1059,7 +1059,6 @@ public:
 		{
 			JumpPos = basePos + newPos.VectorNormalize() * GetDistanceVectors(GEntityList->Player()->GetPosition(), pos);
 		}
-
 
 		if (!W->IsReady() || (!LeeWone())
 			|| (insec && (GetDistanceVectors(GEntityList->Player()->GetPosition(), pos) > W->Range())))
@@ -1224,13 +1223,8 @@ public:
 
 		if (checkWardsTemp())
 		{
-			maxRange += 660.f;
-		}
-
-		if (GetTarget != nullptr && InsecPOS != Vec3(0, 0, 0))
-		{
-			maxRange -= 200.f;
-		}
+			maxRange += 590.f;
+		}		
 
 		return maxRange;
 	}
@@ -1290,7 +1284,7 @@ public:
 		}
 
 		InsecED = GetTarget->GetPosition();
-		InsecPOS = InsecST.Extend(InsecED, +GetDistanceVectors(InsecED, InsecST) + 230);
+		InsecPOS = InsecST.Extend(InsecED, +GetDistanceVectors(InsecED, InsecST) + 180);
 
 		return InsecPOS;
 	}
@@ -1405,7 +1399,7 @@ public:
 						{
 							if (perto != nullptr && !perto->IsDead() && perto->IsVisible() &&
 								perto->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(perto, kSlotQ, Q->GetDelay(), false) < perto->GetHealth() &&
-								GetDistance(perto, GetTarget) < maxDistance() &&
+								GetDistanceVectors(perto->GetPosition(), GetInsecPos(GetTarget)) < maxDistance() &&
 								GetDistance(perto, GEntityList->Player()) < GetDistance(GEntityList->Player(), GetTarget))
 							{
 								otherT = perto;
@@ -1418,7 +1412,7 @@ public:
 							{
 								if (perto != nullptr && !perto->IsDead() && perto->IsVisible() &&
 									perto->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(perto, kSlotQ, Q->GetDelay(), false) < perto->GetHealth() &&
-									GetDistance(perto, GetTarget) < maxDistance() &&
+									GetDistanceVectors(perto->GetPosition(), GetInsecPos(GetTarget)) < maxDistance() &&
 									GetDistance(perto, GEntityList->Player()) < GetDistance(GEntityList->Player(), GetTarget))
 								{
 									otherTM = perto;
@@ -1430,12 +1424,14 @@ public:
 						{
 							SmiteQ(otherT);
 							Q->CastOnTarget(otherT, PredicChange());
+							InsecTime = GGame->TickCount() + 3000;
 							InsecText = "TargetNear";
 						}
 						else if (otherTM != nullptr)
 						{
 							SmiteQ(otherTM);
 							Q->CastOnUnit(otherTM);
+							InsecTime = GGame->TickCount() + 3000;
 							InsecText = "TargetNear";
 						}
 						else
@@ -1445,7 +1441,7 @@ public:
 					}
 				}
 
-				if (!LeeQone() && Q->IsReady() && TargetHaveQ(GetTarget) && InsecType != "ColoqueiWard")
+				if (!LeeQone() && Q->IsReady() && InsecType != "ColoqueiWard")
 				{
 					Q->CastOnPlayer();
 
@@ -1461,7 +1457,7 @@ public:
 					{
 						InsecType = "goKickFlashWardInCD";
 					}
-					else if (Flashdistance->Enabled())
+					else if (Flashdistance->Enabled() && Flash->IsReady())
 					{
 						InsecType = "WardFlashDistance";
 					}
@@ -1475,7 +1471,7 @@ public:
 
 				if (!KickAndFlash->Enabled() && InsecType == "goGapCloser" || InsecType == "goGapCloserFlashInCD")
 				{
-					if (GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) < 600 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
+					if (GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) < 590 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
 						R->IsReady())
 					{
 						if (!goUltimate && W->IsReady())
@@ -1507,7 +1503,7 @@ public:
 
 				if (InsecType == "WardFlashDistance" && Flashdistance->Enabled() && Flash->IsReady() && checkWardsTemp())
 				{
-					if (GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) < 600 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
+					if (GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) < 590 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
 						R->IsReady() || InsecText == "TargetDirect")
 					{
 						InsecType = "goGapCloser";
@@ -1515,14 +1511,14 @@ public:
 					}
 					
 					if (GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) > 600 &&
-						GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) < 1200 &&
+						GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) < maxDistance() &&
 						GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
 						R->IsReady())
 					{
 						if (!goUltimate && W->IsReady() && !GEntityList->Player()->IsDashing())
-						{
-							if (!LeeWone()) return;
-
+						{						
+							if (!LeeWone()) return;							
+							
 							InsecTime = GGame->TickCount() + 2000;
 
 							WardJump(InsecPOS, true, false);

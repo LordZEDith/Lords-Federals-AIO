@@ -1,6 +1,8 @@
 #pragma once
 #include "BaseMenu.h"
 
+IMenuOption* SkinID = 0;
+
 class Skins
 {
 public:
@@ -9,18 +11,18 @@ public:
 	{
 		SkinsChange = MainMenu->AddMenu("Skins Changer");
 		{
-			MiscSkinON = SkinsChange->CheckBox("Usar Skins Change?", true);
-			MiscSkin = SkinsChange->AddInteger("Skins", 1, 20, 1);
+			fedMiscSkinON = SkinsChange->CheckBox("Usar Skins Change?", true);
+			fedMiscSkin = SkinsChange->AddInteger("Skins", 1, 20, 1);
 		}
 	}
 
-	static void SkinChanger()
+	static void fedSkinChanger()
 	{
-		if (MiscSkinON->Enabled())
+		if (fedMiscSkinON->Enabled())
 		{
-			if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
+			if (GEntityList->Player()->GetSkinId() != fedMiscSkin->GetInteger())
 			{
-				GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
+				GEntityList->Player()->SetSkinId(fedMiscSkin->GetInteger());
 			}
 		}
 		else

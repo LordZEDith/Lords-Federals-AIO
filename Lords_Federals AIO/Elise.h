@@ -35,14 +35,14 @@ public:
 			JungleMana = JungleClearSettings->AddInteger("Minimum MP% to jungle", 1, 100, 20);
 		}
 
-		MiscSettings = MainMenu->AddMenu("Misc Settings");
+		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			Predic = MiscSettings->CheckBox("HitChance - Off: Medium | On: Hight", true);
-			EGapCloser = MiscSettings->CheckBox("Human E GapCloser", false);
-			QGapCloser = MiscSettings->CheckBox("Spider E GapCloser", false);
-			EInterrupter = MiscSettings->CheckBox("Automatically E Interrupt Spell", true);						
-			CheckShield = MiscSettings->CheckBox("No Charm (BlackShield, Banshee)", true);
-			SemiManualKey = MiscSettings->AddKey("Fast Rappel", 71);
+			Predic = fedMiscSettings->CheckBox("HitChance - Off: Medium | On: Hight", true);
+			EGapCloser = fedMiscSettings->CheckBox("Human E GapCloser", false);
+			QGapCloser = fedMiscSettings->CheckBox("Spider E GapCloser", false);
+			EInterrupter = fedMiscSettings->CheckBox("Automatically E Interrupt Spell", true);						
+			CheckShield = fedMiscSettings->CheckBox("No Charm (BlackShield, Banshee)", true);
+			SemiManualKey = fedMiscSettings->AddKey("Fast Rappel", 71);
 		}
 		
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");

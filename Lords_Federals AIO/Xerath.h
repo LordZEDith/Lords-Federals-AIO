@@ -60,13 +60,13 @@ public:
 			JungleMana = JungleClearSettings->AddInteger("Minimum MP% to jungle", 1, 100, 20);			
 		}
 
-		MiscSettings = MainMenu->AddMenu("Misc Settings");
+		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			Predic = MiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
-			EGapCloser = MiscSettings->CheckBox("Automatically E GapCloser", true);
-			EInterrupter = MiscSettings->CheckBox("Automatically E Interrupt Spell", true);
-			CCedQ = MiscSettings->CheckBox("Auto Q When Enemies Cant Move", true);
-			CheckShield = MiscSettings->CheckBox("No Stun (BlackShield, Banshee)", true);
+			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
+			EGapCloser = fedMiscSettings->CheckBox("Automatically E GapCloser", true);
+			EInterrupter = fedMiscSettings->CheckBox("Automatically E Interrupt Spell", true);
+			CCedQ = fedMiscSettings->CheckBox("Auto Q When Enemies Cant Move", true);
+			CheckShield = fedMiscSettings->CheckBox("No Stun (BlackShield, Banshee)", true);
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");

@@ -68,14 +68,14 @@ public:
 			JungleMana = JungleClearSettings->AddInteger("Min Mana to Jungle", 1, 100, 40);
 		}
 
-		MiscSettings = MainMenu->AddMenu("Misc Settings");
+		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			RInterrupter = MiscSettings->CheckBox("Automatically R Interrupt Spell", true);
-			RGapCloser = MiscSettings->CheckBox("GapCloser | Anti Meele", true);			
+			RInterrupter = fedMiscSettings->CheckBox("Automatically R Interrupt Spell", true);
+			RGapCloser = fedMiscSettings->CheckBox("GapCloser | Anti Meele", true);			
 			for (auto enemy : GEntityList->GetAllHeros(false, true))
 			{
 				std::string szMenuName = "Anti Gapcloser - " + std::string(enemy->ChampionName());
-				GapCloserList[enemy->GetNetworkId()] = MiscSettings->CheckBox(szMenuName.c_str(), true);				
+				GapCloserList[enemy->GetNetworkId()] = fedMiscSettings->CheckBox(szMenuName.c_str(), true);				
 			}
 
 			for (auto enemy : GEntityList->GetAllHeros(false, true))
@@ -83,7 +83,7 @@ public:
 				if (enemy->IsMelee())
 				{
 					std::string szMenuName = "Anti Melee - " + std::string(enemy->ChampionName());
-					ChampionAntiMelee[enemy->GetNetworkId()] = MiscSettings->CheckBox(szMenuName.c_str(), true);
+					ChampionAntiMelee[enemy->GetNetworkId()] = fedMiscSettings->CheckBox(szMenuName.c_str(), true);
 				}				
 			}
 		}

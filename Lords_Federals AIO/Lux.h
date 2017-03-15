@@ -61,11 +61,11 @@ public:
 			Rally = JungleClearSettings->CheckBox("Ally Stealer", false);
 		}
 
-		MiscSettings = MainMenu->AddMenu("Misc Settings");
+		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			QGapCloser = MiscSettings->CheckBox("Automatically Q GapCloser", true);
-			killstealR = MiscSettings->CheckBox("Auto KS with R", false);
-			CCedE = MiscSettings->CheckBox("Auto E on Enemy CC", false);
+			QGapCloser = fedMiscSettings->CheckBox("Automatically Q GapCloser", true);
+			killstealR = fedMiscSettings->CheckBox("Auto KS with R", false);
+			CCedE = fedMiscSettings->CheckBox("Auto E on Enemy CC", false);
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");

@@ -48,13 +48,13 @@ public:
 			JungleMana = JungleClearSettings->AddInteger("Minimum MP% to jungle", 1, 100, 20);
 		}
 
-		MiscSettings = MainMenu->AddMenu("Misc Settings");
+		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			AntiDash = MiscSettings->CheckBox("W Anti Dash", true);
-			EGapCloser = MiscSettings->CheckBox("Automatically E GapCloser", true);
-			EInterrupter = MiscSettings->CheckBox("Automatically E Interrupter", true);
-			RInterrupter = MiscSettings->CheckBox("Automatically R Interrupter", false);
-			gotoAxeRange = MiscSettings->AddInteger("Max dist to catch passive", 200, 1200, 600);
+			AntiDash = fedMiscSettings->CheckBox("W Anti Dash", true);
+			EGapCloser = fedMiscSettings->CheckBox("Automatically E GapCloser", true);
+			EInterrupter = fedMiscSettings->CheckBox("Automatically E Interrupter", true);
+			RInterrupter = fedMiscSettings->CheckBox("Automatically R Interrupter", false);
+			gotoAxeRange = fedMiscSettings->AddInteger("Max dist to catch passive", 200, 1200, 600);
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");

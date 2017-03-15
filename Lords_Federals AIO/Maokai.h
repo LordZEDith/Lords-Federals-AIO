@@ -47,12 +47,12 @@ public:
 			JungleMana = JungleClearSettings->AddInteger("Minimum MP% to jungle", 1, 100, 20);
 		}
 
-		MiscSettings = MainMenu->AddMenu("Misc Settings");
+		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			QGapCloser = MiscSettings->CheckBox("Automatically Q GapCloser", true);
-			QInterrupter = MiscSettings->CheckBox("Automatically Interrupt Spell", true);
-			CCedQ = MiscSettings->CheckBox("Auto W under Turrets", true);
-			Troll = MiscSettings->CheckBox("Troll laugh?", false);
+			QGapCloser = fedMiscSettings->CheckBox("Automatically Q GapCloser", true);
+			QInterrupter = fedMiscSettings->CheckBox("Automatically Interrupt Spell", true);
+			CCedQ = fedMiscSettings->CheckBox("Auto W under Turrets", true);
+			Troll = fedMiscSettings->CheckBox("Troll laugh?", false);
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");

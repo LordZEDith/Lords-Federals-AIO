@@ -51,11 +51,11 @@ public:
 			KillstealE = KillstealSettings->CheckBox("Use E to KillSteal", true);
 		}
 
-		MiscSettings = MainMenu->AddMenu("Misc Settings");
+		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			QGapCloser = MiscSettings->CheckBox("Automatically Q GapCloser", true);
-			CCedQ = MiscSettings->CheckBox("Auto Use Q on CC", true);
-			gotoAxeRange = MiscSettings->AddInteger("Max dist to catch axe", 200, 800, 500);
+			QGapCloser = fedMiscSettings->CheckBox("Automatically Q GapCloser", true);
+			CCedQ = fedMiscSettings->CheckBox("Auto Use Q on CC", true);
+			gotoAxeRange = fedMiscSettings->AddInteger("Max dist to catch axe", 200, 800, 500);
 		}
 
 		LastHitSettings = MainMenu->AddMenu("LastHit Settings");

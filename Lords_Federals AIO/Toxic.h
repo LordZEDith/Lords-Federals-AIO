@@ -2,39 +2,6 @@
 #include "BaseMenu.h"
 #include "Common.h"
 
-IMenu* EmoteSpam;
-IMenu* GameChat;
-IMenu* GameEvents;
-IMenu* GameStart;
-IMenu* GameEnd;
-
-IMenuOption* EmoteMode;
-IMenuOption* EmoteOnKill;
-IMenuOption* EmoteOnAssis;
-IMenuOption* EmoteOnDeath;
-IMenuOption* EmoteNearDead;
-
-IMenuOption* cMode;
-IMenuOption* Greeting;
-IMenuOption* SayGreeting;
-IMenuOption* MuteAll;
-IMenuOption* CDelay;
-
-IMenuOption* Ending;
-IMenuOption* SayEnding;
-IMenuOption* QuitGame;
-IMenuOption* QuitDelay;
-
-int LastEmoteSpam = 0;
-int MyKills = 0;
-int MyAssits = 0;
-int MyDeaths = 0;
-int LastDeathNetworkId = 0;
-
-bool onEndTriggerd;
-bool onStartDone;
-bool onStartTriggerd;
-
 class Toxic
 {
 public:

@@ -19,9 +19,9 @@ public:
 
 	static void SkinChanger()
 	{
-		if (GEntityList->Player()->GetSkinId() != MiscSkin->GetInteger())
+		if (GEntityList->Player()->GetSkinId() != fedMiscSkin->GetInteger())
 		{
-			GEntityList->Player()->SetSkinId(MiscSkin->GetInteger());
+			GEntityList->Player()->SetSkinId(fedMiscSkin->GetInteger());
 		}
 	}
 
