@@ -15,22 +15,32 @@ public:
 		RMenu = MainMenu->AddMenu("R Settings");
 		Drawings = MainMenu->AddMenu("Drawings");
 
-		ComboQ = QMenu->CheckBox("Auto Q", false);
-		HarassQ = QMenu->CheckBox("Harass Q", false);
+		ComboQ = QMenu->CheckBox("Auto Q", true);
+		HarassQ = QMenu->CheckBox("Harass Q", true);
 
-		ComboW = WMenu->CheckBox("Auto W", false);
-		FarmW = WMenu->CheckBox("Allies W", false);
+		ComboW = WMenu->CheckBox("Auto W", true);
+		FarmW = WMenu->CheckBox("Allies W", true);
 		//HarassW = WMenu->CheckBox("W Speed Up", false);
 		HealthPercent = WMenu->AddFloat("W(Self) on X Health %", 0, 100, 30);
 		UltPercent = WMenu->AddFloat("W(Self & Allies) on X Health %", 0, 100, 30);
+		for (auto allys : GEntityList->GetAllHeros(true, false))
+		{
+			std::string szMenuName = "Use W on - " + std::string(allys->ChampionName());
+			ChampionUseW[allys->GetNetworkId()] = WMenu->CheckBox(szMenuName.c_str(), false);
+		}
 		
-		ComboE = EMenu->CheckBox("Auto E", false);
-		HarassE = EMenu->CheckBox("Harass E", false);
+		ComboE = EMenu->CheckBox("Auto E", true);
+		HarassE = EMenu->CheckBox("Harass E", true);
 
-		ComboR = RMenu->CheckBox("Auto R", false);
+		ComboR = RMenu->CheckBox("Auto R", true);
 	    ComboRKill = RMenu->CheckBox("Allies R", false);
 		ComboREnemies = RMenu->AddFloat("R Self Health %", 0, 100, 20);
 		UltPercent2 = RMenu->AddFloat("R (Allies & Self) Health %", 0, 100, 15);
+		for (auto allys : GEntityList->GetAllHeros(true, false))
+		{
+			std::string szMenuName = "Use R on - " + std::string(allys->ChampionName());
+			ChampionUse[allys->GetNetworkId()] = RMenu->CheckBox(szMenuName.c_str(), false);
+		}
 
 		DrawReady = Drawings->CheckBox("Draw Only Ready Spells", false);
 		DrawQ = Drawings->CheckBox("Draw Q", false);
@@ -85,7 +95,10 @@ public:
 
 			if (GEntityList->Player()->IsValidTarget(ally, W->Range()) && W->IsReady() && (ally->HealthPercent() <= UltPercent->GetFloat()) && FarmW->Enabled() && !GEntityList->Player()->IsRecalling())
 			{
-				W->CastOnTarget(ally);
+				if (ChampionUseW[ally->GetNetworkId()]->Enabled())
+				{
+					W->CastOnTarget(ally);
+				}
 			}
 		}
 	}
@@ -96,7 +109,10 @@ public:
 		{
 			if (GEntityList->Player()->IsValidTarget(ally, R->Range()) && R->IsReady() && ally->HealthPercent() <= UltPercent2->GetFloat()  && ComboRKill->Enabled())
 			{
-				R->CastOnTarget(ally);
+				if (ChampionUse[ally->GetNetworkId()]->Enabled())
+				{
+					R->CastOnTarget(ally);
+				}
 			}
 		}
 	}

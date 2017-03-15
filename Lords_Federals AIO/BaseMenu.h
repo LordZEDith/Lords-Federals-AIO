@@ -342,6 +342,7 @@ IUnit* EMissile;
 std::list<IUnit*> axeListTeste;
 std::map<int, IMenuOption*> MenuDontUlt;
 std::map<int, IMenuOption*> ChampionUse;
+std::map<int, IMenuOption*> ChampionUseW;
 std::map<int, IMenuOption*> ChampionAntiMelee;
 std::map<int, IMenuOption*> GapCloserList;
 
