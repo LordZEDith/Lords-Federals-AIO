@@ -53,7 +53,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -86,7 +86,7 @@ public:
 
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
@@ -160,7 +160,7 @@ public:
 		Varus().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -197,7 +197,7 @@ public:
 			AutoSmite().AutomaticSmite();
 			AutoSmite().KeyPressSmite();
 			Toxic().SpamEmote();
-			Skins().fedSkinChanger();
+			//Skins().fedSkinChanger();
 		 
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
@@ -272,7 +272,7 @@ public:
 		Ziggs().InitializeMenu();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -307,7 +307,7 @@ public:
 		Ziggs().LogicE();		
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		Toxic().SpamEmote();
 	}
 
@@ -383,7 +383,7 @@ public:
 		Ashe().InitializeMenu();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -411,7 +411,7 @@ public:
 		Ashe().LogicR();
 		Ashe().LogicW();
 		Ashe().Automatic();		
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		Ashe().KeyPressUltimate();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
@@ -490,7 +490,7 @@ public:
 		Draven().InitializeMenu();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -530,7 +530,7 @@ public:
 		Draven().LogicR();
 		Draven().LogicE();
 		Draven().KeyPressUltimate();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
@@ -606,7 +606,7 @@ public:
 		Message().ChampionLoadMessage();
 		Ezreal().InitializeSpells();
 		Ezreal().InitializeMenu();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -643,7 +643,7 @@ public:
 		Ezreal().EAntiMelee();
 		Ezreal().StackMuneItem();
 		Ezreal().KsJungle();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		Toxic().SpamEmote();
 	}
 
@@ -719,7 +719,7 @@ public:
 		Ahri().InitializeMenu();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -750,7 +750,7 @@ public:
 		}
 		
 		Ahri().Automatic();		
-		Skins().fedSkinChanger();	
+		//Skins().fedSkinChanger();	
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
@@ -827,7 +827,7 @@ public:
 		Message().ChampionLoadMessage();
 		Lux().InitializeMenu();
 		Lux().LoadSpells();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -857,7 +857,7 @@ public:
 			Lux().LaneClear();
 		}
 
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		Lux().AutoRKS();
 		Lux().AutoCCed();
 		Lux().KsJungle();
@@ -939,7 +939,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -972,7 +972,7 @@ public:
 		}
 
 		Olaf().Automatic();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
@@ -1051,7 +1051,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -1085,7 +1085,7 @@ public:
 		}
 
 		DrMundo().Automatic();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
@@ -1164,7 +1164,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -1197,7 +1197,7 @@ public:
 		
 		Maokai().AutoUlt();
 		Maokai().AutoUnderTower();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
@@ -1276,7 +1276,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -1307,7 +1307,7 @@ public:
 			Poppy().JungleClear();
 		}
 
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
@@ -1388,7 +1388,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -1421,7 +1421,7 @@ public:
 
 		Nocturne().RangeUltimate();
 		Nocturne().Automatic();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		Nocturne().KeyPressUltimate();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
@@ -1500,7 +1500,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -1532,7 +1532,7 @@ public:
 		}
 		
 		Hecarim().Automatic();
-		Skins().fedSkinChanger();		
+		//Skins().fedSkinChanger();		
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
@@ -1611,7 +1611,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -1642,7 +1642,7 @@ public:
 			Elise().JungleClear();
 		}
 		
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		Elise().EliseRappel();
 		Elise().Cooldowns();
 		AutoSmite().AutomaticSmite();
@@ -1722,7 +1722,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -1756,7 +1756,7 @@ public:
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -1836,7 +1836,7 @@ public:
 		Malphite().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -1870,7 +1870,7 @@ public:
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -1945,7 +1945,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -1978,7 +1978,7 @@ public:
 
 		Xerath().Ultimate();
 		Xerath().Automatic();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
@@ -2056,7 +2056,7 @@ public:
 		Sona().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -2090,7 +2090,7 @@ public:
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -2164,7 +2164,7 @@ public:
 		Diana().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -2206,7 +2206,7 @@ public:
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -2281,7 +2281,7 @@ public:
 
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -2315,7 +2315,7 @@ public:
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -2389,7 +2389,7 @@ public:
 		Darius().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -2424,7 +2424,7 @@ public:
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -2498,7 +2498,7 @@ public:
 		Kayle().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -2530,7 +2530,7 @@ public:
 			//Need to Add
 		}
 		Kayle().Combo();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
@@ -2607,7 +2607,7 @@ public:
 		zTristana().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -2643,7 +2643,7 @@ public:
 		zTristana().FocusTargetE();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
@@ -2718,7 +2718,7 @@ public:
 		Caitlyn().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 	}
 
@@ -2752,7 +2752,7 @@ public:
 		Caitlyn().Automatic();
 		Caitlyn().AutoTrap();
 		Caitlyn().DashToMouse();
-		Skins().fedSkinChanger();		
+		//Skins().fedSkinChanger();		
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
@@ -2936,7 +2936,7 @@ public:
 		LeeSin().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Skins().Menu();
+		//Skins().Menu();
 		Toxic().MenuToxic();
 
 		//GUtility->CreateDebugConsole();
@@ -2976,7 +2976,7 @@ public:
 		LeeSin().WardJumpMouse();
 		LeeSin().Automatic();
 		LeeSin().KickBehind();
-		Skins().fedSkinChanger();
+		//Skins().fedSkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
@@ -3039,7 +3039,7 @@ public:
 
 	void OnGameEnd() override
 	{
-		Toxic().OnGameEnd();
+		//Toxic().OnGameEnd();
 	}
 };
 

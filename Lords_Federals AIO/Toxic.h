@@ -1,6 +1,7 @@
-#include "PluginData.h"
+#pragma once
 #include "BaseMenu.h"
-#include "Common.h"
+#include "Common.h";
+#include "PluginSDK.h"
 
 class Toxic
 {
