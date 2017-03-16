@@ -399,6 +399,8 @@ int LastFlashTime;
 int LastSpellTick;
 bool EhWard;
 bool testflash;
+bool Jumping;
+bool EvolvedQ, EvolvedW, EvolvedE, EvolvedR;
 
 short keystate;
 bool smiteKeyWasDown = false;

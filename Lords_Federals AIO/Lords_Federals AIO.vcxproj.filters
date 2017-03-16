@@ -198,6 +198,9 @@
     <ClInclude Include="Toxic.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Khazix.h">
+      <Filter>Header Files\Champions\Jungle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">

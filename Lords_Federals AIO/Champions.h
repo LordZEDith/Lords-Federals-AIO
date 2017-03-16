@@ -30,6 +30,7 @@
 #include "Kayle.h"
 #include "Elise.h"
 #include "LeeSin.h"
+#include "Khazix.h"
 
 // Champions Toplane
 #include "DrMundo.h"

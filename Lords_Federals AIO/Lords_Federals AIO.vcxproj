@@ -165,6 +165,7 @@
     <ClInclude Include="DrMundo.h" />
     <ClInclude Include="Elise.h" />
     <ClInclude Include="Ezreal.h" />
+    <ClInclude Include="Khazix.h" />
     <ClInclude Include="LeeSin.h" />
     <ClInclude Include="Polygons.h" />
     <ClInclude Include="SkinsChange.h" />

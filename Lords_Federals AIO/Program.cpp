@@ -3043,6 +3043,119 @@ public:
 	}
 };
 
+class cKhazix : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		Message().JungleLaneSeries();
+		Message().ChampionLoadMessage();
+		Khazix().InitializeMenu();
+		Khazix().LoadSpells();
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+		//Skins().Menu();
+		Toxic().MenuToxic();
+
+		//GUtility->CreateDebugConsole();
+	}
+
+	virtual void OnRender() override
+	{
+		Khazix().Drawing();
+		AutoSmite().DrawingsSmite();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		{
+			return;
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		{
+			Khazix().Combo();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		{
+			Khazix().LastHit();
+			Khazix().Harass();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		{
+			Khazix().JungleClear();
+			Khazix().LaneClear();
+		}
+		
+		Khazix().Automatic();
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+		
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+		
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+		
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+		
+	}
+
+	void OnGameEnd() override
+	{
+		//Toxic().OnGameEnd();
+	}
+};
+
 IChampion* pChampion = nullptr;
 
 PLUGIN_EVENT(void) OnRender()
@@ -3166,6 +3279,8 @@ void LoadChampion()
 		pChampion = new cElise;
 	else if (szChampion == "LeeSin")
 		pChampion = new cLeeSin;
+	else if (szChampion == "Khazix")
+		pChampion = new cKhazix;
 	// Toplane
 	else if (szChampion == "DrMundo")
 		pChampion = new cDrMundo;
@@ -3219,6 +3334,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	pChampion->OnLoad();	
 	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Welcome to Lords & Federals AIO");
 	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "News: Me and Federal decided to merge to bring you the best Scripts");
+	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "New Champions Supported: LeeSin and Khazix");
 
 	//GUtility->CreateDebugConsole();	
 }
