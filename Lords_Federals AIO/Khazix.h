@@ -19,6 +19,7 @@ public:
 			ComboR = ComboSettings->CheckBox("R in Spells in CD", true);
 			//RGapCloser = ComboSettings->CheckBox("Use R after long gapcloses", true);
 			ComboEA = ComboSettings->CheckBox("Use E To Gapclose for Q", true);
+			AA = ComboSettings->CheckBox("Dont AA while Invisible", true);
 		}
 
 		HarassSettings = MainMenu->AddMenu("Harass Settings");
@@ -64,9 +65,15 @@ public:
 			JungleMana = JungleClearSettings->AddInteger("Min Mana to Jungle", 0, 100, 40);
 		}
 
-		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
+		ESettings = MainMenu->AddMenu("Jump Safety");
 		{			
-			CCedW = fedMiscSettings->CheckBox("Coming Soon...", true);			
+			ESafety = ESettings->CheckBox("Enable Safety Checks", true);
+			AutoE = ESettings->CheckBox("Jump to get out when low", true);
+			ECountEnemy = ESettings->CheckBox("Allys >= Enemys", true);
+			inUnderTower = ESettings->CheckBox("Avoid Tower Diving", true);
+			EBypassTower = ESettings->CheckBox("Bypass Dive in Big Chances", true);
+			HealthE = ESettings->AddInteger("Min Healthy %", 0, 100, 30);
+			//EBypass = ESettings->CheckBox("Bypass Checks while Stealth", true);
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
@@ -77,8 +84,7 @@ public:
 			DrawE = DrawingSettings->CheckBox("Draw E", false);
 			DrawR = DrawingSettings->CheckBox("Draw R", false);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
-		}
-		
+		}		
 	}
 
 	static void LoadSpells()
@@ -116,10 +122,212 @@ public:
 		}
 	}
 
+	static bool IsSafeHP()
+	{
+		if (GEntityList->Player()->HealthPercent() >= HealthE->GetInteger())
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	static bool ucanJump(Vec3 position, IUnit* target = nullptr, bool minion = false)
+	{
+		if (!ESafety->Enabled())
+		{			
+			return true;
+		}
+
+		if (minion)
+		{
+			if (IsUnderTurretPos(position) && (CountMinionsAlly(position, 500) <= 1 || CountEnemy(position, 600) >= 1))
+			{				
+				return false;
+			}			
+			return true;
+		}
+
+		if (inUnderTower->Enabled() && IsUnderTurretPos(position) && target != nullptr)
+		{
+			// Dive
+			if (EBypassTower->Enabled() &&
+				GEntityList->Player()->GetLevel() >= 6 && GEntityList->Player()->GetMana() > (E->ManaCost() * 2) + Q->ManaCost() + W->ManaCost())
+			{
+				if ((GetDamageKhazix(target, true, true, true, true, false) > target->GetHealth() && GEntityList->Player()->HealthPercent() > HealthE->GetInteger() &&
+					CountEnemy(target->GetPosition(), 600) == 1 || CountAlly(target->GetPosition(), 1200) >= 1 && CountEnemy(target->GetPosition(), 800) <= CountAlly(GEntityList->Player()->GetPosition(), 800) + 1))
+				{					
+					return true;
+				}
+			}			
+			return false;
+		}
+
+		else if (ESafety->Enabled())
+		{
+			if (GEntityList->Player()->HealthPercent() < HealthE->GetInteger() && GetDamageKhazix(target, true, true, true, true, false) < target->HealthPercent() && target != nullptr)
+			{				
+				return false;
+			}
+
+			if (!ECountEnemy->Enabled() || ECountEnemy->Enabled() && CountEnemy(target->GetPosition(), 800) <= CountAlly(target->GetPosition(), 1200) + 1)
+			{				
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}		
+		return true;
+	}
+
+	static void GetBuffName()
+	{
+		std::vector<void*> vecBuffs;
+
+		for (auto enemy : GEntityList->GetAllHeros(false, true))
+		{
+
+			if (enemy->IsValidTarget(GEntityList->Player(), W->Range()))
+			{
+				enemy->GetAllBuffsData(vecBuffs);
+			}
+
+			for (auto i : vecBuffs)
+			{
+				/*GBuffData->GetBuffName(i);
+				GGame->PrintChat(enemy->ChampionName());
+				GGame->PrintChat(GBuffData->GetBuffName(i));*/
+
+				GUtility->LogConsole("Champion: %s - Buff Name: %s", enemy->ChampionName(), GBuffData->GetBuffName(i));
+
+				/*if (GEntityList->Player()->HasBuff("AhriTumble"))
+				{
+				auto buffTime = GBuffData->GetEndTime(GEntityList->Player()->GetBuffDataByName("AhriTumble"));
+
+
+				GGame->PrintChat("Tenho Buff do Ult");
+				GGame->PrintChat(std::to_string(buffTime - GGame->Time()).data());
+				}*/
+			}
+		}
+	}
+
+	static bool ObjIsolado(IUnit* target)
+	{
+		if (!CheckTarget(target)) return false;
+
+		if (CountEnemy(target->GetPosition(), 400) == 1)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	static float GetDamageKhazix(IUnit* target, bool CalCulateAttackDamage = true,
+		bool CalCulateQDamage = true, bool CalCulateWDamage = true,
+		bool CalCulateEDamage = true, bool CalCulateRDamage = true)
+	{
+		if (CheckTarget(target))
+		{
+			double Damage = 0;
+			std::string ChampionName = GEntityList->Player()->ChampionName();
+			std::string TargetName = target->ChampionName();
+
+			if (GEntityList->Player()->GetSpellSlot("SummonerDot") != kSlotUnknown)
+			{
+				Ignite = GPluginSDK->CreateSpell(GEntityList->Player()->GetSpellSlot("SummonerDot"), 600);
+			}
+
+			if (CalCulateAttackDamage)
+			{
+				Damage += GDamage->GetAutoAttackDamage(GEntityList->Player(), target, false);
+			}
+
+			if (CalCulateQDamage)
+			{
+				if (ObjIsolado(target))
+				{
+					Damage += Q->IsReady() ? GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotQ) * 1.5 : 0;
+				}
+				else
+				{
+					Damage += Q->IsReady() ? GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotQ) : 0;
+				}
+			}
+
+			if (CalCulateWDamage)
+			{
+				Damage += W->IsReady() ? GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotW) : 0;
+			}
+
+			if (CalCulateEDamage)
+			{
+				Damage += E->IsReady() ? GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotE) : 0;
+			}
+
+			if (CalCulateRDamage)
+			{
+				Damage += R->IsReady() ? GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotR) : 0;				
+			}
+
+			if (GEntityList->Player()->GetSpellSlot("SummonerDot") != kSlotUnknown  && Ignite->IsReady())
+			{
+				Damage += 50 + 20 * GEntityList->Player()->GetLevel() - (target->HPRegenRate() / 5 * 3);
+			}
+
+			if (TargetName == "Moredkaiser")
+				Damage -= target->GetMana();
+
+			// exhaust
+			if (GEntityList->Player()->HasBuff("SummonerExhaust"))
+				Damage = Damage * 0.6f;
+
+			// blitzcrank passive
+			if (target->HasBuff("BlitzcrankManaBarrierCD") && target->HasBuff("ManaBarrier"))
+				Damage -= target->GetMana() / 2;
+
+			// kindred r
+			if (target->HasBuff("KindredRNoDeathBuff"))
+				Damage = 0;
+
+			// tryndamere r
+			if (target->HasBuff("UndyingRage") && GBuffData->GetEndTime(GEntityList->Player()->GetBuffDataByName("UndyingRage")) - GGame->Time() > 0.3)
+				Damage = 0;
+
+			// kayle r
+			if (target->HasBuff("JudicatorIntervention"))
+				Damage = 0;
+
+			// zilean r
+			if (target->HasBuff("ChronoShift") && GBuffData->GetEndTime(GEntityList->Player()->GetBuffDataByName("ChronoShift")) - GGame->Time() > 0.3)
+				Damage = 0;
+
+			// fiora w
+			if (target->HasBuff("FioraW"))
+				Damage = 0;
+
+			return Damage;
+		}
+		return 0;
+	}
+
 	static void Automatic()
 	{
-		EvolutionCheck();
+		//GetBuffName();
+		EvolutionCheck();		
 
+		if (AA->Enabled() && GEntityList->Player()->HasBuff("khazixrstealth"))
+		{
+			GOrbwalking->SetAttacksAllowed(false);			
+		}
+		else
+		{
+			GOrbwalking->SetAttacksAllowed(true);
+		}
+		
 		if (AutoHarass->Enabled())
 		{
 			Harass();
@@ -151,7 +359,73 @@ public:
 
 			if (target->IsValidTarget(GEntityList->Player(), E->Range()) && KillstealE->Enabled() && E->IsReady() && GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) > target->GetHealth())
 			{
-				E->CastOnTarget(target, kHitChanceHigh);
+				if (ucanJump(target->GetPosition(), target))
+				{
+					E->CastOnTarget(target, kHitChanceHigh);
+				}
+			}
+		}
+	}
+
+	static void AutoEscape()
+	{
+		if (AutoE->Enabled())
+		{
+			SArray<IUnit*> sEnemys = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* e) {return e != nullptr &&
+				!e->IsDead() && e->IsVisible() && GetDistance(GEntityList->Player(), e) < E->Range() && IsUnderTurretPos(e->GetPosition()); });
+
+			if (sEnemys.Any())
+			{
+				GetTarget = sEnemys.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GEntityList->Player()->GetPosition()); });
+			}
+
+			auto enemyhp = 0.f;
+
+			if (GetTarget != nullptr)
+			{
+				enemyhp = GetTarget->GetHealth();
+			}
+			
+			if (CountEnemy(GEntityList->Player()->GetPosition(), 900) == 2 && !IsSafeHP() ||
+				CountEnemy(GEntityList->Player()->GetPosition(), 900) > CountAlly(GEntityList->Player()->GetPosition(), 900) + 1 ||
+				CountEnemy(GEntityList->Player()->GetPosition(), 900) == 1 && !IsSafeHP() && enemyhp > GEntityList->Player()->GetHealth())
+			{
+				SArray<IUnit*> sAliados = SArray<IUnit*>(GEntityList->GetAllHeros(true, false)).Where([](IUnit* Aliados) {return Aliados != nullptr && Aliados != GEntityList->Player() &&
+					!Aliados->IsDead() && Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) < 2500 && Aliados->HealthPercent() > 40 && 
+					CountEnemy(Aliados->GetPosition(), 400) == 0 && !IsUnderTurretPos(Aliados->GetPosition()); });				
+
+				if (sAliados.Any())
+				{
+					AliadoPos = sAliados.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GEntityList->Player()->GetPosition()); });
+
+					auto pPos = GEntityList->Player()->ServerPosition();
+					auto jump = pPos.Extend(AliadoPos->ServerPosition(), E->Range());
+
+					E->CastOnPosition(jump);
+					GUtility->LogConsole("Aquiiiiiiiiiii");
+					return;
+				}		
+			}			
+			
+			if (IsUnderTurret(GEntityList->Player()) &&	(CountEnemy(GEntityList->Player()->GetPosition(), 900) == 1 && 
+				!Q->IsReady() && !W->IsReady() && CountMinionsAlly(GEntityList->Player()->GetPosition(), 400) <= 1 && CountAlly(GEntityList->Player()->GetPosition(), 900) == 0 && !IsSafeHP() &&
+				enemyhp > GEntityList->Player()->GetHealth() ||
+				CountEnemy(GEntityList->Player()->GetPosition(), 900) >= CountAlly(GEntityList->Player()->GetPosition(), 900) && 
+				CountMinionsAlly(GEntityList->Player()->GetPosition(), 400) == 0))
+			{
+				SArray<IUnit*> sTorres = SArray<IUnit*>(GEntityList->GetAllTurrets(true, false)).Where([](IUnit* Torres) {return Torres != nullptr && 
+					GetDistance(GEntityList->Player(), Torres) < 5000; });
+
+				if (sTorres.Any())
+				{
+					TorrePos = sTorres.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GEntityList->Player()->GetPosition()); });
+				}
+				
+				auto pPos = GEntityList->Player()->ServerPosition();
+				auto jump = pPos.Extend(TorrePos->ServerPosition(), E->Range());
+
+				E->CastOnPosition(jump);				
+				return;
 			}
 		}
 	}
@@ -173,7 +447,10 @@ public:
 		if (ComboE->Enabled() && E->IsReady() && !Jumping && GetDistance(GEntityList->Player(), target) < E->Range() && 
 			GetDistance(GEntityList->Player(), target) > Q->Range() + (0.4 * GEntityList->Player()->MovementSpeed()))
 		{
-			E->CastOnTarget(target, kHitChanceHigh);
+			if (ucanJump(target->GetPosition(), target))
+			{
+				E->CastOnTarget(target, kHitChanceHigh);
+			}
 		}
 
 		if (ComboW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()))
@@ -184,7 +461,10 @@ public:
 		if ((ComboEA->Enabled() && Q->IsReady() && E->IsReady() && GetDistance(GEntityList->Player(), target) > Q->Range() + (0.4 * GEntityList->Player()->MovementSpeed()) &&
 			GetDistance(GEntityList->Player(), target) <= E->Range() + Q->Range()))
 		{
-			E->CastOnTarget(target, kHitChanceHigh);
+			if (ucanJump(target->GetPosition(), target))
+			{
+				E->CastOnTarget(target, kHitChanceHigh);
+			}
 
 			/*if (RGapCloser->Enabled() && R->IsReady())
 			{
@@ -316,8 +596,6 @@ public:
 		if (GEntityList->Player()->ManaPercent() < LaneClearMana->GetInteger()) return;
 		if (!FoundMinions(E->Range()) || FoundMinionsNeutral(E->Range())) return;
 
-
-
 		if (LaneClearQ->Enabled() && Q->IsReady())
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
@@ -350,18 +628,20 @@ public:
 			int count;
 			W->FindBestCastPosition(true, true, pos, count);
 
-			if (count >= 3 && W->CastOnPosition(pos))
+			if ((!EvolvedW && count >= 2 || EvolvedW && count >= 3) && W->CastOnPosition(pos))
 			{
 				return;
 			}
 		}
 
 		if (LaneClearE->Enabled() && E->IsReady() && CountMinions(GEntityList->Player()->GetPosition(), E->Range()) >= MinionsW->GetInteger())
-		{
+		{			
 			Vec3 pos;
 			int count;
 			E->FindBestCastPosition(true, true, pos, count);
 
+			if (!ucanJump(pos, nullptr, true)) return;
+			
 			if (count >= 3 && E->CastOnPosition(pos))
 			{
 				return;
@@ -384,6 +664,14 @@ public:
 			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), W->Range()); }
 			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), E->Range()); }
 			if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), R->Range()); }
-		}		
+		}
+
+		/*for (auto enemys : GEntityList->GetAllHeros(false, true))
+		{
+			if (ObjIsolado(enemys))
+			{
+				GRender->DrawOutlinedCircle(enemys->GetPosition(), Vec4(255, 0, 0, 255), 400);
+			}
+		}*/
 	}		
 };

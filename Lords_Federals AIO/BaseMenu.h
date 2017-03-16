@@ -175,6 +175,10 @@ IMenuOption* RangeE;
 IMenuOption* MinionsE;
 IMenuOption* JungleE;
 IMenuOption* WAllyrisk;
+IMenuOption* ECountEnemy;
+IMenuOption* ESafety;
+IMenuOption* EBypass;
+IMenuOption* EBypassTower;
 
 IMenuOption* ComboR;
 IMenuOption* ComboRKill;

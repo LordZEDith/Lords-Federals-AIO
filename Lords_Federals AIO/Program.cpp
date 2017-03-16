@@ -3056,9 +3056,7 @@ public:
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		//Skins().Menu();
-		Toxic().MenuToxic();
-
-		//GUtility->CreateDebugConsole();
+		Toxic().MenuToxic();		
 	}
 
 	virtual void OnRender() override
@@ -3090,6 +3088,7 @@ public:
 		}
 		
 		Khazix().Automatic();
+		Khazix().AutoEscape();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
@@ -3345,6 +3344,7 @@ PLUGIN_API void OnUnload()
 	//pChampion->OnUnLoad();
 
 	MainMenu->Remove();
+	//GUtility->DestroyDebugConsole();
 	
 	GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
 	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapCloser);
