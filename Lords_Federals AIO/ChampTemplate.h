@@ -3,10 +3,8 @@
 #include "BaseMenu.h"
 #include "Common.h"
 
-#include <map>
-
 IMenu* BlacklistMenuW;
-std::map<int, IMenuOption*> ChampionUse;
+//std::map<int, IMenuOption*> ChampionUse;
 
 class Template
 {
@@ -62,22 +60,18 @@ public:
 
 	}
 
-	static void OnAfterAttack(IUnit* source, IUnit* target)
+	void OnAfterAttack(IUnit* source, IUnit* target)
 	{
-		if (GOrbwalking->GetOrbwalkingMode == kModeCombo)
-		{
-			if (ComboE->Enabled() && E->IsReady() && GetDistance(source, GEntityList->Player()) < E->Range())
+		if (!source->IsEnemy(GEntityList->Player()) &&
+				source->IsValidTarget(GEntityList->Player(), 1500))
 			{
-				if (source->GetTeam() == GEntityList->Player()->GetTeam() &&
-					source->IsValidTarget(GEntityList->Player(), E->Range()))
+				GGame->PrintChat("test1");
+				if (ChampionUse[source->GetNetworkId()]->Enabled())
 				{
-					if (ChampionUse[source->GetNetworkId()]->Enabled())
-					{
-						E->CastOnUnit(source);
-					}
+					GGame->PrintChat("test2");
+					//E->CastOnUnit(source);
 				}
 			}
-		}
 	}
 	
 

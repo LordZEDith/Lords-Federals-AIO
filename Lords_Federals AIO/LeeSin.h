@@ -1782,7 +1782,7 @@ public:
 					
 					if (enemys->IsValidTarget(GEntityList->Player(), R->Range()))
 					{
-						R->CastOnUnit(enemys);
+						R->CastOnUnit(enemys);						
 					}
 				}
 			}

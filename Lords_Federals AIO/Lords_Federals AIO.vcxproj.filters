@@ -201,6 +201,9 @@
     <ClInclude Include="Khazix.h">
       <Filter>Header Files\Champions\Jungle</Filter>
     </ClInclude>
+    <ClInclude Include="Rumble.h">
+      <Filter>Header Files\Champions\TopLane</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">

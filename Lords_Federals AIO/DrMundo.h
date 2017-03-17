@@ -305,7 +305,7 @@ public:
 			{
 				W->CastOnPlayer();
 			}
-			else if (!FoundMinions(600))
+			else if (!FoundMinions(600) )
 			{
 				W->CastOnPlayer();
 			}

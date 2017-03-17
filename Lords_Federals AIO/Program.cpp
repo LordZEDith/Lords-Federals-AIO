@@ -1080,8 +1080,7 @@ public:
 		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 		{
 			DrMundo().LaneClear();
-			DrMundo().JungleClear();
-			DrMundo().AutoStopW();
+			DrMundo().JungleClear();			
 		}
 
 		DrMundo().Automatic();
@@ -3155,6 +3154,117 @@ public:
 	}
 };
 
+class cRumble : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		Message().JungleLaneSeries();
+		Message().ChampionLoadMessage();
+		Rumble().InitializeMenu();
+		Rumble().LoadSpells();
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+		//Skins().Menu();
+		Toxic().MenuToxic();
+	}
+
+	virtual void OnRender() override
+	{
+		Rumble().Drawing();
+		AutoSmite().DrawingsSmite();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		{
+			return;
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		{
+			Rumble().Combo();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		{
+			Rumble().LastHit();
+			Rumble().Harass();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		{
+			Rumble().JungleClear();
+			Rumble().LaneClear();
+		}
+
+		Rumble().Automatic();		
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+
+	}
+
+	void OnGameEnd() override
+	{
+		//Toxic().OnGameEnd();
+	}
+};
+
 IChampion* pChampion = nullptr;
 
 PLUGIN_EVENT(void) OnRender()
@@ -3293,11 +3403,13 @@ void LoadChampion()
 		pChampion = new cKayle;
 	else if (szChampion == "Darius")
 		pChampion = new cDarius;
-	//else if (szChampion == "Shen")
-		//pChampion = new cShen;
+	else if (szChampion == "Rumble")
+		pChampion = new cRumble;
 	// Support
 	else if (szChampion == "Sona")
 		pChampion = new cSona;
+	//else if (szChampion == "Nami")
+		//pChampion = new cTemplate;
 	else
 	{
 		GGame->PrintChat("Champion Not Supported");
@@ -3333,7 +3445,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	pChampion->OnLoad();	
 	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Welcome to Lords & Federals AIO");
 	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "News: Me and Federal decided to merge to bring you the best Scripts");
-	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "New Champions Supported: LeeSin and Khazix");
+	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "New Champions Supported: LeeSin, Khazix and Rumble");
 
 	//GUtility->CreateDebugConsole();	
 }

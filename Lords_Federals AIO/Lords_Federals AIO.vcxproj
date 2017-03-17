@@ -168,6 +168,7 @@
     <ClInclude Include="Khazix.h" />
     <ClInclude Include="LeeSin.h" />
     <ClInclude Include="Polygons.h" />
+    <ClInclude Include="Rumble.h" />
     <ClInclude Include="SkinsChange.h" />
     <ClInclude Include="Hecarim.h" />
     <ClInclude Include="Karthus.h" />

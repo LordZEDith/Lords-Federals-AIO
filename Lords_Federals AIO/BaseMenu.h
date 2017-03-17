@@ -303,6 +303,8 @@ IMenuOption* AntiDash;
 IMenuOption* CheckShield;
 IMenuOption* AntiMelee;
 IMenuOption* AntiGrab;
+IMenuOption* AutoShielded;
+IMenuOption* minAutoShield;
 
 IMenuOption* QD;
 IMenuOption* WD;
@@ -407,7 +409,11 @@ bool Jumping;
 bool EvolvedQ, EvolvedW, EvolvedE, EvolvedR;
 
 short keystate;
+short keystate2;
+short keystate3;
 bool smiteKeyWasDown = false;
+bool harassKeyWasDown = false;
+bool comboKeyWasDown = false;
 bool KeyWasDown = false;
 
 float RCastSpell = 0;

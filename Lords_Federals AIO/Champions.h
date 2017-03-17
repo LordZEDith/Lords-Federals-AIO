@@ -10,7 +10,6 @@
 #include "zTristana.h"
 #include "Caitlyn.h"
 
-
 // Champions Midlane
 #include "Ahri.h"
 #include "Karthus.h"
@@ -18,7 +17,6 @@
 #include "TwistedFate.h"
 #include "Xerath.h"
 #include "Ziggs.h"
-
 
 // Champions Jungle
 #include "Olaf.h";
@@ -39,6 +37,7 @@
 #include "Rengar.h"
 #include "Warwick.h"
 #include "Poppy.h"
+#include "Rumble.h"
 
 // Champions Support
 #include "Sona.h"
