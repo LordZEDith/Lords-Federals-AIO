@@ -455,6 +455,8 @@ IMenuOption* useFlash;
 IMenuOption* InsecSelect;
 IMenuOption* InsecOrbwalk;
 IMenuOption* Flashdistance;
+IMenuOption* UseWardgap;
+IMenuOption* UseFlashgap;
 
 IMenuOption* KickAndFlash;
 std::string InsecText = "";

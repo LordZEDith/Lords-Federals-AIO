@@ -111,39 +111,42 @@ public:
 				smiteKeyWasDown = false;
 			}
 		}
-	}
+	}	
 
 	static void AutomaticSmite()
 	{
 		//GGame->PrintChat(std::to_string(GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot1)).data());		
 
-		if (FoundSmite && Smite->IsReady() && SmiteActive->Enabled() && KillstealSmite->Enabled())
+		if (FoundSmite && Smite->IsReady() && SmiteActive->Enabled())
 		{
 			/*if (SmiteAmmo->Enabled() && (GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot1) == 1 || GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot2) == 1))
 			{
 				return;
 			}	*/		
 
-			for (auto hero : GEntityList->GetAllHeros(false, true))
+			if (KillstealSmite->Enabled())
 			{
-				auto damage = GDamage->GetSummonerSpellDamage(GEntityList->Player(), hero, kSummonerSpellSmite);
-
-				if (strstr(GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1), "SummonerSmitePlayerGanker") ||
-					strstr(GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2), "SummonerSmitePlayerGanker"))
+				for (auto hero : GEntityList->GetAllHeros(false, true))
 				{
-					if (20 + 8 * GEntityList->Player()->GetLevel() > hero->GetHealth())
+					auto damage = GDamage->GetSummonerSpellDamage(GEntityList->Player(), hero, kSummonerSpellSmite);
+
+					if (strstr(GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1), "SummonerSmitePlayerGanker") ||
+						strstr(GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2), "SummonerSmitePlayerGanker"))
 					{
-						Smite->CastOnUnit(hero);
+						if (20 + 8 * GEntityList->Player()->GetLevel() > hero->GetHealth())
+						{
+							Smite->CastOnUnit(hero);
+						}
 					}
 				}
 			}
 
 			// Use Smite Red in Combo
-			if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+			if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && SmiteCombo->Enabled())
 			{
 				for (auto hero : GEntityList->GetAllHeros(false, true))
 				{
-					if (FoundSmite && SmiteCombo->Enabled() && Smite->IsReady() && !hero->IsInvulnerable() && !hero->IsDead())
+					if (!hero->IsInvulnerable() && !hero->IsDead())
 					{
 						if (strstr(GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1), "SummonerSmiteDuel") ||
 							strstr(GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2), "SummonerSmiteDuel"))

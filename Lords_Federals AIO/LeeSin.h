@@ -72,6 +72,8 @@ public:
 			kickBehind = RMenu->CheckBox("Use Kick Behind (Beta ++)", false);
 			kickHit = RMenu->AddInteger("If Hit Enemy Behind (Beta)", 0, 5, 3);
 			kickKill = RMenu->CheckBox("If Kill Enemy Behind (Beta)", true);
+			UseWardgap = RMenu->CheckBox("Use Ward", true);
+			UseFlashgap = RMenu->CheckBox("Use Flash", false);
 		}
 
 		InsecSettings = MainMenu->AddMenu("Insec Settings");
@@ -1616,14 +1618,13 @@ public:
 
 				if (InsecText == "FlashDistance" && Rposition != Vec3(0, 0, 0))
 				{
-					GPluginSDK->DelayFunctionCall(200, []() { Flash->CastOnPosition(Rposition); });
-
-					GPluginSDK->DelayFunctionCall(100, []() { 
+					GPluginSDK->DelayFunctionCall(120, []() { 
 						
+						Flash->CastOnPosition(Rposition);
 						InsecType = "Ultimate";
-						goUltimate = true;
+						goUltimate = true; 
 					
-					});					
+					});									
 
 					InsecTime = GGame->TickCount() + 2000;
 				}
@@ -1640,7 +1641,7 @@ public:
 
 				if (IsKeyDown(InsecKey) && InsecText == "Flash")
 				{
-					GPluginSDK->DelayFunctionCall(120, []() { Flash->CastOnPosition(Rposition); });
+					Flash->CastOnPosition(Rposition);
 				}
 
 				if (IsKeyDown(InsecKey) && InsecText != "Flash")
@@ -1738,7 +1739,7 @@ public:
 
 			if (kickKill->Enabled())
 			{
-				
+				AutoKickToKill();
 			}
 		}		
 	}
@@ -1753,17 +1754,79 @@ public:
 			{
 				auto startPos = enemys->GetPosition();
 				auto pPos = GEntityList->Player()->GetPosition();
-				auto endPos = pPos.Extend(startPos, GetDistance(enemys, GEntityList->Player()) + 700);
-				
-				TestPOS = pPos.Extend(startPos, GetDistance(enemys, GEntityList->Player()) -230);
+				auto endPos = pPos.Extend(startPos, GetDistance(enemys, GEntityList->Player()) + 700);				
 
-				auto cRect = Geometry::Rectangle(startPos.To2D(), endPos.To2D(), 100);
+				auto cRect = Geometry::Rectangle(startPos.To2D(), endPos.To2D(), 80);
+				cRect.Draw(Vec4(255, 255, 255, 255));
 
 				SArray<IUnit*> Enemys = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([&](IUnit* i) {return cRect.IsInside(i); });
-
+				
+				
 				if (Enemys.Count() >= minREnemies && CheckShielded(enemys))
 				{					
-					R->CastOnUnit(enemys);
+					auto posToKick = pPos.Extend(startPos, GetDistance(enemys, GEntityList->Player()) - 230);
+					
+					if (UseFlashgap->Enabled() && Flash->IsReady() && R->IsReady() && GetDistanceVectors(posToKick, GEntityList->Player()->GetPosition()) <= 425 &&
+						GetDistanceVectors(posToKick, GEntityList->Player()->GetPosition()) > 150)
+					{
+						Flash->CastOnPosition(posToKick);
+						TestPOS = posToKick;
+					}
+					else if (UseWardgap->Enabled() && checkWardsTemp() && R->IsReady() && GetDistanceVectors(posToKick, GEntityList->Player()->GetPosition()) <= 590 &&
+						GetDistanceVectors(posToKick, GEntityList->Player()->GetPosition()) > 150)
+					{
+						WardJump(posToKick, false, true);
+						Rposition = posToKick;
+						TestPOS = posToKick;
+					}
+					
+					if (enemys->IsValidTarget(GEntityList->Player(), R->Range()))
+					{
+						R->CastOnUnit(enemys);
+					}
+				}
+			}
+		}
+	}
+
+	static void AutoKickToKill()
+	{
+		for (auto enemys : GEntityList->GetAllHeros(false, true))
+		{
+			if (enemys != nullptr && GEntityList->Player()->IsValidTarget(enemys, 600 + R->Range()))
+			{
+				auto startPos = enemys->GetPosition();
+				auto pPos = GEntityList->Player()->GetPosition();
+				auto endPos = pPos.Extend(startPos, GetDistance(enemys, GEntityList->Player()) + 700);
+
+				auto cRect = Geometry::Rectangle(startPos.To2D(), endPos.To2D(), 80);
+				cRect.Draw(Vec4(255, 255, 255, 255));
+
+				SArray<IUnit*> Enemys = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([&](IUnit* i) {return cRect.IsInside(i) && GHealthPrediction->GetKSDamage(i, kSlotR, R->GetDelay(),false) > i->GetHealth(); });
+
+
+				if (CheckShielded(enemys) && Enemys.Any())
+				{
+					auto posToKick = pPos.Extend(startPos, GetDistance(enemys, GEntityList->Player()) - 230);
+
+					if (UseFlashgap->Enabled() && Flash->IsReady() && R->IsReady() && GetDistanceVectors(posToKick, GEntityList->Player()->GetPosition()) <= 425 &&
+						GetDistanceVectors(posToKick, GEntityList->Player()->GetPosition()) > 150)
+					{
+						Flash->CastOnPosition(posToKick);
+						TestPOS = posToKick;
+					}
+					else if (UseWardgap->Enabled() && checkWardsTemp() && R->IsReady() && GetDistanceVectors(posToKick, GEntityList->Player()->GetPosition()) <= 590 &&
+						GetDistanceVectors(posToKick, GEntityList->Player()->GetPosition()) > 150)
+					{
+						WardJump(posToKick, false, true);
+						Rposition = posToKick;
+						TestPOS = posToKick;
+					}
+
+					if (enemys->IsValidTarget(GEntityList->Player(), R->Range()))
+					{
+						R->CastOnUnit(enemys);
+					}
 				}
 			}
 		}
@@ -1876,7 +1939,24 @@ public:
 			}
 		}
 
-		/*GRender->DrawOutlinedCircle(TestPOS, Vec4(102, 255, 102, 255), 100);*/
+		/*for (auto enemys : GEntityList->GetAllHeros(false, true))
+		{
+			if (enemys != nullptr && GEntityList->Player()->IsValidTarget(enemys, 600 + R->Range()))
+			{				
+					auto startPos = enemys->GetPosition();
+					auto pPos = GEntityList->Player()->GetPosition();
+					auto endPos = pPos.Extend(startPos, GetDistance(enemys, GEntityList->Player()) + 700);
+
+					TestPOS = pPos.Extend(startPos, GetDistance(enemys, GEntityList->Player()) - 230);
+
+					auto cRect = Geometry::Rectangle(startPos.To2D(), endPos.To2D(), 80);
+					cRect.Draw(Vec4(255, 255, 255, 255));
+				
+				
+			}
+		}*/
+
+		//GRender->DrawOutlinedCircle(TestPOS, Vec4(102, 255, 102, 255), 100);
 		
 	}	
 };
