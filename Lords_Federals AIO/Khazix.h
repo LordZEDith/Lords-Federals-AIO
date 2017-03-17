@@ -93,7 +93,7 @@ public:
 		Q->SetSkillshot(0.25f, 50.f, 1400.f, 325.f);
 
 		W = GPluginSDK->CreateSpell2(kSlotW, kLineCast, true, false, (kCollidesWithYasuoWall, kCollidesWithHeroes, kCollidesWithMinions));
-		W->SetSkillshot(0.25f, 73.f, 1700.f, 1025.f);
+		W->SetSkillshot(0.25f, 70.f, 1700.f, 1050.f);
 
 		E = GPluginSDK->CreateSpell2(kSlotE, kCircleCast, false, true, (kCollidesWithNothing));
 		E->SetSkillshot(0.25f, 200.f, 1500.f, 700.f);

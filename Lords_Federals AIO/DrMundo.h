@@ -41,7 +41,7 @@ public:
 			AutoUlt = fedMiscSettings->CheckBox("Automatically use R", true);
 			REnemies = fedMiscSettings->CheckBox("If enemies nearby", true);
 			HealthR = fedMiscSettings->AddInteger("Minimum HP% to use R", 1, 60, 20);
-			Predic = fedMiscSettings->CheckBox("HitChance - Off: Medium | On: Hight", true);
+			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
 		}
 
 		LastHitSettings = MainMenu->AddMenu("LastHit Settings");
@@ -96,7 +96,25 @@ public:
 		{
 			return false;
 		}
-	}	
+	}
+
+	static int PredicChange()
+	{
+		if (Predic->GetInteger() == 0)
+		{
+			return mypredic = kHitChanceMedium;
+		}
+		if (Predic->GetInteger() == 1)
+		{
+			return mypredic = kHitChanceHigh;
+		}
+		if (Predic->GetInteger() == 2)
+		{
+			return mypredic = kHitChanceVeryHigh;
+		}
+
+		return mypredic = kHitChanceLow;
+	}
 
 	static void Drawing()
 	{
@@ -124,7 +142,7 @@ public:
 
 					if (damage > hero->GetHealth()){
 
-						Q->CastOnTarget(hero, kHitChanceMedium);
+						Q->CastOnTarget(hero, PredicChange());
 					}
 				}
 			}
@@ -137,21 +155,14 @@ public:
 			if (qTarget != nullptr && qTarget->IsValidTarget()
 				&& GetDistance(GEntityList->Player(), qTarget) < Q->Range())
 			{
-				if (Predic->Enabled())
-				{
-					Q->CastOnTarget(qTarget, kHitChanceHigh);
-				}
-				else
-				{
-					Q->CastOnTarget(qTarget, kHitChanceMedium);
-				}
+				Q->CastOnTarget(qTarget, PredicChange());				
 			}
 		}
 		// BurningManager
 
-		if (AutoW->Enabled() && IsBurning() && W->IsReady() && GOrbwalking->GetOrbwalkingMode() == kModeNone)
+		if (AutoW->Enabled() && IsBurning() && W->IsReady()/* && GOrbwalking->GetOrbwalkingMode() == kModeNone*/)
 		{
-			if (!FoundEnemies(GEntityList->Player(), 550) && !FoundMinions(550) || GEntityList->Player()->HealthPercent() < 20)
+			if (!FoundEnemies(GEntityList->Player(), 600) && !FoundMinions(600) && !FoundMinionsNeutral(600) || GEntityList->Player()->HealthPercent() < 20)
 			{
 				W->CastOnPlayer();
 			}
@@ -182,14 +193,7 @@ public:
 			if (qTarget != nullptr && qTarget->IsValidTarget()
 				&& GetDistance(GEntityList->Player(), qTarget) < Q->Range())
 			{
-				if (Predic->Enabled())
-				{
-					Q->CastOnTarget(qTarget, kHitChanceHigh);
-				}
-				else
-				{
-					Q->CastOnTarget(qTarget, kHitChanceMedium);
-				}
+				Q->CastOnTarget(qTarget, PredicChange());				
 			}
 		}
 
@@ -211,14 +215,7 @@ public:
 			if (qTarget != nullptr && qTarget->IsValidTarget()
 				&& GetDistance(GEntityList->Player(), qTarget) < Q->Range())
 			{
-				if (Predic->Enabled())
-				{
-					Q->CastOnTarget(qTarget, kHitChanceHigh);
-				}
-				else
-				{
-					Q->CastOnTarget(qTarget, kHitChanceMedium);
-				}
+				Q->CastOnTarget(qTarget, PredicChange());				
 			}
 		}
 	}
@@ -252,6 +249,8 @@ public:
 
 	static void JungleClear()
 	{
+		if (FoundMinions(Q->Range()) || !FoundMinionsNeutral(Q->Range())) return;
+
 		if (JungleQ->Enabled() && Q->IsReady())
 		{
 			for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
@@ -266,7 +265,7 @@ public:
 			}
 		}
 
-		if (JungleW->Enabled() && W->IsReady() && !IsBurning() && FoundMinions(400) && GEntityList->Player()->HealthPercent() >= JungleHealthW->GetInteger())
+		if (JungleW->Enabled() && W->IsReady() && !IsBurning() && GEntityList->Player()->HealthPercent() >= JungleHealthW->GetInteger())
 		{
 			W->CastOnPlayer();
 		}
@@ -274,6 +273,8 @@ public:
 
 	static void LaneClear()
 	{
+		if (!FoundMinions(Q->Range()) || FoundMinionsNeutral(Q->Range())) return;
+
 		if (LaneClearQ->Enabled() && Q->IsReady() && GEntityList->Player()->HealthPercent() > HealthLaneClear->GetInteger())
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
@@ -288,13 +289,9 @@ public:
 					}
 				}
 			}
-		}
+		}		
 
-		Vec3 pos;
-		int hit;
-		GPrediction->FindBestCastPosition(600, W->Radius() + 50, false, true, false, pos, hit);
-
-		if (LaneClearW->Enabled() && W->IsReady() && !IsBurning() && hit >= MinionsW->GetInteger() && GEntityList->Player()->HealthPercent() >= HealthLaneClearW->GetInteger())
+		if (LaneClearW->Enabled() && W->IsReady() && !IsBurning() && CountMinions(GEntityList->Player()->GetPosition(), W->Range() + 100) >= MinionsW->GetInteger() && GEntityList->Player()->HealthPercent() >= HealthLaneClearW->GetInteger())
 		{
 			W->CastOnPlayer();
 		}
@@ -319,7 +316,7 @@ public:
 	{
 		if (QGapCloser->Enabled() && Q->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < Q->Range())
 			{
-				Q->CastOnTarget(args.Sender, kHitChanceMedium);
+				Q->CastOnTarget(args.Sender, PredicChange());
 			}		
 	}
 

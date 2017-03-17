@@ -106,7 +106,7 @@ inline double GetDamageTeste(IUnit* target, bool CalCulateAttackDamage = true,
 	{
 		double Damage = 0;
 		std::string ChampionName = GEntityList->Player()->ChampionName();
-		std::string TargetName = target->ChampionName();
+		std::string TargetName = target->ChampionName();		
 
 		if(GEntityList->Player()->GetSpellSlot("SummonerDot") != kSlotUnknown)
 		{
@@ -131,7 +131,7 @@ inline double GetDamageTeste(IUnit* target, bool CalCulateAttackDamage = true,
 			else if (ChampionName == "Vladimir")
 			{
 				Damage += Q->IsReady() ? GEntityList->Player()->HasBuff("vladimirqfrenzy") ? GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotQ) * 2 : GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotQ) : 0;
-			}
+			}			
 			else
 			{
 				Damage += Q->IsReady() ? GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotQ) : 0;
@@ -226,7 +226,7 @@ inline bool IsUnderTurret(IUnit* source)
 {
 	for (auto turret : GEntityList->GetAllTurrets(false, true))
 	{
-		if (source->IsValidTarget(turret, 950))
+		if (source->IsValidTarget(turret, 900) && turret->GetHealth() >= 1)
 			return true;
 	}
 
@@ -349,6 +349,20 @@ inline int CountMinions(Vec3 Location, int range)
 	 }
 	 return (Count);
  }
+
+inline int CountMinionsAlly(Vec3 Location, int range)
+{
+	int Count = 0;
+
+	for (auto Minions : GEntityList->GetAllMinions(true, false, false))
+	{
+		if ((Minions->GetPosition() - Location).Length() < range && Minions->IsValidTarget() && !Minions->IsDead())
+		{
+			Count++;
+		}
+	}
+	return (Count);
+}
 
 inline int CountMinionsWithBuff(Vec3 Location, int range, const char* buff)
 {
