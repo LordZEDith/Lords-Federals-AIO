@@ -29,6 +29,7 @@
 #include "Elise.h"
 #include "LeeSin.h"
 #include "Khazix.h"
+#include "Gragas.h"
 
 // Champions Toplane
 #include "DrMundo.h"

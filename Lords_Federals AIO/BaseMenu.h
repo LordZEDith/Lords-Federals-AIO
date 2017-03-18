@@ -369,6 +369,7 @@ Vec3 InsecST;
 Vec3 InsecED;
 Vec3 InsecPOS;
 Vec3 TestPOS;
+Vec3 BarrilQ;
 
 IUnit* Teamate01;
 IUnit* Teamate02;
@@ -407,6 +408,7 @@ bool EhWard;
 bool testflash;
 bool Jumping;
 bool EvolvedQ, EvolvedW, EvolvedE, EvolvedR;
+bool justQ;
 
 short keystate;
 short keystate2;

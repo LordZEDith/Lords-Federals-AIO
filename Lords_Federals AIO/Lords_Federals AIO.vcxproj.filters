@@ -204,6 +204,9 @@
     <ClInclude Include="Rumble.h">
       <Filter>Header Files\Champions\TopLane</Filter>
     </ClInclude>
+    <ClInclude Include="Gragas.h">
+      <Filter>Header Files\Champions\Jungle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">

@@ -575,7 +575,7 @@ public:
 					}
 					else
 					{
-						GPrediction->FindBestCastPosition(W->Range() - 50, W->Radius(), false, true, false, posE, hitE);
+						GPrediction->FindBestCastPosition(E->Range() - 50, E->Radius(), false, true, false, posE, hitE);
 					}
 
 					if (hitE > 1)

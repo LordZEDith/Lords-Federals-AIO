@@ -3265,6 +3265,117 @@ public:
 	}
 };
 
+class cGragas : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		Message().JungleLaneSeries();
+		Message().ChampionLoadMessage();
+		Gragas().InitializeMenu();
+		Gragas().LoadSpells();
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+		//Skins().Menu();
+		Toxic().MenuToxic();
+	}
+
+	virtual void OnRender() override
+	{
+		Gragas().Drawing();
+		AutoSmite().DrawingsSmite();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		{
+			return;
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		{
+			Gragas().Combo();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		{
+			Gragas().LastHit();
+			Gragas().Harass();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		{
+			Gragas().JungleClear();
+			Gragas().LaneClear();
+		}
+
+		Gragas().Automatic();
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+		Gragas().OnCreateObject(Source);
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+		Gragas().OnDeleteObject(Source);
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+		Gragas().OnProcessSpell(Args);
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+
+	}
+
+	void OnGameEnd() override
+	{
+		//Toxic().OnGameEnd();
+	}
+};
+
 IChampion* pChampion = nullptr;
 
 PLUGIN_EVENT(void) OnRender()
@@ -3390,6 +3501,8 @@ void LoadChampion()
 		pChampion = new cLeeSin;
 	else if (szChampion == "Khazix")
 		pChampion = new cKhazix;
+	else if (szChampion == "Gragas")
+		pChampion = new cGragas;
 	// Toplane
 	else if (szChampion == "DrMundo")
 		pChampion = new cDrMundo;
