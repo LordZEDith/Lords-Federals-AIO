@@ -1932,8 +1932,8 @@ public:
 			{
 				Vec2 mypos;
 				Vec2 axepos;
-				auto position = GetInsecPos(GetTargetDraw);
-				auto direction = position.Extend(GetTargetDraw->GetPosition(), +GetDistanceVectors(GetTargetDraw->GetPosition(), position) - 690);
+				auto position = GetInsecPos(GetTargetDraw);				
+				auto direction = InsecST.Extend(GetTargetDraw->GetPosition(), +GetDistanceVectors(GetTargetDraw->GetPosition(), InsecST) - 690);
 				GGame->Projection(direction, &mypos);
 				GGame->Projection(GetTargetDraw->GetPosition(), &axepos);
 				GRender->DrawLine(mypos, axepos, Vec4(0, 255, 0, 255));
