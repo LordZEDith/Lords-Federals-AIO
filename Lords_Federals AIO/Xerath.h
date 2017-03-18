@@ -13,18 +13,18 @@ public:
 		RSettings = MainMenu->AddMenu("R Settings");
 		{
 			ComboR = RSettings->CheckBox("Use Ultimate", true);
-			autoR = RSettings->CheckBox("Auto R if Kill 2 charge", true);			
+			autoR = RSettings->CheckBox("Auto R if Kill 2 charge", true);
 			RBlock = RSettings->CheckBox("Block Movement and AA", true);
 			Rdelay = RSettings->AddInteger("R Delays ms", 0, 2500, 1000);
 			SemiManualKey = RSettings->AddKey("Semi-manual R key OneTap", 71);
 			RMax = RSettings->AddInteger("R only Mouse Radius", 0, 1500, 700);
 		}
-		
+
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{
 			ComboQ = ComboSettings->CheckBox("Use Q", true);
 			ComboW = ComboSettings->CheckBox("Use W", true);
-			ComboE = ComboSettings->CheckBox("Use E", true);			
+			ComboE = ComboSettings->CheckBox("Use E", true);
 		}
 
 		HarassSettings = MainMenu->AddMenu("Harass Settings");
@@ -40,7 +40,7 @@ public:
 			Killsteal = KillstealSettings->CheckBox("Activate KillSteal", true);
 			KillstealQ = KillstealSettings->CheckBox("Use Q to KillSteal", false);
 			KillstealW = KillstealSettings->CheckBox("Use W to KillSteal", false);
-			KillstealE = KillstealSettings->CheckBox("Use E to KillSteal", false);			
+			KillstealE = KillstealSettings->CheckBox("Use E to KillSteal", false);
 		}
 
 		LaneClearSettings = MainMenu->AddMenu("LaneClear Settings");
@@ -57,7 +57,7 @@ public:
 			JungleQ = JungleClearSettings->CheckBox("Use Q to jungle", true);
 			JungleW = JungleClearSettings->CheckBox("Use W to jungle", false);
 			JungleE = JungleClearSettings->CheckBox("Use E to jungle", true);
-			JungleMana = JungleClearSettings->AddInteger("Minimum MP% to jungle", 1, 100, 20);			
+			JungleMana = JungleClearSettings->AddInteger("Minimum MP% to jungle", 1, 100, 20);
 		}
 
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
@@ -78,24 +78,19 @@ public:
 			DrawEA = DrawingSettings->CheckBox("Draw R target radius", true);
 			DrawR = DrawingSettings->CheckBox("Draw R", false);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
-		}		
+		}
 	}
 
 	void static InitializeSpells()
 	{
 		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, kCollidesWithNothing);
-		Q->SetSkillshot(0.6f, 100.f, 1000.f, 1600.f);
-		Q->SetCharged(750.f, 1550.f, 1.5f);
+		Q->SetSkillshot(0.6f, 145.f, 1000.f, 1450.f);
+		Q->SetCharged(750.f, 1450.f, 1.5f);
 		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, true, kCollidesWithYasuoWall);
 		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
 		R = GPluginSDK->CreateSpell2(kSlotR, kCircleCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 
-		Q->SetOverrideRange(1550);
-		Q->SetOverrideDelay(0.6f);
-		Q->SetOverrideRadius(100);
-		Q->SetOverrideSpeed(1000);
-
-		W->SetOverrideRange(1050);
+		W->SetOverrideRange(1100);
 		W->SetOverrideDelay(0.7f);
 		W->SetOverrideRadius(200);
 		W->SetOverrideSpeed(1000);
@@ -103,25 +98,25 @@ public:
 		E->SetOverrideRange(1050);
 		E->SetOverrideDelay(0.2f);
 		E->SetOverrideRadius(60);
-		E->SetOverrideSpeed(1400);
+		E->SetOverrideSpeed(2300);
 
-		R->SetOverrideRange(5600);
-		R->SetOverrideDelay(0.7f);		
-		R->SetOverrideRadius(120);
+		R->SetOverrideRange(6160);
+		R->SetOverrideDelay(0.7f);
+		R->SetOverrideRadius(200);
 		R->SetOverrideSpeed(1000);
-	}	
+	}
 
 	static float RealRange()
-	{		
-		return 2000 + GEntityList->Player()->GetSpellLevel(kSlotR) * 1200;		
-	}	
-	
+	{
+		return 2000 + GEntityList->Player()->GetSpellLevel(kSlotR) * 1200;
+	}
+
 	static bool IsCastingR()
 	{
 		if (GEntityList->Player()->HasBuff("XerathLocusOfPower2") || LastSpellName == "XerathLocusOfPower2" && GGame->TickCount() - LastSpellTime < 500)
 		{
-			return true;			
-		}	
+			return true;
+		}
 
 		return false;
 	}
@@ -158,20 +153,20 @@ public:
 				{
 					if (GetDistanceVectors(GGame->CursorPosition(), target->GetPosition()) < RMax->GetInteger())
 					{
-						R->CastOnTarget(target, PredicChange());						
+						R->CastOnTarget(target, PredicChange());
 					}
 
 					return;
-				}				
+				}
 
 				if (Rdelay->GetInteger() == 0)
 				{
-					R->CastOnTarget(target, PredicChange());					
+					R->CastOnTarget(target, PredicChange());
 				}
 
 				else if (GGame->Time() - RCastSpell > 0.001 * Rdelay->GetInteger())
 				{
-					R->CastOnTarget(target, PredicChange());					
+					R->CastOnTarget(target, PredicChange());
 				}
 
 				return;
@@ -180,24 +175,24 @@ public:
 
 			if (IsKeyDown(SemiManualKey) && !IsCastingR())
 			{
-				R->CastOnPlayer();				
+				R->CastOnPlayer();
 			}
 
 			if (!target->IsValidTarget(GEntityList->Player(), W->Range()) && autoR->Enabled() && !IsCastingR() && CountAlly(target->GetPosition(), 500) == 0 && CountEnemy(GEntityList->Player()->GetPosition(), 1100) == 0)
 			{
-				if (GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) + GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotR)  > target->GetHealth() && ValidUlt(target))
+				if (GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) + GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotR) > target->GetHealth() && ValidUlt(target))
 				{
-					R->CastOnPlayer();					
+					R->CastOnPlayer();
 				}
-			}			
+			}
 		}
 
 		else if (RWall->Enabled() && GGame->Time() - RCastSpell > 0.001 * Rdelay->GetInteger() && IsCastingR())
 		{
-			R->CastOnPosition(Rposition);			
+			R->CastOnPosition(Rposition);
 		}
 	}
-	
+
 	static void Ultimate()
 	{
 		if (IsCastingR() && RBlock->Enabled())
@@ -209,8 +204,8 @@ public:
 		{
 			GOrbwalking->SetMovementAllowed(true);
 			GOrbwalking->SetAttacksAllowed(true);
-		}		
-		
+		}
+
 		if (ComboR->Enabled())
 		{
 			if (R->IsReady())
@@ -224,7 +219,7 @@ public:
 	static void CastQ(IUnit* target)
 	{
 		if (Q->IsCharging())
-		{			
+		{
 			Q->FindTarget(SpellDamage);
 			{
 				if (GetEnemiesInRange(Q->Range()) >= 1)
@@ -238,7 +233,7 @@ public:
 		{
 			if (target->IsValidTarget(GEntityList->Player(), Q->Range() - 50))
 			{
-				Q->StartCharging();				
+				Q->StartCharging();
 			}
 		}
 		else
@@ -246,22 +241,9 @@ public:
 			return;
 		}
 	}	
-	
-	static void CastQPos(Vec3 target)
-	{
-		if (Q->IsCharging() || (Q->GetChargePercent() == 100 && !Q->IsCharging()))
-		{			
-			Q->CastOnPosition(target);			
-		}
-
-		else if (Q->IsReady())
-		{
-			Q->StartCharging();			
-		}
-	}
 
 	static void Automatic()
-	{
+	{		
 		for (auto target : GEntityList->GetAllHeros(false, true))
 		{
 			if (!CheckTarget(target)) continue;
@@ -285,20 +267,20 @@ public:
 					E->CastOnTarget(target, kHitChanceHigh);
 					return;
 				}
-			}			
+			}
 
 			if (AutoHarass->Enabled() && Q->IsReady() && HarassMana->GetInteger() < GEntityList->Player()->ManaPercent() && CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), Q->Range()))
 			{
 				CastQ(target);
 			}
-			
+
 			if (CCedQ->Enabled() && target->IsHero() && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50) && Q->IsReady() && !CanMove(target) && !target->IsDead() && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > Q->ManaCost())
 			{
 				CastQ(target);
 			}
 		}
 	}
-	
+
 	static void Combo()
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, 1600);
@@ -310,7 +292,7 @@ public:
 			if (CheckShielded(target) && CheckShield->Enabled())
 			{
 				E->CastOnTarget(target, PredicChange());
-				
+
 			}
 			else
 			{
@@ -320,13 +302,13 @@ public:
 
 		if (ComboW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && GEntityList->Player()->GetMana() > Q->ManaCost() + W->ManaCost() && !Q->IsCharging())
 		{
-			W->CastOnTarget(target, PredicChange());			
-		}			
+			W->CastOnTarget(target, PredicChange());
+		}
 
 		if (ComboQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), 1550) && GEntityList->Player()->GetMana() > Q->ManaCost() + E->ManaCost())
 		{
 			CastQ(target);
-		}		
+		}
 	}
 
 	static void Harass()
@@ -344,7 +326,7 @@ public:
 
 		if (HarassW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && !Q->IsCharging())
 		{
-			W->CastOnTarget(target, PredicChange());			
+			W->CastOnTarget(target, PredicChange());
 		}
 	}
 
@@ -375,22 +357,22 @@ public:
 								strstr(minion->GetObjectName(), "Razorbeak3") || strstr(minion->GetObjectName(), "SRU_Krug11") ||
 								strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "Gromp") ||
 								strstr(minion->GetObjectName(), "SRU_Krug5") || strstr(minion->GetObjectName(), "Razorbeak9"))
-							{								
-									E->CastOnUnit(minion);								
+							{
+								E->CastOnUnit(minion);
 							}
 						}
 					}
 				}
 
-				else if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
+				else if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() &&
+					!FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
 				{
 					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
 					{
 						Vec3 posQ;
 						int hitQ;
 
-						if (strstr(minion->GetObjectName(), "Dragon") || strstr(minion->GetObjectName(), "Baron") ||
-							strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "RiftHerald"))
+						if (strstr(minion->GetObjectName(), "Crab"))
 						{
 							GPrediction->FindBestCastPosition(Q->Range() - 500, Q->Radius(), true, true, false, posQ, hitQ);
 						}
@@ -401,26 +383,50 @@ public:
 
 						if (hitQ > 1)
 						{
-							CastQPos(posQ);
+							if (!Q->IsCharging())
+							{
+								Q->StartCharging();
+							}
+
+							if (Q->IsCharging() && Q->GetChargePercent() >= (GetDistanceVectors(GEntityList->Player()->GetPosition(), posQ) / 1450.f) * 100.f)
+							{
+								Q->CastOnPosition(posQ);
+							}
 						}
 						else
 						{
-							CastQ(minion);
+							if (!Q->IsCharging())
+							{
+								Q->StartCharging();
+							}
+
+							if (Q->IsCharging() && Q->GetChargePercent() >= (GetDistanceVectors(GEntityList->Player()->GetPosition(), minion->GetPosition()) / 1450.f) * 100.f)
+							{
+								Q->CastOnUnit(minion);
+							}
 						}
 					}
 				}
 
-				if (JungleW->Enabled() && W->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(W->Range()) && !Q->IsCharging())
+				if (JungleW->Enabled() && W->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() &&
+					!FoundMinions(E->Range()) && FoundMinionsNeutral(W->Range()) && !Q->IsCharging())
 				{
 					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, W->Range()))
 					{
 						Vec3 posW;
 						int hitW;
-						
-						GPrediction->FindBestCastPosition(Q->Range() - 50, Q->Radius(), true, true, false, posW, hitW);						
+
+						if (strstr(minion->GetObjectName(), "Crab"))
+						{
+							GPrediction->FindBestCastPosition(W->Range() - 500, W->Radius(), false, true, false, posW, hitW);
+						}
+						else
+						{
+							GPrediction->FindBestCastPosition(W->Range(), W->Radius(), false, true, false, posW, hitW);
+						}
 
 						if (hitW > 1)
-						{							
+						{
 							W->CastOnPosition(posW);
 						}
 						else
@@ -437,38 +443,60 @@ public:
 	{
 		if (GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger() && !FoundMinionsNeutral(600) && FoundMinions(E->Range()))
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, true, false))
+			if (LaneClearW->Enabled() && W->IsReady() && !Q->IsCharging() && CountMinions(GEntityList->Player()->GetPosition(), W->Range()) >= MinionsW->GetInteger())
 			{
-				if (LaneClearW->Enabled() && W->IsReady() && minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, W->Range()) && !Q->IsCharging())
-				{
-					Vec3 posW;
-					int hitW;
-					GPrediction->FindBestCastPosition(W->Range(), W->Radius(), false, true, false, posW, hitW);
+				Vec3 posW;
+				int hitW;
+				GPrediction->FindBestCastPosition(W->Range(), W->Radius(), false, true, true, posW, hitW);
 
-					if (hitW >= MinionsW->GetInteger() && W->CastOnPosition(posW))
-					{
-						return;
-					}					
+				if (hitW >= 3 && MinionsW->GetInteger() >= 3)
+				{
+					W->CastOnPosition(posW);
 				}
-
-				if (LaneClearQ->Enabled() && Q->IsReady() && minion != nullptr && !minion->IsDead() && !FoundMinionsNeutral(600) && minion->IsValidTarget(GEntityList->Player(), Q->Range()))
+				else if (hitW >= 1 && MinionsW->GetInteger() < 3)
 				{
-					Vec3 posQ;
-					int hitQ;
-					GPrediction->FindBestCastPosition(1550, Q->Radius(), false, true, false, posQ, hitQ);
-					
-					if (hitQ >= MinionsQ->GetInteger())
+					W->CastOnPosition(posW);
+				}
+				else
+				{
+					return;
+				}
+			}
+
+			if (LaneClearQ->Enabled() && Q->IsReady() && CountMinions(GEntityList->Player()->GetPosition(), Q->Range()) >= MinionsQ->GetInteger() && !FoundMinionsNeutral(600))
+			{
+				Vec3 posQ;
+				int hitQ;
+
+				GPrediction->FindBestCastPosition(Q->Range(), Q->Radius(), false, true, true, posQ, hitQ);
+
+				if (hitQ >= 3 && MinionsQ->GetInteger() >= 3)
+				{
+					if (!Q->IsCharging())
 					{
-						CastQPos(posQ);						
+						Q->StartCharging();						
 					}
-					else if (Q->IsCharging())
+
+					if (Q->IsCharging() && Q->GetChargePercent() >= 90)
+					{						
+							Q->CastOnPosition(posQ);							
+					}
+				}
+				else if (hitQ >= 1 && MinionsQ->GetInteger() < 3)
+				{
+					if (!Q->IsCharging())
 					{
-						Q->CastOnUnit(minion);
+						Q->StartCharging();						
 					}
-					else
+
+					if (Q->IsCharging() && Q->GetChargePercent() >= 90)
 					{
-						return;
+						Q->CastOnPosition(posQ);						
 					}
+				}
+				else
+				{
+					return;
 				}
 			}
 		}
