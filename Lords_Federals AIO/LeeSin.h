@@ -60,6 +60,7 @@ public:
 			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
 			KillstealQ = fedMiscSettings->CheckBox("Killsteal with Q", true);
 			WardJumpKey = fedMiscSettings->AddKey("Ward Jump", 90);
+			WardMax = fedMiscSettings->CheckBox("Ward Max Range", true);
 			jumpMinion = fedMiscSettings->CheckBox("Jump in Minion", true);
 			jumpAliado = fedMiscSettings->CheckBox("Jump in Allys", true);
 			EscapeKey = fedMiscSettings->AddKey("Escape Jungle (Near Mouse)", 65);
@@ -1209,8 +1210,8 @@ public:
 	static void WardJumpMouse()
 	{
 		if (IsKeyDown(WardJumpKey))
-		{
-			WardJump(GGame->CursorPosition(), true, false);
+		{			
+			WardJump(GGame->CursorPosition(), WardMax->Enabled(), false);
 		}
 	}
 
@@ -1927,11 +1928,12 @@ public:
 				}
 			}
 
-			if (DrawPosInsec->Enabled() && GetTargetDraw != nullptr && InsecST.x > 0)
+			if (DrawPosInsec->Enabled() && GetTargetDraw != nullptr)
 			{
 				Vec2 mypos;
 				Vec2 axepos;
-				auto direction = InsecST.Extend(GetTargetDraw->GetPosition(), +GetDistanceVectors(GetTargetDraw->GetPosition(), InsecST) - 690);
+				auto position = GetInsecPos(GetTargetDraw);
+				auto direction = position.Extend(GetTargetDraw->GetPosition(), +GetDistanceVectors(GetTargetDraw->GetPosition(), position) - 690);
 				GGame->Projection(direction, &mypos);
 				GGame->Projection(GetTargetDraw->GetPosition(), &axepos);
 				GRender->DrawLine(mypos, axepos, Vec4(0, 255, 0, 255));

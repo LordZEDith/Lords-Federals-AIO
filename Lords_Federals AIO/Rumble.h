@@ -71,6 +71,8 @@ public:
 			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
 			AutoShielded = fedMiscSettings->CheckBox("Auto Shield Near Enemys", true);
 			minAutoShield = fedMiscSettings->AddInteger("Auto Shield HP%", 1, 100, 40);
+			EscapeKey = fedMiscSettings->AddKey("Panic Escape", 65);
+			RinRisk = fedMiscSettings->AddInteger("R near Foot Hp%", 0, 50, 15);
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
@@ -202,10 +204,16 @@ public:
 		KeyPressToggle();
 		KeyPressHarass();
 		AutoShield();
+		Escape();
 
 		if (autoR->Enabled() && R->IsReady())
 		{
 			TesteR();
+		}
+
+		if (RinRisk->GetInteger() > 0 && GEntityList->Player()->HealthPercent() <= RinRisk->GetInteger())
+		{
+			PanicR();
 		}
 
 		if (StackMune->Enabled())
@@ -295,7 +303,27 @@ public:
 				}
 			}
 		}
-	}	
+	}
+
+	static void PanicR()
+	{
+		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, 1000);
+		if (!CheckTarget(target)) return;
+
+		R2->SetFrom(GEntityList->Player()->ServerPosition());
+
+		AdvPredictionOutput out;
+		R2->RunPrediction(target, true, kCollidesWithYasuoWall, &out);
+
+		if (GetDistance(GEntityList->Player(), target) < 1000)
+		{
+			if (out.HitChance >= kHitChanceHigh)
+			{
+				R2->CastFrom(GEntityList->Player()->ServerPosition(), out.TargetPosition);
+				R2->SetFrom(Vec3(0, 0, 0));
+			}
+		}
+	}
 
 	static void CastR()
 	{
@@ -465,6 +493,30 @@ public:
 		if (LaneClearQ->Enabled() && Q->IsReady() && CountMinions(GEntityList->Player()->GetPosition(), Q->Range() + 50) >= MinionsW->GetInteger())
 		{			
 			Q->CastOnPosition(GGame->CursorPosition());
+		}
+	}
+
+	static void Escape()
+	{
+		if (IsKeyDown(EscapeKey))
+		{
+			GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
+
+			if (W->IsReady())
+			{
+				W->CastOnPlayer();
+			}
+
+			if (E->IsReady())
+			{
+				for (auto hero : GEntityList->GetAllHeros(false, true))
+				{
+					if (CheckTarget(hero) && hero->IsValidTarget(GEntityList->Player(), E->Range() - 50))
+					{
+						E->CastOnTarget(hero, PredicChange());
+					}
+				}
+			}
 		}
 	}
 

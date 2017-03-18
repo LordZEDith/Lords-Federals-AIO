@@ -447,6 +447,7 @@ IMenuOption* InstaFlashKey;
 IMenuOption* InsecKey;
 IMenuOption* EscapeKey;
 IMenuOption* WardJumpKey;
+IMenuOption* WardMax;
 IMenuOption* JumpMinion;
 IMenuOption* JumpAllys;
 IMenuOption* kickKill;
