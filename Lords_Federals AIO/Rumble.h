@@ -25,7 +25,8 @@ public:
 			ComboW = ComboSettings->CheckBox("Use W", true);
 			ComboE = ComboSettings->CheckBox("Use E", true);
 			ComboR = ComboSettings->CheckBox("Use R", true);			
-			REnemies = ComboSettings->AddInteger("Enemies in range for R", 0, 5, 2);			
+			REnemies = ComboSettings->AddInteger("Enemies in range for R", 0, 5, 2);
+			autoR = ComboSettings->CheckBox("Auto R ?", false);
 		}
 
 		HarassSettings = MainMenu->AddMenu("Harass Settings");
@@ -41,7 +42,7 @@ public:
 			Killsteal = KillstealSettings->CheckBox("Activate KillSteal", true);
 			KillstealQ = KillstealSettings->CheckBox("Use Q to KillSteal", true);			
 			KillstealE = KillstealSettings->CheckBox("Use E to KillSteal", false);
-			//KillstealR = KillstealSettings->CheckBox("Use R to KillSteal", false);
+			KillstealR = KillstealSettings->CheckBox("Use R to KillSteal", false);
 		}
 
 		LastHitSettings = MainMenu->AddMenu("LastHit Settings");
@@ -201,7 +202,11 @@ public:
 		KeyPressToggle();
 		KeyPressHarass();
 		AutoShield();
-		TesteR();
+
+		if (autoR->Enabled() && R->IsReady())
+		{
+			TesteR();
+		}
 
 		if (StackMune->Enabled())
 		{
@@ -229,7 +234,13 @@ public:
 				GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) > target->GetHealth())
 			{
 				E->CastOnTarget(target, kHitChanceHigh);
-			}			
+			}
+
+			if (target->IsValidTarget(GEntityList->Player(), R->Range()) && KillstealR->Enabled() && R->IsReady() &&
+				GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) > target->GetHealth())
+			{
+				CastR();
+			}
 		}
 	}
 
@@ -259,10 +270,10 @@ public:
 				auto pPos = GEntityList->Player()->GetPosition();
 				auto endPos = pPos.Extend(startPos, GetDistance(enemys, GEntityList->Player()) + 1000);				
 
-				R2->SetFrom(startPos);
+				R->SetFrom(startPos);
 
 				AdvPredictionOutput out;
-				R2->RunPrediction(enemys, true, kCollidesWithYasuoWall, &out);
+				R->RunPrediction(enemys, true, kCollidesWithYasuoWall, &out);
 
 				auto cRect = Geometry::Rectangle(startPos.To2D(), endPos.To2D(), 150);				
 
@@ -276,15 +287,15 @@ public:
 						{
 							if (out.HitChance >= kHitChanceHigh)
 							{
-								R2->CastFrom(startPos, endPos);
-								R2->SetFrom(Vec3(0, 0, 0));
+								R->CastFrom(startPos, endPos);
+								R->SetFrom(Vec3(0, 0, 0));
 							}
 						}
 					}
 				}
 			}
 		}
-	}
+	}	
 
 	static void CastR()
 	{
@@ -327,37 +338,27 @@ public:
 	static void Combo()
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, E->Range());
-		//auto rtarget = GTargetSelector->FindTarget(QuickestKill, SpellDamage, R->Range());
+		auto rtarget = GTargetSelector->FindTarget(QuickestKill, SpellDamage, R->Range());		
 
-		if (!CheckTarget(target)) return;
-
-		if (ComboQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()))
+		if (CheckTarget(target) && ComboQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()))
 		{
 			Q->CastOnUnit(target);
 		}
 
-		if (ComboE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()))
+		if (CheckTarget(target) && ComboE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()))
 		{
 			E->CastOnTarget(target, PredicChange());
 		}
 
-		if (ComboW->Enabled() && W->IsReady())
+		if (CheckTarget(target) && ComboW->Enabled() && W->IsReady())
 		{
 			W->CastOnPlayer();
 		}
 
-		if (ComboR->Enabled() && R->IsReady())
+		if (CheckTarget(rtarget) && ComboR->Enabled() && R->IsReady())
 		{
 			TesteR();
-		}
-
-		if (ComboR->Enabled() && R->IsReady())
-		{
-			if (target->GetHealth() < GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false))
-			{
-				CastR();
-			}
-		}
+		}		
 	}
 
 	static void Harass()
