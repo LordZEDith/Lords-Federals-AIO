@@ -86,6 +86,9 @@ public:
 			Flashdistance = InsecSettings->CheckBox("Ward + Flash (Selected Target)", false);
 			InsecKey = InsecSettings->AddKey("Go Insec", 71);
 			InstaFlashKey = InsecSettings->AddKey("Flash + R to Mouse", 75);
+			clickInsec = InsecSettings->CheckBox("Insec to ClickPos?", true);
+			ClickExpire = InsecSettings->AddInteger("Expire Pos Click (ms)", 5000, 30000, 15000);
+			ClickKeyPos = InsecSettings->AddKey("Key do Add Pos", 4);
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
@@ -420,6 +423,8 @@ public:
 
 	static void Automatic()
 	{	
+		SaveClick();
+		
 		if (IsKeyDown(InstaFlashKey))
 		{
 			GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
@@ -460,6 +465,11 @@ public:
 		{
 			InsecType = "VamosInsec";
 			InsecText = "";
+		}
+
+		if (LastClick < GGame->TickCount())
+		{
+			ClickPOS = Vec3(0, 0, 0);
 		}
 		
 		//GUtility->LogConsole("Tick: %i - Insec Etapas: %s -- Texto: %s (Wards: %i) - Distancia: %f max: %f", GGame->TickCount(), InsecType.data(), InsecText.data(), checkWardsTemp(), GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()), maxDistance());
@@ -1261,7 +1271,7 @@ public:
 			AllySoloPos = sAliado.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GetTarget->GetPosition()); });
 		}
 
-		if (TorrePos == nullptr && AliadoPos == nullptr && AllySoloPos == nullptr)
+		if (TorrePos == nullptr && AliadoPos == nullptr && AllySoloPos == nullptr && ClickPOS == Vec3(0,0,0))
 		{
 			/*if (MenuAtivadoParaCursor)
 			{
@@ -1272,7 +1282,11 @@ public:
 		}
 		else
 		{
-			if (AliadoPos != nullptr)
+			if (clickInsec->Enabled() && ClickPOS != Vec3(0, 0, 0))
+			{
+				InsecST = ClickPOS;
+			}
+			else if (AliadoPos != nullptr)
 			{
 				InsecST = AliadoPos->GetPosition();
 			}
@@ -1939,6 +1953,11 @@ public:
 				GGame->Projection(GetTargetDraw->GetPosition(), &axepos);
 				GRender->DrawLine(mypos, axepos, Vec4(0, 255, 0, 255));
 				GRender->DrawOutlinedCircle(direction, Vec4(0, 255, 0, 255), 100);
+
+				if (ClickPOS != Vec3(0, 0, 0) && clickInsec->Enabled())
+				{
+					GRender->DrawOutlinedCircle(ClickPOS, Vec4(150, 255, 0, 255), 50);
+				}
 			}
 		}
 
@@ -1961,5 +1980,32 @@ public:
 
 		//GRender->DrawOutlinedCircle(TestPOS, Vec4(102, 255, 102, 255), 100);
 		
-	}	
+	}
+
+	static void SaveClick()
+	{
+		keystate2 = GetAsyncKeyState(ClickKeyPos->GetInteger());
+
+		if (keystate2 < 0)
+		{
+			if (harassKeyWasDown == false)
+			{				
+				if (ClickPOS == Vec3(0, 0, 0))
+				{
+					ClickPOS = GGame->CursorPosition();
+					LastClick = GGame->TickCount() + ClickExpire->GetInteger();
+				}
+				else
+				{
+					ClickPOS = Vec3(0, 0, 0);
+				}
+
+				harassKeyWasDown = true;
+			}
+		}
+		else
+		{
+			harassKeyWasDown = false;
+		}
+	}
 };

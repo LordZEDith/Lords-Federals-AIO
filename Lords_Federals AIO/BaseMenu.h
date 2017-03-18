@@ -370,6 +370,7 @@ Vec3 InsecED;
 Vec3 InsecPOS;
 Vec3 TestPOS;
 Vec3 BarrilQ;
+Vec3 ClickPOS;
 
 IUnit* Teamate01;
 IUnit* Teamate02;
@@ -401,6 +402,7 @@ int LastQTick;
 int LastQ2Tick;
 int LastRTick;
 int LastETick;
+int LastClick;
 int LastWardTime;
 int LastFlashTime;
 int LastSpellTick;
@@ -466,6 +468,9 @@ IMenuOption* InsecOrbwalk;
 IMenuOption* Flashdistance;
 IMenuOption* UseWardgap;
 IMenuOption* UseFlashgap;
+
+IMenuOption* ClickKeyPos;
+IMenuOption* ClickExpire;
 
 IMenuOption* KickAndFlash;
 std::string InsecText = "";
