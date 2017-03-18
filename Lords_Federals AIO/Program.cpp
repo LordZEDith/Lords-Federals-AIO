@@ -3299,8 +3299,7 @@ public:
 			Gragas().Combo();
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
-		{
-			Gragas().LastHit();
+		{			
 			Gragas().Harass();
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
