@@ -1906,6 +1906,7 @@ public:
 			}
 
 			if (GetTargetDraw == nullptr) return;
+			if (!GetTargetDraw->IsHero() || !GetTargetDraw->IsEnemy(GEntityList->Player())) return;
 
 			if (DrawSelect->Enabled())
 			{
