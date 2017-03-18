@@ -3557,7 +3557,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	pChampion->OnLoad();	
 	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Welcome to Lords & Federals AIO");
 	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "News: Me and Federal decided to merge to bring you the best Scripts");
-	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "New Champions Supported: LeeSin, Khazix and Rumble");
+	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "New Champions Supported: LeeSin, Khazix, Rumble and Gragas Beta");
 
 	//GUtility->CreateDebugConsole();	
 }
