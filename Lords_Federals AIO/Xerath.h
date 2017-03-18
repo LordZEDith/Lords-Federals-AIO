@@ -95,12 +95,12 @@ public:
 		Q->SetOverrideRadius(100);
 		Q->SetOverrideSpeed(1000);
 
-		W->SetOverrideRange(1000);
+		W->SetOverrideRange(1050);
 		W->SetOverrideDelay(0.7f);
 		W->SetOverrideRadius(200);
 		W->SetOverrideSpeed(1000);
 
-		E->SetOverrideRange(1150);
+		E->SetOverrideRange(1050);
 		E->SetOverrideDelay(0.2f);
 		E->SetOverrideRadius(60);
 		E->SetOverrideSpeed(1400);
@@ -158,18 +158,7 @@ public:
 				{
 					if (GetDistanceVectors(GGame->CursorPosition(), target->GetPosition()) < RMax->GetInteger())
 					{
-						if (Predic->GetInteger() == 2)
-						{
-							R->CastOnTarget(target, kHitChanceHigh);
-						}
-						else if (Predic->GetInteger() == 1)
-						{
-							R->CastOnTarget(target, kHitChanceMedium);
-						}
-						else
-						{
-							R->CastOnTarget(target, kHitChanceHigh);
-						}
+						R->CastOnTarget(target, PredicChange());						
 					}
 
 					return;
@@ -177,34 +166,12 @@ public:
 
 				if (Rdelay->GetInteger() == 0)
 				{
-					if (Predic->GetInteger() == 2)
-					{
-						R->CastOnTarget(target, kHitChanceHigh);
-					}
-					else if (Predic->GetInteger() == 1)
-					{
-						R->CastOnTarget(target, kHitChanceMedium);
-					}
-					else
-					{
-						R->CastOnTarget(target, kHitChanceHigh);
-					}
+					R->CastOnTarget(target, PredicChange());					
 				}
 
 				else if (GGame->Time() - RCastSpell > 0.001 * Rdelay->GetInteger())
 				{
-					if (Predic->GetInteger() == 2)
-					{
-						R->CastOnTarget(target, kHitChanceHigh);
-					}
-					else if (Predic->GetInteger() == 1)
-					{
-						R->CastOnTarget(target, kHitChanceMedium);
-					}
-					else
-					{
-						R->CastOnTarget(target, kHitChanceHigh);
-					}
+					R->CastOnTarget(target, PredicChange());					
 				}
 
 				return;
@@ -342,50 +309,18 @@ public:
 		{
 			if (CheckShielded(target) && CheckShield->Enabled())
 			{
-				if (Predic->GetInteger() == 2)
-				{
-					E->CastOnTarget(target, kHitChanceHigh);
-				}
-				else if (Predic->GetInteger() == 1)
-				{
-					E->CastOnTarget(target, kHitChanceMedium);
-				}
-				else
-				{
-					E->CastOnTarget(target, kHitChanceHigh);
-				}
+				E->CastOnTarget(target, PredicChange());
+				
 			}
 			else
 			{
-				if (Predic->GetInteger() == 2)
-				{
-					E->CastOnTarget(target, kHitChanceHigh);
-				}
-				else if (Predic->GetInteger() == 1)
-				{
-					E->CastOnTarget(target, kHitChanceMedium);
-				}
-				else
-				{
-					E->CastOnTarget(target, kHitChanceHigh);
-				}
+				E->CastOnTarget(target, PredicChange());
 			}
 		}
 
 		if (ComboW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && GEntityList->Player()->GetMana() > Q->ManaCost() + W->ManaCost() && !Q->IsCharging())
 		{
-			if (Predic->GetInteger() == 2)
-			{
-				W->CastOnTarget(target, kHitChanceHigh);
-			}
-			else if (Predic->GetInteger() == 1)
-			{
-				W->CastOnTarget(target, kHitChanceMedium);
-			}
-			else
-			{
-				W->CastOnTarget(target, kHitChanceHigh);
-			}
+			W->CastOnTarget(target, PredicChange());			
 		}			
 
 		if (ComboQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), 1550) && GEntityList->Player()->GetMana() > Q->ManaCost() + E->ManaCost())
@@ -409,18 +344,7 @@ public:
 
 		if (HarassW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && !Q->IsCharging())
 		{
-			if (Predic->GetInteger() == 2)
-			{
-				W->CastOnTarget(target, kHitChanceHigh);
-			}
-			else if (Predic->GetInteger() == 1)
-			{
-				W->CastOnTarget(target, kHitChanceMedium);
-			}
-			else
-			{
-				W->CastOnTarget(target, kHitChanceHigh);
-			}
+			W->CastOnTarget(target, PredicChange());			
 		}
 	}
 
@@ -579,7 +503,7 @@ public:
 		if (EGapCloser->Enabled() && E->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < E->Range() && !Q->IsCharging())
 
 		{
-			E->CastOnTarget(args.Sender, kHitChanceMedium);
+			E->CastOnTarget(args.Sender, PredicChange());
 		}
 	}
 
@@ -587,7 +511,7 @@ public:
 	{
 		if (EInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < E->Range() && !Q->IsCharging())
 		{
-			E->CastOnTarget(Args.Target, kHitChanceHigh);
+			E->CastOnTarget(Args.Target, PredicChange());
 		}
 	}
 
