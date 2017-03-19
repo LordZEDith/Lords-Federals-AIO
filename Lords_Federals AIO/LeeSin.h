@@ -80,6 +80,7 @@ public:
 		InsecSettings = MainMenu->AddMenu("Insec Settings");
 		{
 			InsecSelect = InsecSettings->AddSelection("Target to Insec", 0, std::vector<std::string>({ "Selected Target", "Target Selector" }));
+			InsecTo = InsecSettings->AddSelection("Insec To ->", 0, std::vector<std::string>({ "Allys>Tower>Ally", "Tower>Allys", "To Mouse" }));
 			InsecOrbwalk = InsecSettings->CheckBox("Orbwalk to Mouse", true);
 			KickAndFlash = InsecSettings->CheckBox("Priorize Kick + Flash", false);			
 			useFlash = InsecSettings->CheckBox("Use Flash if no Wards", true);
@@ -146,6 +147,25 @@ public:
 		{
 			Flash = GPluginSDK->CreateSpell(kSummonerSlot2, 425);
 			FoundFlash = true;
+		}
+		else
+		{
+			FoundFlash = false;
+		}
+
+		if (strstr(GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1), "SummonerSmite"))
+		{
+			Smites = GPluginSDK->CreateSpell(kSummonerSlot1, 570);
+			FoundSmiteQ = true;
+		}
+		else if (strstr(GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2), "SummonerSmite"))
+		{
+			Smites = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
+			FoundSmite = true;
+		}
+		else
+		{
+			FoundSmite = false;
 		}
 	}
 
@@ -470,6 +490,11 @@ public:
 		if (LastClick < GGame->TickCount())
 		{
 			ClickPOS = Vec3(0, 0, 0);
+		}
+
+		if (!FoundSmiteQ && SmiteQ1->GetInteger() == 1)
+		{
+			SmiteQ1->UpdateInteger(0);
 		}
 		
 		//GUtility->LogConsole("Tick: %i - Insec Etapas: %s -- Texto: %s (Wards: %i) - Distancia: %f max: %f", GGame->TickCount(), InsecType.data(), InsecText.data(), checkWardsTemp(), GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()), maxDistance());
@@ -1273,30 +1298,52 @@ public:
 
 		if (TorrePos == nullptr && AliadoPos == nullptr && AllySoloPos == nullptr && ClickPOS == Vec3(0,0,0))
 		{
-			/*if (MenuAtivadoParaCursor)
-			{
-			InsecST = GGame->CursorPosition();
-			}*/
-
 			InsecST = GEntityList->Player()->ServerPosition();
 		}
 		else
 		{
-			if (clickInsec->Enabled() && ClickPOS != Vec3(0, 0, 0))
+			if (InsecTo->GetInteger() == 0)
 			{
-				InsecST = ClickPOS;
+				if (clickInsec->Enabled() && ClickPOS != Vec3(0, 0, 0))
+				{
+					InsecST = ClickPOS;
+				}
+				else if (AliadoPos != nullptr)
+				{
+					InsecST = AliadoPos->GetPosition();
+				}
+				else if (TorrePos != nullptr)
+				{
+					InsecST = TorrePos->ServerPosition();
+				}
+				else
+				{
+					InsecST = AllySoloPos->GetPosition();
+				}
 			}
-			else if (AliadoPos != nullptr)
+
+			else if (InsecTo->GetInteger() == 1)
 			{
-				InsecST = AliadoPos->GetPosition();
-			}
-			else if (TorrePos != nullptr)
-			{
-				InsecST = TorrePos->ServerPosition();
+				if (clickInsec->Enabled() && ClickPOS != Vec3(0, 0, 0))
+				{
+					InsecST = ClickPOS;
+				}
+				else if (TorrePos != nullptr)
+				{
+					InsecST = TorrePos->ServerPosition();
+				}
+				else if (AliadoPos != nullptr)
+				{
+					InsecST = AliadoPos->GetPosition();
+				}
+				else
+				{
+					InsecST = AllySoloPos->GetPosition();
+				}
 			}
 			else
 			{
-				InsecST = AllySoloPos->GetPosition();
+				InsecST = GGame->CursorPosition();
 			}
 		}
 
@@ -1562,53 +1609,56 @@ public:
 
 	static void SmiteQ(IUnit* target)
 	{
-		if (SmiteQ1->Enabled())
+		if (FoundSmiteQ && Smites->IsReady())
 		{
-			int Count = 0;			
-
-			if (!CheckTarget(target)) return;
-
-			if (GEntityList->Player()->IsValidTarget(target, Q->Range()))
+			if (SmiteQ1->Enabled())
 			{
-				auto startPos = GEntityList->Player()->GetPosition();
-				auto endPos = target->GetPosition();
+				int Count = 0;
 
-				auto cRect = Geometry::Rectangle(startPos.To2D(), endPos.To2D(), Q->Radius());
+				if (!CheckTarget(target)) return;
 
-				for (auto minion : GEntityList->GetAllMinions(false, true, false))
+				if (GEntityList->Player()->IsValidTarget(target, Q->Range()))
 				{
-					if (minion != nullptr && GetDistance(GEntityList->Player(), minion) + GetDistance(minion, target) < Q->Range() && GetDistance(GEntityList->Player(), minion) < 550)
+					auto startPos = GEntityList->Player()->GetPosition();
+					auto endPos = target->GetPosition();
+
+					auto cRect = Geometry::Rectangle(startPos.To2D(), endPos.To2D(), Q->Radius());
+
+					for (auto minion : GEntityList->GetAllMinions(false, true, false))
 					{
-						if (cRect.IsInside(minion))
+						if (minion != nullptr && GetDistance(GEntityList->Player(), minion) + GetDistance(minion, target) < Q->Range() && GetDistance(GEntityList->Player(), minion) < 550)
 						{
-							SmiteQu = minion;
-							Count++;
-						}
-					}
-				}
-
-				if (Count == 1)
-				{
-					auto damage = GDamage->GetSummonerSpellDamage(GEntityList->Player(), SmiteQu, kSummonerSpellSmite);
-
-					if (GEntityList->Player()->IsFacing(target) && CountMinions(SmiteQu->GetPosition(), 60) < 2 && damage > SmiteQu->GetHealth())
-					{
-						AdvPredictionOutput out1;						
-						Q->RunPrediction(target, false, kCollidesWithYasuoWall, &out1);						
-
-						if (out1.HitChance >= PredicChange())
-						{
-							if (Smite->CastOnUnit(SmiteQu))
+							if (cRect.IsInside(minion))
 							{
-								Q->CastOnTarget(target, PredicChange());
+								SmiteQu = minion;
+								Count++;
 							}
 						}
 					}
+
+					if (Count == 1)
+					{
+						auto damage = GDamage->GetSummonerSpellDamage(GEntityList->Player(), SmiteQu, kSummonerSpellSmite);
+
+						if (GEntityList->Player()->IsFacing(target) && CountMinions(SmiteQu->GetPosition(), 60) < 2 && damage > SmiteQu->GetHealth())
+						{
+							AdvPredictionOutput out1;
+							Q->RunPrediction(target, false, kCollidesWithYasuoWall, &out1);
+
+							if (out1.HitChance >= PredicChange())
+							{
+								if (Smite->CastOnUnit(SmiteQu))
+								{
+									Q->CastOnTarget(target, PredicChange());
+								}
+							}
+						}
+					}
+
+					//GUtility->LogConsole("Contas: %i ", Count);
 				}
 
-				//GUtility->LogConsole("Contas: %i ", Count);
-			}				
-			
+			}
 		}
 	}
 

@@ -14,6 +14,7 @@ ISpell2* E2;
 ISpell2* R2;
 
 ISpell* Smite;
+ISpell* Smites;
 ISpell* Ignite;
 ISpell* Flash;
 ISpell* Wards;
@@ -389,6 +390,7 @@ std::map<int, IMenuOption*> ChampionAntiMelee;
 std::map<int, IMenuOption*> GapCloserList;
 
 bool FoundSmite = false;
+bool FoundSmiteQ = false;
 bool FoundFlash = false;
 int tempaxe = 0;
 bool temp = false;
@@ -468,6 +470,7 @@ IMenuOption* InsecOrbwalk;
 IMenuOption* Flashdistance;
 IMenuOption* UseWardgap;
 IMenuOption* UseFlashgap;
+IMenuOption* InsecTo;
 
 IMenuOption* ClickKeyPos;
 IMenuOption* ClickExpire;
