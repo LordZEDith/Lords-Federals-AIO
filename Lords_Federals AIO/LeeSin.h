@@ -485,6 +485,7 @@ public:
 		{
 			InsecType = "VamosInsec";
 			InsecText = "";
+			InsecTextQ2 = "";
 		}
 
 		if (LastClick < GGame->TickCount())
@@ -1400,7 +1401,7 @@ public:
 
 			InsecPOS = GetInsecPos(GetTarget);
 			
-			if (Q->IsReady() && TargetHaveQ(GetTarget) && !R->IsReady() && LastRTick - GGame->TickCount() < 2000 && InsecText == "Q2Now" &&
+			if (Q->IsReady() && TargetHaveQ(GetTarget) && !R->IsReady() && LastRTick - GGame->TickCount() < 2000 && InsecTextQ2 == "Q2Now" &&
 				(CastingR(GetTarget) || ExpireQ(GetTarget)))
 			{
 				Q->CastOnPlayer();
@@ -1415,7 +1416,7 @@ public:
 					{
 						GOrbwalking->ResetAA();
 						Q->CastOnTarget(GetTarget, PredicChange());
-						InsecText = "Q2Now";
+						InsecTextQ2 = "Q2Now";
 					}					
 
 					if (R->IsReady())
@@ -1428,6 +1429,13 @@ public:
 
 			else if (KickAndFlash->Enabled() && GetDistance(GEntityList->Player(), GetTarget) <= R->Range() && CheckShielded(GetTarget) && InsecType == "VamosInsec")
 			{
+				if (Q->IsReady() && LeeQone() && R->IsReady())
+				{
+					GOrbwalking->ResetAA();
+					Q->CastOnTarget(GetTarget, PredicChange());
+					InsecTextQ2 = "Q2Now";
+				}
+				
 				if (R->IsReady() && Flash->IsReady())
 				{
 					InsecTime = GGame->TickCount() + 1500;

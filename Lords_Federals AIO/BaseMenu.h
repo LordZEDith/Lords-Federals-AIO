@@ -477,6 +477,7 @@ IMenuOption* ClickExpire;
 
 IMenuOption* KickAndFlash;
 std::string InsecText = "";
+std::string InsecTextQ2 = "";
 std::string InsecType = "";
 
 int InsecTime;

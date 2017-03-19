@@ -42,3 +42,4 @@
 
 // Champions Support
 #include "Sona.h"
+#include "ChampTemplate.h"
