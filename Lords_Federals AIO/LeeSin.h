@@ -1455,10 +1455,10 @@ public:
 				
 				if (Q->IsReady() && LeeQone() && InsecType != "ColoqueiWard" &&
 					GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) > 680)
-				{					
-					
+				{
+
 					if (GetTarget->IsValidTarget(GEntityList->Player(), Q->Range()))
-					{						
+					{
 						SmiteQ(GetTarget);
 						Q->CastOnTarget(GetTarget, PredicChange());
 						InsecTime = GGame->TickCount() + 3000;
@@ -1467,54 +1467,65 @@ public:
 
 					else
 					{
-						for (auto perto : GEntityList->GetAllHeros(false, true))
+						SArray<IUnit*> pPerto = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* m) {return m != nullptr &&
+							!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) &&
+							GHealthPrediction->GetKSDamage(m, kSlotQ, Q->GetDelay(), false) < m->GetHealth() &&
+							GetDistanceVectors(m->GetPosition(), GetInsecPos(GetTarget)) < maxDistance() &&
+							GetDistance(m, GEntityList->Player()) < GetDistance(GEntityList->Player(), GetTarget) && m->GetNetworkId() != GetTarget->GetNetworkId(); });
+
+						SArray<IUnit*> mPerto = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+							!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) &&
+							GHealthPrediction->GetKSDamage(m, kSlotQ, Q->GetDelay(), false) < m->GetHealth() &&
+							GetDistanceVectors(m->GetPosition(), GetInsecPos(GetTarget)) < maxDistance() &&
+							GetDistance(m, GEntityList->Player()) < GetDistance(GEntityList->Player(), GetTarget); });
+
+						if (pPerto.Any())
 						{
-							if (perto != nullptr && !perto->IsDead() && perto->IsVisible() &&
-								perto->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(perto, kSlotQ, Q->GetDelay(), false) < perto->GetHealth() &&
-								GetDistanceVectors(perto->GetPosition(), GetInsecPos(GetTarget)) < maxDistance() &&
-								GetDistance(perto, GEntityList->Player()) < GetDistance(GEntityList->Player(), GetTarget))
-							{
-								otherT = perto;
-							}
+							otherT = pPerto.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GetTarget->GetPosition()); });
+						}
+						else
+						{
+							otherT = nullptr;
 						}
 
-						if (otherT == nullptr)
-						{
-							SArray<IUnit*> mPerto = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
-								!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && 
-								GHealthPrediction->GetKSDamage(m, kSlotQ, Q->GetDelay(), false) < m->GetHealth() &&
-								GetDistanceVectors(m->GetPosition(), GetInsecPos(GetTarget)) < maxDistance() &&
-								GetDistance(m, GEntityList->Player()) < GetDistance(GEntityList->Player(), GetTarget); });
 
-							if (mPerto.Any())
+						if (mPerto.Any())
+						{
+							otherTM = mPerto.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GetTarget->GetPosition()); });
+						}
+						else
+						{
+							otherTM = nullptr;
+						}
+
+						if (otherT == nullptr && otherTM == nullptr) return;
+
+						if (otherT != nullptr && otherTM != nullptr)
+						{
+							if (GetDistance(otherT, GetTarget) <= GetDistance(otherTM, GetTarget))
 							{
-								otherTM = mPerto.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GetTarget->GetPosition()); });
+								SmiteQ(otherT);
+								Q->CastOnTarget(otherT, PredicChange());
+								InsecTime = GGame->TickCount() + 3000;
+								InsecText = "TargetNear";
 							}
 							else
 							{
-								otherTM = nullptr;
+								SmiteQ(otherTM);
+								Q->CastOnUnit(otherTM);
+								InsecTime = GGame->TickCount() + 3000;
+								InsecText = "TargetNear";
 							}
-							
-							/*for (auto perto : GEntityList->GetAllMinions(false, true, false))
-							{
-								if (perto != nullptr && !perto->IsDead() && perto->IsVisible() &&
-									perto->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(perto, kSlotQ, Q->GetDelay(), false) < perto->GetHealth() &&
-									GetDistanceVectors(perto->GetPosition(), GetInsecPos(GetTarget)) < maxDistance() &&
-									GetDistance(perto, GEntityList->Player()) < GetDistance(GEntityList->Player(), GetTarget))
-								{
-									otherTM = perto;
-								}
-							}*/
 						}
 
-						if (otherT != nullptr && otherT->GetNetworkId() != GetTarget->GetNetworkId())
+						else if (otherT != nullptr && otherTM == nullptr)
 						{
 							SmiteQ(otherT);
 							Q->CastOnTarget(otherT, PredicChange());
 							InsecTime = GGame->TickCount() + 3000;
 							InsecText = "TargetNear";
 						}
-						else if (otherTM != nullptr)
+						else if (otherTM != nullptr && otherT == nullptr)
 						{
 							SmiteQ(otherTM);
 							Q->CastOnUnit(otherTM);
