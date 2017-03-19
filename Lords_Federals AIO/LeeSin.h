@@ -21,6 +21,7 @@ public:
 			AutoStartKill = ComboSettings->CheckBox("Beta Auto Star Combo If Killable", true);
 			AutoStartWard = ComboSettings->CheckBox("Beta Ward Jump In Auto Star Combo", true);
 			StartComboKey = ComboSettings->AddKey("Start Combo", 74);
+			PassiveStacks = ComboSettings->AddInteger("Passive Stacks", 0, 2, 2);
 		}
 
 		HarassSettings = MainMenu->AddMenu("Harass Settings");
@@ -52,18 +53,20 @@ public:
 		{
 			JungleQ = JungleClearSettings->CheckBox("Use Q in Jungle", true);
 			JungleW = JungleClearSettings->CheckBox("Use W in Jungle", true);
-			JungleE = JungleClearSettings->CheckBox("Use E in Jungle", true);			
+			JungleE = JungleClearSettings->CheckBox("Use E in Jungle", true);
+			jPassiveStacks = JungleClearSettings->AddInteger("Passive Stacks", 0, 2, 2);
 		}
 
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
+			Predic = fedMiscSettings->AddSelection("Q Prediction ->", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
 			KillstealQ = fedMiscSettings->CheckBox("Killsteal with Q", true);
 			WardJumpKey = fedMiscSettings->AddKey("Ward Jump", 90);
 			WardMax = fedMiscSettings->CheckBox("Ward Max Range", true);
 			jumpMinion = fedMiscSettings->CheckBox("Jump in Minion", true);
-			jumpAliado = fedMiscSettings->CheckBox("Jump in Allys", true);
-			EscapeKey = fedMiscSettings->AddKey("Escape Jungle (Near Mouse)", 65);
+			jumpAliado = fedMiscSettings->CheckBox("Jump in Allys", true);			
+			EscapeMode = fedMiscSettings->AddSelection("Escape Mode ->", 0, std::vector<std::string>({ "Near Mouse", "Auto Closest Spot" }));
+			EscapeKey = fedMiscSettings->AddKey("Escape Jungle", 65);
 			SmiteQ1 = fedMiscSettings->CheckBox("Beta SmiteQ", true);
 		}
 
@@ -79,7 +82,7 @@ public:
 
 		InsecSettings = MainMenu->AddMenu("Insec Settings");
 		{
-			InsecSelect = InsecSettings->AddSelection("Target to Insec", 0, std::vector<std::string>({ "Selected Target", "Target Selector" }));
+			InsecSelect = InsecSettings->AddSelection("Target to Insec ->", 0, std::vector<std::string>({ "Selected Target", "Target Selector" }));
 			InsecTo = InsecSettings->AddSelection("Insec To ->", 0, std::vector<std::string>({ "Allys>Tower>Ally", "Tower>Allys", "To Mouse" }));
 			InsecOrbwalk = InsecSettings->CheckBox("Orbwalk to Mouse", true);
 			KickAndFlash = InsecSettings->CheckBox("Priorize Kick + Flash", false);			
@@ -386,9 +389,9 @@ public:
 		return false;
 	}
 
-	/*static bool ComboPassive()
+	static bool ComboPassive()
 	{
-		auto Buff = GEntityList->Player()->GetBuffCount("blindmonkpassive_cosmetic");
+		auto Buff = PassiveStacksNum;
 		auto stack = PassiveStacks->GetInteger();
 
 		if (stack == 2 && Buff == 0)
@@ -401,13 +404,36 @@ public:
 			return true;
 		}
 
-		if (stack == 0 <= 2)
+		if (stack == 0)
 		{
 			return true;
 		}
 
 		return false;
-	}*/
+	}
+
+	static bool JunglePassive()
+	{
+		auto Buff = PassiveStacksNum;
+		auto stack = jPassiveStacks->GetInteger();
+
+		if (stack == 2 && Buff == 0)
+		{
+			return true;
+		}
+
+		if (stack == 1 && Buff <= 1)
+		{
+			return true;
+		}
+
+		if (stack == 0)
+		{
+			return true;
+		}
+
+		return false;
+	}
 
 	static bool IsDashingW()
 	{
@@ -481,6 +507,7 @@ public:
 		}			
 		
 		PassiveStacksNum = GEntityList->Player()->GetBuffCount("blindmonkpassive_cosmetic");
+
 		if (InsecTime < GGame->TickCount())
 		{
 			InsecType = "VamosInsec";
@@ -652,7 +679,7 @@ public:
 
 						if (LeeEone())
 						{
-							if (!FoundMinions(Q->Range()) && FoundMinionsNeutral(Q->Range()) && PassiveStacksNum == 0 && (LeeQone() || !Q->IsReady()) && (LeeWone() || !W->IsReady()))
+							if (!FoundMinions(Q->Range()) && FoundMinionsNeutral(Q->Range()) && JunglePassive() && (LeeQone() || !Q->IsReady()) && (LeeWone() || !W->IsReady()))
 							{
 								if (GEntityList->Player()->IsValidTarget(minion, E->Range() + 50) && E->CastOnPlayer())
 								{
@@ -663,13 +690,13 @@ public:
 						else
 						{
 							if (minion->IsValidTarget(GEntityList->Player(), E2->Range()) && TargetHaveE(minion) &&
-								PassiveStacksNum == 0 && E2->CastOnPlayer())
+								JunglePassive() && E2->CastOnPlayer())
 							{
 								LastSpellTick = GGame->TickCount() + 300;
 								return;
 							}
 
-							if ((PassiveStacksNum == 0 || ExpireE(minion)) && E2->CastOnPlayer())
+							if ((JunglePassive() || ExpireE(minion)) && E2->CastOnPlayer())
 							{
 								LastSpellTick = GGame->TickCount();
 							}
@@ -686,7 +713,7 @@ public:
 							if (GGame->TickCount() - LastWTick > 500 && (LeeQone() || !Q->IsReady()) && (LeeEone() || E->IsReady() || GEntityList->Player()->GetSpellBook()->GetLevel(kSlotE) == 0))
 							{
 								if ((!FoundMinions(Q->Range()) && FoundMinionsNeutral(Q->Range()) &&
-									GEntityList->Player()->HealthPercent() < 30) || PassiveStacksNum == 0)
+									GEntityList->Player()->HealthPercent() < 30) || JunglePassive())
 								{
 									if (GEntityList->Player()->IsValidTarget(minion, 400))
 									{
@@ -698,7 +725,7 @@ public:
 						}
 						else
 						{
-							if (GEntityList->Player()->HealthPercent() < 20 || GGame->TickCount() - LastWTick >= 2800 || PassiveStacksNum == 0)
+							if (GEntityList->Player()->HealthPercent() < 20 || GGame->TickCount() - LastWTick >= 2800 || JunglePassive())
 							{
 								if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
 								{
@@ -716,7 +743,7 @@ public:
 					{						
 						if (PassiveStacksNum < 2 && !IsDashingW() && (LeeEone() || !E->IsReady()) && (LeeWone() || !W->IsReady()))
 						{
-							if (GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 200 || PassiveStacksNum == 0)
+							if (GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 200 || JunglePassive())
 							{
 								if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
 								{
@@ -740,7 +767,7 @@ public:
 					else
 					{
 						if (TargetHaveQ(minion) && (ExpireQ(minion) || GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false) > minion->GetHealth() ||
-							GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 200 || PassiveStacksNum == 0))
+							GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 200 || JunglePassive()))
 						{
 							if (!IsDashingW())
 							{
@@ -895,7 +922,7 @@ public:
 		if (!LeeQone() && ComboQH->Enabled() && Q->IsReady() && TargetHaveQ(ComboTarget) &&
 			((GDamage->GetAutoAttackDamage(GEntityList->Player(), ComboTarget, false) + GHealthPrediction->GetKSDamage(ComboTarget, kSlotQ, Q->GetDelay(), false) > ComboTarget->GetHealth()) ||
 			(GetDistance(GEntityList->Player(), ComboTarget) > GEntityList->Player()->GetRealAutoAttackRange(ComboTarget) + 100) ||
-				(PassiveStacksNum == 0) || (!R->IsReady() && LastRTick - GGame->TickCount() < 2500 && CastingR(ComboTarget))))
+				(ComboPassive()) || (!R->IsReady() && LastRTick - GGame->TickCount() < 2500 && CastingR(ComboTarget))))
 		{
 			Q->CastOnPlayer();
 			LastSpellTick = GGame->TickCount();
@@ -936,7 +963,7 @@ public:
 					return;
 				}
 
-				if (((PassiveStacksNum == 0 && (LeeWone() || !W->IsReady())  && GEntityList->Player()->GetMana() >= 80) || CountEnemy(GEntityList->Player()->GetPosition(), E->Range() + 20) > 2) && E->CastOnPlayer())
+				if (((ComboPassive() && (LeeWone() || !W->IsReady())  && GEntityList->Player()->GetMana() >= 80) || CountEnemy(GEntityList->Player()->GetPosition(), E->Range() + 20) > 2) && E->CastOnPlayer())
 				{
 					LastSpellTick = GGame->TickCount();
 				}
@@ -952,13 +979,13 @@ public:
 
 				if (TargetHaveE(qtarget))
 				{
-					if (PassiveStacksNum == 0 && qtarget->IsValidTarget(GEntityList->Player(), E2->Range() && E2->CastOnPlayer()))
+					if (ComboPassive() && qtarget->IsValidTarget(GEntityList->Player(), E2->Range() && E2->CastOnPlayer()))
 					{
 						LastSpellTick = GGame->TickCount() + 300;
 					}
 					return;
 				}
-				if ((PassiveStacksNum == 0 || CountEnemy(GEntityList->Player()->GetPosition(), E2->Range()) > 2
+				if ((ComboPassive() || CountEnemy(GEntityList->Player()->GetPosition(), E2->Range()) > 2
 					|| ExpireE(qtarget) || GetDistance(qtarget, GEntityList->Player()) > GEntityList->Player()->GetRealAutoAttackRange(qtarget) + 100)
 					&& E2->CastOnPlayer())
 				{
@@ -982,12 +1009,12 @@ public:
 				}
 
 				if (((GEntityList->Player()->HealthPercent() < 5 || GEntityList->Player()->HealthPercent() < ComboTarget->HealthPercent() && GEntityList->Player()->HealthPercent() < 20) || 
-					PassiveStacksNum == 0 && (LeeEone() || !E->IsReady())) && W->CastOnPlayer())
+					ComboPassive() && (LeeEone() || !E->IsReady())) && W->CastOnPlayer())
 				{
 					LastSpellTick = GGame->TickCount() + 500;
 				}
 			}
-			else if (((GEntityList->Player()->HealthPercent() < 5 || GEntityList->Player()->HealthPercent() < ComboTarget->HealthPercent() && GEntityList->Player()->HealthPercent() < 20) || GGame->TickCount() - LastWTick >= 2800 || PassiveStacksNum == 0) && W->CastOnPlayer())
+			else if (((GEntityList->Player()->HealthPercent() < 5 || GEntityList->Player()->HealthPercent() < ComboTarget->HealthPercent() && GEntityList->Player()->HealthPercent() < 20) || GGame->TickCount() - LastWTick >= 2800 || ComboPassive()) && W->CastOnPlayer())
 			{
 				LastSpellTick = GGame->TickCount();
 			}
@@ -1022,47 +1049,73 @@ public:
 
 	static void Escape()
 	{
-		GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
-		
-		if (escActive)
+		SArray<Vec3> jSpots = SArray<Vec3>(JunglePos).Where([](Vec3 point) { return GetDistanceVectors(GEntityList->Player()->GetPosition(), point) > 150; });
+		if (jSpots.Any())
 		{
-			for (auto point : JunglePos)
-			{
-				if ((GetDistanceVectors(GEntityList->Player()->GetPosition(), point) < 100) || (LastQ2Tick + 2000 < GGame->TickCount()))
-				{
-					escActive = false;
-				}
-			}
-		}
+			JungleSpot = jSpots.MinOrDefault<float>([](Vec3 i) {return GetDistanceVectors(i, GGame->CursorPosition()); });
+		}		
 
-		auto regua = Geometry::Rectangle(
-			GEntityList->Player()->GetPosition().To2D(),
-			GEntityList->Player()->GetPosition().To2D().Extend(GGame->CursorPosition().To2D(), 1050), 400);
-
-		if (LeeQone())
+		if (EscapeMode->GetInteger() == 1 && JungleSpot != Vec3(0, 0, 0))
 		{
-			if (Q->IsReady())
+			GOrbwalking->Orbwalk(nullptr, JungleSpot);
+
+			if (LeeQone())
 			{
-				for (auto position : JunglePos)
+				if (Q->IsReady() && GetDistanceVectors(JungleSpot, GEntityList->Player()->GetPosition()) <= Q->Range())
 				{
-					if (regua.IsOutside(position.To2D()))
-					{
-						continue;
-					}
-
-					escActive = true;
-
-					Q->CastOnPosition(position);
-
+					Q->CastOnPosition(JungleSpot);
 					return;
-				}
+				}				
+			}
+			else
+			{
+				Q->CastOnPlayer();				
 			}
 		}
 		else
 		{
-			Q->CastOnPlayer();
-			escActive = true;
-		}
+			GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
+
+			auto regua = Geometry::Rectangle(
+				GEntityList->Player()->GetPosition().To2D(),
+				GEntityList->Player()->GetPosition().To2D().Extend(GGame->CursorPosition().To2D(), 1050), 400);
+
+			if (escActive)
+			{
+				for (auto point : JunglePos)
+				{
+					if ((GetDistanceVectors(GEntityList->Player()->GetPosition(), point) < 150) || (LastQ2Tick + 2000 < GGame->TickCount()))
+					{
+						escActive = false;
+					}
+				}
+			}
+
+			if (LeeQone())
+			{
+				if (Q->IsReady())
+				{
+					for (auto position : JunglePos)
+					{
+						if (regua.IsOutside(position.To2D()))
+						{
+							continue;
+						}
+
+						escActive = true;
+
+						Q->CastOnPosition(position);
+
+						return;
+					}
+				}
+			}
+			else
+			{
+				Q->CastOnPlayer();
+				escActive = true;
+			}
+		}	
 	}
 
 	static void EscapeJungle()
@@ -1473,7 +1526,7 @@ public:
 							GetDistanceVectors(m->GetPosition(), GetInsecPos(GetTarget)) < maxDistance() &&
 							GetDistance(m, GEntityList->Player()) < GetDistance(GEntityList->Player(), GetTarget) && m->GetNetworkId() != GetTarget->GetNetworkId(); });
 
-						SArray<IUnit*> mPerto = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+						SArray<IUnit*> mPerto = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, true)).Where([](IUnit* m) {return m != nullptr &&
 							!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) &&
 							GHealthPrediction->GetKSDamage(m, kSlotQ, Q->GetDelay(), false) < m->GetHealth() &&
 							GetDistanceVectors(m->GetPosition(), GetInsecPos(GetTarget)) < maxDistance() &&
@@ -1952,7 +2005,35 @@ public:
 
 		auto regua = Geometry::Rectangle(
 			GEntityList->Player()->GetPosition().To2D(),
-			GEntityList->Player()->GetPosition().To2D().Extend(GGame->CursorPosition().To2D(), 1050), 400);
+			GEntityList->Player()->GetPosition().To2D().Extend(GGame->CursorPosition().To2D(), 1050), 400);		
+
+		if (DrawEsca->Enabled())
+		{
+			for (auto point : JunglePos)
+			{
+				if (GetDistanceVectors(point, GEntityList->Player()->GetPosition()) < 2000)
+				{
+					if (regua.IsInside(point.To2D()) || EscapeMode->GetInteger() == 1)
+					{
+						Vec2 xPos;
+						GGame->Projection(point, &xPos);
+						static auto message = GRender->CreateFontW("Comic Sans", 40.f, kFontWeightBold);
+						message->SetColor(Vec4(0, 255, 0, 255));
+						message->SetOutline(true);
+						message->Render(xPos.x - 10, xPos.y - 18, "X");
+					}
+					else
+					{
+						Vec2 xPos;
+						GGame->Projection(point, &xPos);
+						static auto message = GRender->CreateFontW("Comic Sans", 40.f, kFontWeightBold);
+						message->SetColor(Vec4(255, 0, 0, 255));
+						message->SetOutline(true);
+						message->Render(xPos.x - 10, xPos.y - 18, "X");
+					}
+				}
+			}
+		}
 
 		if (escActivedraw && Q->IsReady() && DrawEscaW->Enabled())
 		{
@@ -1965,28 +2046,14 @@ public:
 				{
 					GGame->Projection(GEntityList->Player()->GetPosition(), &mypos);
 					GGame->Projection(point, &pointpos);
-					GRender->DrawLine(mypos, pointpos, Vec4(0, 255, 0, 255));
-					//regua.Draw(Vec4(0, 255, 0, 255), 4);
-				}
-			}
-		}
 
-		if (DrawEsca->Enabled())
-		{
-			for (auto point : JunglePos)
-			{
-				if (regua.IsOutside(point.To2D()))
-				{
-					if (GetDistanceVectors(point, GEntityList->Player()->GetPosition()) < 2000)
+					if (regua.IsInside(point.To2D()) || EscapeMode->GetInteger() == 1)
 					{
-						GRender->DrawOutlinedCircle(point, Vec4(255, 255, 255, 255), 100);
+						GRender->DrawLine(mypos, pointpos, Vec4(0, 255, 0, 255));
 					}
-				}
-				else
-				{
-					if (GetDistanceVectors(point, GEntityList->Player()->GetPosition()) < 2000)
+					else
 					{
-						GRender->DrawOutlinedCircle(point, Vec4(0, 255, 0, 255), 100);
+						GRender->DrawLine(mypos, pointpos, Vec4(255, 0, 0, 255));
 					}
 				}
 			}
@@ -2021,9 +2088,11 @@ public:
 					message->SetOutline(true);
 					message->Render(textPos.x + comprimento, textPos.y + altura, "> Insecded Target <");
 
-					GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(102, 255, 102, 255), 100);
-					GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(51, 255, 51, 255), 110);
-					GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 255, 0, 255), 120);
+					GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 51, 0, 255), 100);
+					GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 102, 0, 255), 90);
+					GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 153, 0, 255), 80);
+					GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 204, 0, 255), 70);
+					GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 255, 0, 255), 60);
 				}
 			}
 
@@ -2034,14 +2103,26 @@ public:
 				auto position = GetInsecPos(GetTargetDraw);				
 				auto direction = InsecST.Extend(GetTargetDraw->GetPosition(), +GetDistanceVectors(GetTargetDraw->GetPosition(), InsecST) - 690);
 				GGame->Projection(direction, &mypos);
-				GGame->Projection(GetTargetDraw->GetPosition(), &axepos);
-				GRender->DrawLine(mypos, axepos, Vec4(0, 255, 0, 255));
-				GRender->DrawOutlinedCircle(direction, Vec4(0, 255, 0, 255), 100);
+				GGame->Projection(GetTargetDraw->GetPosition(), &axepos);				
+
+				//GRender->DrawOutlinedCircle(direction, Vec4(0, 255, 0, 255), 100);				
+				static auto message = GRender->CreateFontW("Comic Sans", 50.f, kFontWeightBold);
+				message->SetColor(Vec4(0, 255, 0, 255));
+				message->SetOutline(true);
+				message->Render(mypos.x - 12, mypos.y - 20, "X");
 
 				if (ClickPOS != Vec3(0, 0, 0) && clickInsec->Enabled())
 				{
-					GRender->DrawOutlinedCircle(ClickPOS, Vec4(150, 255, 0, 255), 50);
+					Vec2 myposclick;
+					GGame->Projection(ClickPOS, &myposclick);
+					//GRender->DrawOutlinedCircle(ClickPOS, Vec4(150, 255, 0, 255), 50);
+					static auto message = GRender->CreateFontW("Comic Sans", 50.f, kFontWeightBold);
+					message->SetColor(Vec4(255, 0, 0, 255));
+					message->SetOutline(true);
+					message->Render(myposclick.x - 12, myposclick.y - 20, "M");
 				}
+
+				GRender->DrawLine(mypos, axepos, Vec4(0, 255, 0, 255));
 			}
 		}
 
@@ -2077,7 +2158,7 @@ public:
 				if (ClickPOS == Vec3(0, 0, 0))
 				{
 					ClickPOS = GGame->CursorPosition();
-					LastClick = GGame->TickCount() + ClickExpire->GetInteger();
+					LastClick = GGame->TickCount() + ClickExpire->GetInteger();					
 				}
 				else
 				{

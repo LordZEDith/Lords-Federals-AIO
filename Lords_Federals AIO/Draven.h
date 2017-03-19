@@ -224,26 +224,19 @@ public:
 			GOrbwalking->SetOverridePosition(GGame->CursorPosition());			
 		}
 
-		else if (axeTower2->Enabled() && modokey == kModeLaneClear  && IsUnderTurretPos(target->GetPosition()))
+		if (axeTower2->Enabled() && modokey == kModeLaneClear  && IsUnderTurretPos(target->GetPosition()))
 		{
 			GOrbwalking->SetOverridePosition(GGame->CursorPosition());			
 		}
 
-		else if (axeEnemy->Enabled() && CountEnemy(target->GetPosition(), 550) > 2)
+		if (axeEnemy->Enabled() && CountEnemy(target->GetPosition(), 550) > 2)
 		{
 			GOrbwalking->SetOverridePosition(GGame->CursorPosition());			
 		}
-		else
-		{
 
-			if (GetDistance(GEntityList->Player(), target) < maxDist)
-			{
-				GOrbwalking->SetOverridePosition(target->GetPosition());
-			}
-			else
-			{
-				GOrbwalking->SetOverridePosition(GGame->CursorPosition());
-			}
+		if (GetDistance(GEntityList->Player(), target) > maxDist)
+		{
+			GOrbwalking->SetOverridePosition(GGame->CursorPosition());
 		}
 	}
 

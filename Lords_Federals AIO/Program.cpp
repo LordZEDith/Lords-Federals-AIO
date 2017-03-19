@@ -47,8 +47,8 @@ public:
 
 	virtual void OnLoad() override
 	{
-		//Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().SuppLaneSeries();
+		//Message().ChampionLoadMessage();
 		Template().InitializeMenu();
 		Template().LoadSpells();
 		AutoSmite().SpellsSmite();
@@ -154,8 +154,8 @@ class cVarus : public IChampion
 public:
 	virtual void OnLoad() override
 	{
-		//Message().ADCLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().ADCLaneSeries();
+		//Message().ChampionLoadMessage();
 		Varus().Menu();
 		Varus().LoadSpells();
 		AutoSmite().SpellsSmite();
@@ -267,7 +267,7 @@ public:
 	virtual void OnLoad() override
 	{
 		Message().MidLaneSeries();
-		Message().ChampionLoadMessage();
+		//Message().ChampionLoadMessage();
 		Ziggs().InitializeSpells();
 		Ziggs().InitializeMenu();
 		AutoSmite().SpellsSmite();
@@ -377,8 +377,8 @@ public:
 
 	virtual void OnLoad() override
 	{
-		//Message().MidLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().ADCLaneSeries();
+		//Message().ChampionLoadMessage();
 		Ashe().InitializeSpells();
 		Ashe().InitializeMenu();
 		AutoSmite().SpellsSmite();
@@ -484,8 +484,8 @@ public:
 
 	virtual void OnLoad() override
 	{
-		//Message().MidLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().ADCLaneSeries();
+		//Message().ChampionLoadMessage();
 		Draven().InitializeSpells();
 		Draven().InitializeMenu();
 		AutoSmite().SpellsSmite();
@@ -602,8 +602,8 @@ public:
 
 	virtual void OnLoad() override
 	{
-		//Message().MidLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().ADCLaneSeries();
+		//Message().ChampionLoadMessage();
 		Ezreal().InitializeSpells();
 		Ezreal().InitializeMenu();
 		//Skins().Menu();
@@ -713,8 +713,8 @@ public:
 
 	virtual void OnLoad() override
 	{
-		//Message().MidLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().MidLaneSeries();
+		//Message().ChampionLoadMessage();
 		Ahri().LoadSpells();
 		Ahri().InitializeMenu();
 		AutoSmite().SpellsSmite();
@@ -823,8 +823,8 @@ public:
 
 	virtual void OnLoad() override
 	{
-		//Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().MidLaneSeries();
+		//Message().ChampionLoadMessage();
 		Lux().InitializeMenu();
 		Lux().LoadSpells();
 		//Skins().Menu();
@@ -932,8 +932,8 @@ public:
 
 	virtual void OnLoad() override
 	{
-		//Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().JungleLaneSeries();
+		//Message().ChampionLoadMessage();
 		Olaf().InitializeMenu();
 		Olaf().LoadSpells();
 
@@ -1044,8 +1044,8 @@ public:
 
 	virtual void OnLoad() override
 	{
-		//Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().TopLaneSeries();
+		//Message().ChampionLoadMessage();
 		DrMundo().InitializeMenu();
 		DrMundo().LoadSpells();
 
@@ -1156,8 +1156,8 @@ public:
 
 	virtual void OnLoad() override
 	{
-		//Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().TopLaneSeries();
+		//Message().ChampionLoadMessage();
 		Maokai().InitializeMenu();
 		Maokai().LoadSpells();
 
@@ -1268,8 +1268,8 @@ public:
 
 	virtual void OnLoad() override
 	{
-		//Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().TopLaneSeries();
+		//Message().ChampionLoadMessage();
 		Poppy().InitializeMenu();
 		Poppy().LoadSpells();
 
@@ -1380,8 +1380,8 @@ public:
 
 	virtual void OnLoad() override
 	{
-		//Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().JungleLaneSeries();
+		//Message().ChampionLoadMessage();
 		Nocturne().InitializeMenu();
 		Nocturne().LoadSpells();
 
@@ -1492,8 +1492,8 @@ public:
 
 	virtual void OnLoad() override
 	{
-		//Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().JungleLaneSeries();
+		//Message().ChampionLoadMessage();
 		Hecarim().InitializeMenu();
 		Hecarim().LoadSpells();
 
@@ -1602,8 +1602,8 @@ public:
 
 	virtual void OnLoad() override
 	{
-		//Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().JungleLaneSeries();
+		//Message().ChampionLoadMessage();
 		Elise().InitializeMenu();
 		Elise().LoadSpells();
 		Elise().LoadTextures();
@@ -1715,7 +1715,7 @@ public:
 	virtual void OnLoad() override
 	{
 		Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		//Message().ChampionLoadMessage();
 		Rengar().Menu();
 		Rengar().LoadSpells();
 
@@ -1830,7 +1830,7 @@ public:
 	virtual void OnLoad() override
 	{
 		Message().TopLaneSeries();
-		Message().ChampionLoadMessage();
+		//Message().ChampionLoadMessage();
 		Malphite().Menu();
 		Malphite().LoadSpells();
 		AutoSmite().SpellsSmite();
@@ -1937,8 +1937,8 @@ public:
 
 	virtual void OnLoad() override
 	{
-		//Message().MidLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().MidLaneSeries();
+		//Message().ChampionLoadMessage();
 		Xerath().InitializeMenu();
 		Xerath().InitializeSpells();
 
@@ -2049,7 +2049,7 @@ public:
 	virtual void OnLoad() override
 	{
 		Message().SuppLaneSeries();
-		Message().ChampionLoadMessage();
+		//Message().ChampionLoadMessage();
 
 		Sona().Menu();
 		Sona().LoadSpells();
@@ -2158,7 +2158,7 @@ public:
 	virtual void OnLoad() override
 	{
 		Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		//Message().ChampionLoadMessage();
 		Diana().Menu();
 		Diana().LoadSpells();
 		AutoSmite().SpellsSmite();
@@ -2274,7 +2274,7 @@ public:
 	virtual void OnLoad() override
 	{
 		Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		//Message().ChampionLoadMessage();
 		Warwick().Menu();
 		Warwick().LoadSpells();
 
@@ -2383,7 +2383,7 @@ public:
 	virtual void OnLoad() override
 	{
 		Message().TopLaneSeries();
-		Message().ChampionLoadMessage();
+		//Message().ChampionLoadMessage();
 		Darius().Menu();
 		Darius().LoadSpells();
 		AutoSmite().SpellsSmite();
@@ -2492,7 +2492,7 @@ public:
 	virtual void OnLoad() override
 	{
 		Message().TopLaneSeries();
-		Message().ChampionLoadMessage();
+		//Message().ChampionLoadMessage();
 		Kayle().Menu();
 		Kayle().LoadSpells();
 		AutoSmite().SpellsSmite();
@@ -2601,7 +2601,7 @@ public:
 	virtual void OnLoad() override
 	{
 		Message().ADCLaneSeries();
-		Message().ChampionLoadMessage();
+		//Message().ChampionLoadMessage();
 		zTristana().InitializeMenu();
 		zTristana().LoadSpells();
 		AutoSmite().SpellsSmite();
@@ -2712,7 +2712,7 @@ public:
 	virtual void OnLoad() override
 	{
 		Message().ADCLaneSeries();
-		Message().ChampionLoadMessage();
+		//Message().ChampionLoadMessage();
 		Caitlyn().InitializeMenu();
 		Caitlyn().LoadSpells();
 		AutoSmite().SpellsSmite();
@@ -2824,7 +2824,7 @@ public:
 	virtual void OnLoad() override
 	{
 		Message().MidLaneSeries();
-		Message().ChampionLoadMessage();
+		//Message().ChampionLoadMessage();
 		Twisted().Menu();
 		Twisted().LoadSpells();
 		AutoSmite().SpellsSmite();
@@ -2930,7 +2930,7 @@ public:
 	virtual void OnLoad() override
 	{
 		Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		//Message().ChampionLoadMessage();
 		LeeSin().InitializeMenu();
 		LeeSin().LoadSpells();
 		AutoSmite().SpellsSmite();
@@ -3049,7 +3049,7 @@ public:
 	virtual void OnLoad() override
 	{
 		Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		//Message().ChampionLoadMessage();
 		Khazix().InitializeMenu();
 		Khazix().LoadSpells();
 		AutoSmite().SpellsSmite();
@@ -3160,8 +3160,8 @@ public:
 
 	virtual void OnLoad() override
 	{
-		Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		Message().TopLaneSeries();
+		//Message().ChampionLoadMessage();
 		Rumble().InitializeMenu();
 		Rumble().LoadSpells();
 		AutoSmite().SpellsSmite();
@@ -3272,7 +3272,7 @@ public:
 	virtual void OnLoad() override
 	{
 		Message().JungleLaneSeries();
-		Message().ChampionLoadMessage();
+		//Message().ChampionLoadMessage();
 		Gragas().InitializeMenu();
 		Gragas().LoadSpells();
 		AutoSmite().SpellsSmite();

@@ -372,6 +372,7 @@ Vec3 InsecPOS;
 Vec3 TestPOS;
 Vec3 BarrilQ;
 Vec3 ClickPOS;
+Vec3 JungleSpot;
 
 IUnit* Teamate01;
 IUnit* Teamate02;
@@ -450,6 +451,7 @@ IMenuOption* StartComboKey;
 IMenuOption* InstaFlashKey;
 IMenuOption* InsecKey;
 IMenuOption* EscapeKey;
+IMenuOption* EscapeMode;
 IMenuOption* WardJumpKey;
 IMenuOption* WardMax;
 IMenuOption* JumpMinion;
