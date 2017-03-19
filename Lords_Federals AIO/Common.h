@@ -91,6 +91,18 @@ inline bool CheckTarget(IUnit* target)
 	return false;
 }
 
+static bool CheckIsWard(IUnit* minion)
+{
+	if (strstr(minion->GetBaseSkinName(), "YellowTrinket") ||
+		strstr(minion->GetBaseSkinName(), "JammerDevice") ||
+		strstr(minion->GetBaseSkinName(), "SightWard"))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 inline double GetQAttackDamage(IUnit* target)
 {
 	std::vector<double> AttackDamage = { 20, 25, 30, 35, 40, 45, 50, 55, 60, 70, 80, 90, 110, 130, 150, 170, 190, 210 };
@@ -302,7 +314,7 @@ inline int GetMinionsInRange(Vec3 Position, float Range)
 	for (auto mingon : mingons)
 	{
 		//counts enemies checking if they are enemy heroes and are within radius parameter
-		if (mingon != nullptr && mingon->IsValidTarget() && !mingon->IsDead())
+		if (mingon != nullptr && mingon->IsValidTarget() && !mingon->IsDead() && !CheckIsWard(mingon))
 		{
 			auto mingonDistance = (mingon->GetPosition() - Position).Length();
 			if (mingonDistance < Range)
@@ -329,7 +341,7 @@ inline bool FoundMinions(float range)
  {
 	 for (auto Minions : GEntityList->GetAllMinions(false, true, false))
 	 {
-		 if (GEntityList->Player()->IsValidTarget(Minions, range))
+		 if (GEntityList->Player()->IsValidTarget(Minions, range) && !CheckIsWard(Minions))
 			 return true;
 	 }
 
@@ -341,8 +353,8 @@ inline int CountMinions(Vec3 Location, int range)
 	 int Count = 0;
 
 	 for (auto Minions : GEntityList->GetAllMinions(false, true, false))
-	 {
-		 if ((Minions->GetPosition() - Location).Length() < range && Minions->IsValidTarget() && !Minions->IsDead())
+	 {		 
+		 if ((Minions->GetPosition() - Location).Length() < range && Minions->IsValidTarget() && !Minions->IsDead() && !CheckIsWard(Minions))
 		 {
 			 Count++;
 		 }
@@ -356,7 +368,7 @@ inline int CountMinionsAlly(Vec3 Location, int range)
 
 	for (auto Minions : GEntityList->GetAllMinions(true, false, false))
 	{
-		if ((Minions->GetPosition() - Location).Length() < range && Minions->IsValidTarget() && !Minions->IsDead())
+		if ((Minions->GetPosition() - Location).Length() < range && Minions->IsValidTarget() && !Minions->IsDead() && !CheckIsWard(Minions))
 		{
 			Count++;
 		}

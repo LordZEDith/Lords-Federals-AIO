@@ -79,7 +79,7 @@ public:
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{					
 			CCedQ = fedMiscSettings->CheckBox("Auto Q on CC", true);
-			AntiDash = fedMiscSettings->CheckBox("Anti Dash", true);
+			//AntiDash = fedMiscSettings->CheckBox("Anti Dash", true);
 			EGapCloser = fedMiscSettings->CheckBox("E GapCloser | Anti Meele", true);
 			for (auto enemy : GEntityList->GetAllHeros(false, true))
 			{
@@ -541,7 +541,7 @@ public:
 
 	static void OnDash(UnitDash* Source)
 	{
-		if (AntiDash->Enabled())
+		/*if (AntiDash->Enabled())
 		{
 			if (GetDistance(GEntityList->Player(), Source->Source) <= E->Range() || GetDistanceVectors(GEntityList->Player()->GetPosition(), Source->EndPosition) <= E->Range() ||
 				GetDistanceVectors(GEntityList->Player()->GetPosition(), Source->StartPosition) <= E->Range())
@@ -551,7 +551,7 @@ public:
 					E->CastOnTarget(Source->Source, kHitChanceHigh);
 				}
 			}
-		}
+		}*/
 	}
 
 	static void OnGapcloser(GapCloserSpell const& args)

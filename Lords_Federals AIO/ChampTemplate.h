@@ -38,6 +38,13 @@ public:
 
 	static void Automatic()
 	{
+		for (auto fed : GEntityList->GetAllMinions(false, false, true))
+		{
+			if (GetDistance(GEntityList->Player(), fed) < 1500 && fed->IsWard())
+			{
+				GUtility->LogConsole("Nome %s", fed->GetBaseSkinName());
+			}
+		}
 	}
 
 	static void Combo()

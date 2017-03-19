@@ -197,7 +197,6 @@ public:
 			return true;
 		}
 
-
 		if (Ward1->IsReady() && Ward1->IsOwned())
 		{
 			return true;
@@ -486,7 +485,7 @@ public:
 					return;
 				}
 			}
-		}
+		}	
 
 		for (auto target : GEntityList->GetAllHeros(false, true))
 		{
@@ -580,7 +579,7 @@ public:
 				{
 					for (auto minion : GEntityList->GetAllMinions(false, true, false))
 					{
-						if ((PassiveStacksNum == 0 || ExpireE(minion)) && minion->IsValidTarget(GEntityList->Player(), E2->Range()) && E->CastOnPlayer())
+						if ((PassiveStacksNum == 0 || ExpireE(minion)) && !CheckIsWard(minion) &&  minion->IsValidTarget(GEntityList->Player(), E2->Range()) && E->CastOnPlayer())
 						{
 							LastSpellTick = GGame->TickCount();
 						}
@@ -631,7 +630,7 @@ public:
 						{
 							if (GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 100 || PassiveStacksNum == 0)
 							{
-								if (GEntityList->Player()->IsValidTarget(minion, Q->Range()) && !minion->IsDead() && !minion->IsInvulnerable() && minion->IsVisible())
+								if (GEntityList->Player()->IsValidTarget(minion, Q->Range()) && !minion->IsDead() && !minion->IsInvulnerable() && minion->IsVisible() && !CheckIsWard(minion))
 								{
 									Q->CastOnUnit(minion);
 									LastSpellTick = GGame->TickCount();

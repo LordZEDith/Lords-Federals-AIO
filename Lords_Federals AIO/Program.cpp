@@ -83,7 +83,7 @@ public:
 
 		}
 
-
+		Template().Automatic();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		//Skins().fedSkinChanger();
