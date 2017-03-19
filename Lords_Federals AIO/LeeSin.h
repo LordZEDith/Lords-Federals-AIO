@@ -164,11 +164,11 @@ public:
 		else if (strstr(GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2), "SummonerSmite"))
 		{
 			Smites = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
-			FoundSmite = true;
+			FoundSmiteQ = true;
 		}
 		else
 		{
-			FoundSmite = false;
+			FoundSmiteQ = false;
 		}
 	}
 
@@ -1813,8 +1813,6 @@ public:
 
 	static void OnCreateObject(IUnit* Source)
 	{
-		//GUtility->LogConsole("Nome do Objeto: %s", Source->GetObjectName());
-
 		if (W->IsReady() && (strstr(Source->GetObjectName(), "SightWard") || strstr(Source->GetObjectName(), "VisionWard")))
 		{
 			if (GetDistanceVectors(Source->GetPosition(), WardPos) < 100)
@@ -1857,10 +1855,8 @@ public:
 			if (strstr(GBuffData->GetBuffName(BuffData), "blindmonkrroot") && Flash->IsReady())
 			{
 				FlashAfterR(Source);
-			}
-			//GUtility->LogConsole("Nome do Buff: %s", GBuffData->GetBuffName(BuffData));
+			}			
 		}
-
 	}
 
 	static void OnBuffRemove(IUnit* Source, void* BuffData)
@@ -1877,7 +1873,6 @@ public:
 				PassiveStacksNum = 0;
 			}
 		}
-
 	}
 
 	static void KickBehind()
@@ -1911,8 +1906,7 @@ public:
 				auto cRect = Geometry::Rectangle(startPos.To2D(), endPos.To2D(), 80);
 				cRect.Draw(Vec4(255, 255, 255, 255));
 
-				SArray<IUnit*> Enemys = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([&](IUnit* i) {return cRect.IsInside(i); });
-				
+				SArray<IUnit*> Enemys = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([&](IUnit* i) {return cRect.IsInside(i); });				
 				
 				if (Enemys.Count() >= minREnemies && CheckShielded(enemys))
 				{					
@@ -1955,7 +1949,6 @@ public:
 				cRect.Draw(Vec4(255, 255, 255, 255));
 
 				SArray<IUnit*> Enemys = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([&](IUnit* i) {return cRect.IsInside(i) && GHealthPrediction->GetKSDamage(i, kSlotR, R->GetDelay(),false) > i->GetHealth(); });
-
 
 				if (CheckShielded(enemys) && Enemys.Any())
 				{
