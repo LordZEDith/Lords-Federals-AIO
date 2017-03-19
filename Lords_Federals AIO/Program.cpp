@@ -49,8 +49,8 @@ public:
 	{
 		//Message().JungleLaneSeries();
 		Message().ChampionLoadMessage();
-
-
+		Template().InitializeMenu();
+		Template().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		//Skins().Menu();
@@ -95,7 +95,7 @@ public:
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
 	{
-
+		//Template().OnAfterAttack(Source, Target);
 	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
@@ -122,7 +122,7 @@ public:
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-
+		Template().OnProcessSpell(Args);
 	}
 
 	void OnExitVisible(IUnit* Source) override
@@ -3520,8 +3520,8 @@ void LoadChampion()
 	// Support
 	else if (szChampion == "Sona")
 		pChampion = new cSona;
-	//else if (szChampion == "Nami")
-		//pChampion = new cTemplate;
+	else if (szChampion == "Nami")
+		pChampion = new cTemplate;
 	else
 	{
 		GGame->PrintChat("Champion Not Supported");

@@ -1480,7 +1480,22 @@ public:
 
 						if (otherT == nullptr)
 						{
-							for (auto perto : GEntityList->GetAllMinions(false, true, false))
+							SArray<IUnit*> mPerto = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+								!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && 
+								GHealthPrediction->GetKSDamage(m, kSlotQ, Q->GetDelay(), false) < m->GetHealth() &&
+								GetDistanceVectors(m->GetPosition(), GetInsecPos(GetTarget)) < maxDistance() &&
+								GetDistance(m, GEntityList->Player()) < GetDistance(GEntityList->Player(), GetTarget); });
+
+							if (mPerto.Any())
+							{
+								otherTM = mPerto.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GetTarget->GetPosition()); });
+							}
+							else
+							{
+								otherTM = nullptr;
+							}
+							
+							/*for (auto perto : GEntityList->GetAllMinions(false, true, false))
 							{
 								if (perto != nullptr && !perto->IsDead() && perto->IsVisible() &&
 									perto->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(perto, kSlotQ, Q->GetDelay(), false) < perto->GetHealth() &&
@@ -1489,7 +1504,7 @@ public:
 								{
 									otherTM = perto;
 								}
-							}
+							}*/
 						}
 
 						if (otherT != nullptr && otherT->GetNetworkId() != GetTarget->GetNetworkId())
