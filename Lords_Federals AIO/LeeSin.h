@@ -73,7 +73,7 @@ public:
 		RMenu = MainMenu->AddMenu("Ultimate Settings");
 		{
 			ComboR = RMenu->CheckBox("Use R KS", true);
-			kickBehind = RMenu->CheckBox("Use Kick Behind (Beta ++)", false);
+			kickBehind = RMenu->CheckBox("Use Kick Behind (Beta)", false);
 			kickHit = RMenu->AddInteger("If Hit Enemy Behind (Beta)", 0, 5, 3);
 			kickKill = RMenu->CheckBox("If Kill Enemy Behind (Beta)", true);
 			UseWardgap = RMenu->CheckBox("Use Ward", true);
@@ -114,7 +114,7 @@ public:
 	static void LoadSpells()
 	{
 		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
-		Q->SetSkillshot(0.25f, 65.f, 1800.f, 1080.f);
+		Q->SetSkillshot(0.25f, 65.f, 1750.f, 1080.f);
 		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, kCollidesWithNothing);
 		W->SetOverrideRange(700);
 		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, kCollidesWithNothing);
@@ -470,7 +470,7 @@ public:
 	{	
 		SaveClick();
 		
-		if (IsKeyDown(InstaFlashKey))
+		if (IsKeyDown(InstaFlashKey) && FoundFlash)
 		{
 			GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
 
@@ -787,9 +787,10 @@ public:
 		if (!CheckTarget(target)) return;
 
 		if (!LeeQone() && HarassQ->Enabled() && Q->IsReady() && TargetHaveQ(target) &&
-			((GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth()) ||
-			(GetDistance(GEntityList->Player(), target) > GEntityList->Player()->GetRealAutoAttackRange(target) + 100)))
-		{
+			((GDamage->GetAutoAttackDamage(GEntityList->Player(), target, false) + GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth()) ||
+			(GetDistance(GEntityList->Player(), target) > GEntityList->Player()->GetRealAutoAttackRange(target) + 100) ||
+				(ComboPassive()) || (!R->IsReady() && LastRTick - GGame->TickCount() < 2500 && CastingR(target))))
+		{		
 			Q->CastOnPlayer();
 			LastSpellTick = GGame->TickCount();
 		}
@@ -824,18 +825,16 @@ public:
 			&& (LeeEone() || !E->IsReady())
 			&& (LeeQone() || !Q->IsReady()))
 		{
-			for (auto allys : GEntityList->GetAllUnits())
-			{				
-				if (allys != nullptr && !allys->IsDead() && allys->IsVisible() && GetDistance(GEntityList->Player(), allys) <= W->Range() && 
-					allys != GEntityList->Player() && GetDistance(GEntityList->Player(), allys) > 200 &&
-					allys->GetTeam() == GEntityList->Player()->GetTeam() && GGame->TickCount() - LastSpellTick > 500)
-				{
-					if (allys->IsHero() || allys->IsWard() || allys->IsCreep())
-					{
-						W->CastOnUnit(allys);
-					}
-				}
-			}
+			SArray<IUnit*> allys = SArray<IUnit*>(GEntityList->GetAllUnits()).Where([](IUnit* Aliados) {return Aliados != nullptr && Aliados != GEntityList->Player() &&
+				!Aliados->IsDead() && Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) <= W->Range() && 
+				Aliados->GetTeam() == GEntityList->Player()->GetTeam() && GGame->TickCount() - LastSpellTick > 500 &&
+				(Aliados->IsHero() || Aliados->IsWard() || Aliados->IsCreep()); });
+
+			if (allys.Any())
+			{
+				auto wally = allys.MaxOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GEntityList->Player()->GetPosition()); });
+				W->CastOnUnit(wally);
+			}		
 		}
 	}		
 
@@ -870,11 +869,11 @@ public:
 	{
 		if (IsKeyDown(StartComboKey))
 		{
+			GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
+
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 
-			if (!CheckTarget(target)) return;
-
-			GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
+			if (!CheckTarget(target)) return;			
 
 			if (Q->IsReady())
 			{
@@ -1022,7 +1021,9 @@ public:
 
 	static void FlashAfterR(IUnit* target)
 	{
-		if (target->GetHealth() <= GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) && !CheckShielded(target))
+		if (!FoundFlash) return;
+		
+		if (target->GetHealth() <= GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) || !CheckShielded(target))
 		{
 			return;
 		}
@@ -1039,7 +1040,7 @@ public:
 			pos = InsecST;
 		}
 		
-		if (pos.x > 0)
+		if (pos.x > 0 && Flash->IsReady())
 		{
 			auto position = target->ServerPosition();
 			Flash->CastOnPosition(position.Extend(pos, -(GEntityList->Player()->BoundingRadius() / 2 + target->BoundingRadius() + 50)));			
@@ -1307,9 +1308,12 @@ public:
 	{
 		auto maxRange = 0.f;
 
-		if (Flash->IsReady() && Flashdistance->Enabled())
+		if (FoundFlash)
 		{
-			maxRange += 425.f;
+			if (Flash->IsReady() && Flashdistance->Enabled())
+			{
+				maxRange += 425.f;
+			}
 		}
 
 		if (checkWardsTemp())
@@ -1479,7 +1483,7 @@ public:
 				}
 			}
 
-			else if (KickAndFlash->Enabled() && GetDistance(GEntityList->Player(), GetTarget) <= R->Range() && CheckShielded(GetTarget) && InsecType == "VamosInsec")
+			else if (KickAndFlash->Enabled() && FoundFlash && GetDistance(GEntityList->Player(), GetTarget) <= R->Range() && CheckShielded(GetTarget) && InsecType == "VamosInsec")
 			{
 				if (Q->IsReady() && LeeQone() && R->IsReady())
 				{
@@ -1497,13 +1501,13 @@ public:
 			}
 			// Se tiver na distancia do WardJump
 			else if (GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) < 650 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
-				R->IsReady() && checkWardsTemp() && InsecType == "VamosInsec" && (!KickAndFlash->Enabled() || !Flash->IsReady()))
+				R->IsReady() && checkWardsTemp() && InsecType == "VamosInsec" && (!KickAndFlash->Enabled() || !FoundFlash || !Flash->IsReady()))
 			{
 				WardJump(GetInsecPos(GetTarget), false, true);
 			}			
 			else
 			{				
-				if (!R->IsReady() || !Flash->IsReady() && !checkWardsTemp()) return;				
+				if (!R->IsReady() || (!FoundFlash || !Flash->IsReady()) && !checkWardsTemp()) return;
 				
 				if (Q->IsReady() && LeeQone() && InsecType != "ColoqueiWard" &&
 					GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) > 680)
@@ -1595,19 +1599,19 @@ public:
 				{
 					Q->CastOnPlayer();
 
-					if (KickAndFlash->Enabled() && Flash->IsReady())
+					if (KickAndFlash->Enabled() && FoundFlash && Flash->IsReady())
 					{
 						InsecType = "goKickFlash";
 					}
-					else if (KickAndFlash->Enabled() && !Flash->IsReady())
+					else if (KickAndFlash->Enabled() && (!FoundFlash || !Flash->IsReady()))
 					{
 						InsecType = "goGapCloserFlashInCD";
 					}
-					else if (!KickAndFlash->Enabled() && Flash->IsReady() && !checkWardsTemp() && useFlash->Enabled())
+					else if (!KickAndFlash->Enabled() && FoundFlash && Flash->IsReady() && !checkWardsTemp() && useFlash->Enabled())
 					{
 						InsecType = "goKickFlashWardInCD";
 					}
-					else if (Flashdistance->Enabled() && Flash->IsReady())
+					else if (Flashdistance->Enabled() && FoundFlash && Flash->IsReady())
 					{
 						InsecType = "WardFlashDistance";
 					}
@@ -1651,7 +1655,7 @@ public:
 					}
 				}
 
-				if (InsecType == "WardFlashDistance" && Flashdistance->Enabled() && Flash->IsReady() && checkWardsTemp())
+				if (InsecType == "WardFlashDistance" && Flashdistance->Enabled() && FoundFlash && Flash->IsReady() && checkWardsTemp())
 				{
 					if (GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) < 590 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
 						R->IsReady() || InsecText == "TargetDirect")
@@ -1681,7 +1685,7 @@ public:
 				if (KickAndFlash->Enabled() && InsecType == "goKickFlash" || InsecType == "goKickFlashWardInCD")
 				{
 					if (GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) < 425
-						&& GetDistance(GetTarget, GEntityList->Player()) < 375 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 && R->IsReady() && !goUltimate && Flash->IsReady())
+						&& GetDistance(GetTarget, GEntityList->Player()) < 375 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 && R->IsReady() && !goUltimate && FoundFlash && Flash->IsReady())
 					{
 						InsecTime = GGame->TickCount() + 3000;
 						InsecText = "Flash";
@@ -1771,9 +1775,12 @@ public:
 				{
 					GPluginSDK->DelayFunctionCall(120, []() { 
 						
-						Flash->CastOnPosition(Rposition);
-						InsecType = "Ultimate";
-						goUltimate = true; 
+						if (FoundFlash && Flash->IsReady())
+						{
+							Flash->CastOnPosition(Rposition);
+							InsecType = "Ultimate";
+							goUltimate = true;
+						}
 					
 					});									
 
@@ -1790,7 +1797,7 @@ public:
 			{
 				LastRTick = GGame->TickCount();
 
-				if (IsKeyDown(InsecKey) && InsecText == "Flash")
+				if (IsKeyDown(InsecKey) && InsecText == "Flash" && FoundFlash && Flash->IsReady())
 				{
 					Flash->CastOnPosition(Rposition);
 				}
@@ -1851,7 +1858,7 @@ public:
 		}
 		else
 		{
-			if (strstr(GBuffData->GetBuffName(BuffData), "blindmonkrroot") && Flash->IsReady())
+			if (strstr(GBuffData->GetBuffName(BuffData), "blindmonkrroot") && FoundFlash && Flash->IsReady())
 			{
 				FlashAfterR(Source);
 			}			
@@ -1911,7 +1918,7 @@ public:
 				{					
 					auto posToKick = pPos.Extend(startPos, GetDistance(enemys, GEntityList->Player()) - 230);
 					
-					if (UseFlashgap->Enabled() && Flash->IsReady() && R->IsReady() && GetDistanceVectors(posToKick, GEntityList->Player()->GetPosition()) <= 425 &&
+					if (UseFlashgap->Enabled() && FoundFlash && Flash->IsReady() && R->IsReady() && GetDistanceVectors(posToKick, GEntityList->Player()->GetPosition()) <= 425 &&
 						GetDistanceVectors(posToKick, GEntityList->Player()->GetPosition()) > 150)
 					{
 						Flash->CastOnPosition(posToKick);
@@ -1953,7 +1960,7 @@ public:
 				{
 					auto posToKick = pPos.Extend(startPos, GetDistance(enemys, GEntityList->Player()) - 230);
 
-					if (UseFlashgap->Enabled() && Flash->IsReady() && R->IsReady() && GetDistanceVectors(posToKick, GEntityList->Player()->GetPosition()) <= 425 &&
+					if (UseFlashgap->Enabled() && FoundFlash && Flash->IsReady() && R->IsReady() && GetDistanceVectors(posToKick, GEntityList->Player()->GetPosition()) <= 425 &&
 						GetDistanceVectors(posToKick, GEntityList->Player()->GetPosition()) > 150)
 					{
 						Flash->CastOnPosition(posToKick);

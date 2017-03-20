@@ -65,7 +65,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -172,7 +172,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 	     }
@@ -283,7 +283,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -394,7 +394,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -501,7 +501,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -617,7 +617,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -730,7 +730,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -838,7 +838,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -951,7 +951,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}	
@@ -1063,7 +1063,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -1175,7 +1175,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -1287,7 +1287,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -1399,7 +1399,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -1511,7 +1511,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -1622,7 +1622,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -1733,7 +1733,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -1847,7 +1847,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -1956,7 +1956,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -2067,7 +2067,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -2175,7 +2175,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -2292,7 +2292,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -2400,7 +2400,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -2509,7 +2509,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -2618,7 +2618,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -2729,7 +2729,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -2840,7 +2840,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -2949,7 +2949,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -3066,7 +3066,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -3178,7 +3178,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
@@ -3289,7 +3289,7 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
-		if (GEntityList->Player()->IsDead() && GEntityList->Player()->IsRecalling())
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
 		}
