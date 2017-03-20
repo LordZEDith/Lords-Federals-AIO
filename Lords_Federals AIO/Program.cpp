@@ -3553,7 +3553,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 {
 	// Initializes global interfaces for core access
 	PluginSDKSetup(PluginSDK);
-	VersionCheck().RunVersionChecker();
+	//VersionCheck().RunVersionChecker();
 	LoadChampion();
 	pChampion->OnLoad();	
 	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Welcome to Lords & Federals AIO");

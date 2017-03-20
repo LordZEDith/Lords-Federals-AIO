@@ -443,6 +443,7 @@ int mypredic;
 bool WardCheck = true;
 bool enemyscheck;
 bool goUltimate = false;
+bool goInsecUnder = false;
 
 IMenuOption* PassiveStacks;
 IMenuOption* jPassiveStacks;
@@ -473,6 +474,7 @@ IMenuOption* Flashdistance;
 IMenuOption* UseWardgap;
 IMenuOption* UseFlashgap;
 IMenuOption* InsecTo;
+IMenuOption* InsecUnder;
 
 IMenuOption* ClickKeyPos;
 IMenuOption* ClickExpire;
@@ -493,6 +495,8 @@ IUnit* ComboTarget = nullptr;
 IUnit* SmiteQu = nullptr;
 IUnit* GetTarget = nullptr;
 IUnit* GetTargetDraw = nullptr;
+IUnit* TargetUnder = nullptr;
+IUnit* jMonster = nullptr;
 
 // Elise
 float _humQcd, _humWcd, _humEcd;

@@ -17,7 +17,7 @@ public:
 			ComboQ = ComboSettings->CheckBox("Use Q1", true);
 			ComboQH = ComboSettings->CheckBox("Use Q2", true);
 			ComboW = ComboSettings->CheckBox("Use W", true);
-			ComboE = ComboSettings->CheckBox("Use E", true);			
+			ComboE = ComboSettings->CheckBox("Use E", true);
 			AutoStartKill = ComboSettings->CheckBox("Beta Auto Star Combo If Killable", true);
 			AutoStartWard = ComboSettings->CheckBox("Beta Ward Jump In Auto Star Combo", true);
 			StartComboKey = ComboSettings->AddKey("Start Combo", 74);
@@ -41,12 +41,12 @@ public:
 		LaneClearSettings = MainMenu->AddMenu("LaneClear Settings");
 		{
 			LaneClearQ = LaneClearSettings->CheckBox("Use Q1 in laneclear", true);
-			LaneClearQ2 = LaneClearSettings->CheckBox("Use Q2 in laneclear", true);	
+			LaneClearQ2 = LaneClearSettings->CheckBox("Use Q2 in laneclear", true);
 			LaneClearW = LaneClearSettings->CheckBox("Use W in laneclear", true);
 			HealthW = LaneClearSettings->AddInteger("Only W if Hp % < ", 1, 100, 50);
 			LaneClearE = LaneClearSettings->CheckBox("Use E in laneclear", true);
 			MinionsE = LaneClearSettings->AddInteger("Minimum minions to E in laneclear", 1, 6, 3);
-			LaneClearMana = LaneClearSettings->AddInteger("Minimum Energy% to laneclear", 1, 100, 40);			
+			LaneClearMana = LaneClearSettings->AddInteger("Minimum Energy% to laneclear", 1, 100, 40);
 		}
 
 		JungleClearSettings = MainMenu->AddMenu("JungleClear Settings");
@@ -64,10 +64,26 @@ public:
 			WardJumpKey = fedMiscSettings->AddKey("Ward Jump", 90);
 			WardMax = fedMiscSettings->CheckBox("Ward Max Range", true);
 			jumpMinion = fedMiscSettings->CheckBox("Jump in Minion", true);
-			jumpAliado = fedMiscSettings->CheckBox("Jump in Allys", true);			
+			jumpAliado = fedMiscSettings->CheckBox("Jump in Allys", true);
 			EscapeMode = fedMiscSettings->AddSelection("Escape Mode ->", 0, std::vector<std::string>({ "Near Mouse", "Auto Closest Spot" }));
 			EscapeKey = fedMiscSettings->AddKey("Escape Jungle", 65);
 			SmiteQ1 = fedMiscSettings->CheckBox("Beta SmiteQ", true);
+		}
+
+		InsecSettings = MainMenu->AddMenu("Insec Settings");
+		{
+			InsecSelect = InsecSettings->AddSelection("Target to Insec ->", 0, std::vector<std::string>({ "Selected Target", "Target Selector" }));
+			InsecTo = InsecSettings->AddSelection("Insec To ->", 0, std::vector<std::string>({ "Allys>Tower>Ally", "Tower>Allys", "To Mouse" }));
+			InsecOrbwalk = InsecSettings->CheckBox("Orbwalk to Mouse", true);
+			KickAndFlash = InsecSettings->CheckBox("Priorize Kick & Flash", false);
+			useFlash = InsecSettings->CheckBox("Use Flash if no Wards", true);
+			Flashdistance = InsecSettings->CheckBox("Ward & Flash (Selected Target)", false);
+			InsecKey = InsecSettings->AddKey("Go Insec", 71);
+			InstaFlashKey = InsecSettings->AddKey("Flash & R to Mouse", 75);
+			clickInsec = InsecSettings->CheckBox("Insec to ClickPos", true);
+			ClickExpire = InsecSettings->AddInteger("Expire Pos Click (ms)", 5000, 30000, 15000);
+			ClickKeyPos = InsecSettings->AddKey("Key do Add Pos", 4);
+			InsecUnder = InsecSettings->AddSelection("Auto Under Attack Tower", 0, std::vector<std::string>({ "Disable", "Flash", "Ward Jump" }));
 		}
 
 		RMenu = MainMenu->AddMenu("Ultimate Settings");
@@ -78,22 +94,7 @@ public:
 			kickKill = RMenu->CheckBox("If Kill Enemy Behind (Beta)", true);
 			UseWardgap = RMenu->CheckBox("Use Ward", true);
 			UseFlashgap = RMenu->CheckBox("Use Flash", false);
-		}
-
-		InsecSettings = MainMenu->AddMenu("Insec Settings");
-		{
-			InsecSelect = InsecSettings->AddSelection("Target to Insec ->", 0, std::vector<std::string>({ "Selected Target", "Target Selector" }));
-			InsecTo = InsecSettings->AddSelection("Insec To ->", 0, std::vector<std::string>({ "Allys>Tower>Ally", "Tower>Allys", "To Mouse" }));
-			InsecOrbwalk = InsecSettings->CheckBox("Orbwalk to Mouse", true);
-			KickAndFlash = InsecSettings->CheckBox("Priorize Kick + Flash", false);			
-			useFlash = InsecSettings->CheckBox("Use Flash if no Wards", true);
-			Flashdistance = InsecSettings->CheckBox("Ward + Flash (Selected Target)", false);
-			InsecKey = InsecSettings->AddKey("Go Insec", 71);
-			InstaFlashKey = InsecSettings->AddKey("Flash + R to Mouse", 75);
-			clickInsec = InsecSettings->CheckBox("Insec to ClickPos?", true);
-			ClickExpire = InsecSettings->AddInteger("Expire Pos Click (ms)", 5000, 30000, 15000);
-			ClickKeyPos = InsecSettings->AddKey("Key do Add Pos", 4);
-		}
+		}		
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
 		{
@@ -469,6 +470,7 @@ public:
 	static void Automatic()
 	{	
 		SaveClick();
+		InsecUnderTower();
 		
 		if (IsKeyDown(InstaFlashKey) && FoundFlash)
 		{
@@ -491,7 +493,8 @@ public:
 		{
 			if (!CheckTarget(target)) continue;
 
-			if (target->IsValidTarget(GEntityList->Player(), R->Range()) && ComboR->Enabled() && R->IsReady() && GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) > target->GetHealth())
+			if (target->IsValidTarget(GEntityList->Player(), R->Range()) && ComboR->Enabled() && R->IsReady() && 
+				GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) > target->GetHealth())
 			{
 				if (CheckShielded(target))
 				{
@@ -499,7 +502,8 @@ public:
 				}
 			}
 
-			if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
+			if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && 
+				GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
 			{
 				Q->CastOnTarget(target, PredicChange());
 			}
@@ -512,6 +516,7 @@ public:
 			InsecType = "VamosInsec";
 			InsecText = "";
 			InsecTextQ2 = "";
+			goInsecUnder = false;
 		}
 
 		if (LastClick < GGame->TickCount())
@@ -665,120 +670,113 @@ public:
 	static void JungleClear()
 	{
 		if (FoundMinions(Q->Range()) && !FoundMinionsNeutral(1300)) { return; }
-		
-		for (auto minion : GEntityList->GetAllMinions(false, false, true))
+
+		SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()); });	
+
+		if (Minion.Any())
 		{
+			jMonster = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
+		}
 
-			if (minion != nullptr && !minion->IsDead() && !minion->IsInvulnerable() && minion->IsVisible())
-			{				
-				if (JungleE->Enabled())
+		if (jMonster != nullptr && !jMonster->IsDead() && !jMonster->IsInvulnerable() && jMonster->IsVisible())
+		{
+			if (JungleE->Enabled())
+			{
+				if (E->IsReady() && !isDashingQ && !IsDashingW() && GGame->TickCount() - LastSpellTick > 500)
 				{
-					if (E->IsReady() && !isDashingQ && !IsDashingW() && GGame->TickCount() - LastSpellTick > 500 )
+
+					if (LeeEone())
 					{
-
-						if (LeeEone())
+						if (!FoundMinions(Q->Range()) && FoundMinionsNeutral(Q->Range()) && JunglePassive() && (LeeQone() || !Q->IsReady()) && (LeeWone() || !W->IsReady()))
 						{
-							if (!FoundMinions(Q->Range()) && FoundMinionsNeutral(Q->Range()) && JunglePassive() && (LeeQone() || !Q->IsReady()) && (LeeWone() || !W->IsReady()))
-							{
-								if (GEntityList->Player()->IsValidTarget(minion, E->Range() + 50) && E->CastOnPlayer())
-								{
-									LastSpellTick = GGame->TickCount();
-								}
-							}
-						}
-						else
-						{
-							if (minion->IsValidTarget(GEntityList->Player(), E2->Range()) && TargetHaveE(minion) &&
-								JunglePassive() && E2->CastOnPlayer())
-							{
-								LastSpellTick = GGame->TickCount() + 300;
-								return;
-							}
-
-							if ((JunglePassive() || ExpireE(minion)) && E2->CastOnPlayer())
+							if (GEntityList->Player()->IsValidTarget(jMonster, E->Range() + 50) && E->CastOnPlayer())
 							{
 								LastSpellTick = GGame->TickCount();
 							}
 						}
 					}
-				}
-				
-				if (JungleW->Enabled())
-				{
-					if (W->IsReady() && !isDashingQ && !IsDashingW() && GGame->TickCount() - LastSpellTick > 500)
+					else
 					{
-						if (LeeWone())
+						if (jMonster->IsValidTarget(GEntityList->Player(), E2->Range()) && TargetHaveE(jMonster) &&
+							JunglePassive() && E2->CastOnPlayer())
 						{
-							if (GGame->TickCount() - LastWTick > 500 && (LeeQone() || !Q->IsReady()) && (LeeEone() || E->IsReady() || GEntityList->Player()->GetSpellBook()->GetLevel(kSlotE) == 0))
-							{
-								if ((!FoundMinions(Q->Range()) && FoundMinionsNeutral(Q->Range()) &&
-									GEntityList->Player()->HealthPercent() < 30) || JunglePassive())
-								{
-									if (GEntityList->Player()->IsValidTarget(minion, 400))
-									{
-										W->CastOnPlayer();
-										LastSpellTick = GGame->TickCount() + 500;
-									}
-								}
-							}
+							LastSpellTick = GGame->TickCount() + 300;
+							return;
 						}
-						else
+
+						if ((JunglePassive() || ExpireE(jMonster)) && E2->CastOnPlayer())
 						{
-							if (GEntityList->Player()->HealthPercent() < 20 || GGame->TickCount() - LastWTick >= 2800 || JunglePassive())
-							{
-								if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
-								{
-									W->CastOnPlayer();
-									LastSpellTick = GGame->TickCount();
-								}
-							}
+							LastSpellTick = GGame->TickCount();
 						}
 					}
 				}
-				
-				if (JungleQ->Enabled() && Q->IsReady() && GGame->TickCount() - LastWTick > 500)
-				{					
-					if (LeeQone())
-					{						
-						if (PassiveStacksNum < 2 && !IsDashingW() && (LeeEone() || !E->IsReady()) && (LeeWone() || !W->IsReady()))
+			}
+
+			if (JungleW->Enabled())
+			{
+				if (W->IsReady() && !isDashingQ && !IsDashingW() && GGame->TickCount() - LastSpellTick > 500)
+				{
+					if (LeeWone())
+					{
+						if (GGame->TickCount() - LastWTick > 500 && (LeeQone() || !Q->IsReady()) && (LeeEone() || E->IsReady() || GEntityList->Player()->GetSpellBook()->GetLevel(kSlotE) == 0))
 						{
-							if (GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 200 || JunglePassive())
+							if ((!FoundMinions(Q->Range()) && FoundMinionsNeutral(Q->Range()) &&
+								GEntityList->Player()->HealthPercent() < 30) || JunglePassive())
 							{
-								if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+								if (GEntityList->Player()->IsValidTarget(jMonster, 400))
 								{
-									if (strstr(minion->GetObjectName(), "Crab"))
-									{
-										if (GEntityList->Player()->IsValidTarget(minion, 400))
-										{
-											Q->CastOnUnit(minion);
-											LastSpellTick = GGame->TickCount();
-										}
-									}
-									else
-									{
-										Q->CastOnUnit(minion);
-										LastSpellTick = GGame->TickCount();
-									}									
+									W->CastOnPlayer();
+									LastSpellTick = GGame->TickCount() + 500;
 								}
 							}
 						}
 					}
 					else
 					{
-						if (TargetHaveQ(minion) && (ExpireQ(minion) || GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false) > minion->GetHealth() ||
-							GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 200 || JunglePassive()))
+						if (GEntityList->Player()->HealthPercent() < 20 || GGame->TickCount() - LastWTick >= 2800 || JunglePassive())
 						{
-							if (!IsDashingW())
+							if (GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
 							{
-								Q->CastOnPlayer();
+								W->CastOnPlayer();
 								LastSpellTick = GGame->TickCount();
 							}
 						}
 					}
 				}
 			}
+
+			if (JungleQ->Enabled() && Q->IsReady() && GGame->TickCount() - LastWTick > 500)
+			{
+				if (LeeQone())
+				{
+					if (PassiveStacksNum < 2 && !IsDashingW() && (LeeEone() || !E->IsReady()) && (LeeWone() || !W->IsReady()))
+					{
+						if (GetDistance(GEntityList->Player(), jMonster) > GEntityList->Player()->GetRealAutoAttackRange(jMonster) + 200 || JunglePassive())
+						{
+							if (GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
+							{
+								Q->CastOnUnit(jMonster);
+								LastSpellTick = GGame->TickCount();
+							}
+						}
+					}
+				}
+				else
+				{
+					if (TargetHaveQ(jMonster) && (ExpireQ(jMonster) || GHealthPrediction->GetKSDamage(jMonster, kSlotQ, Q->GetDelay(), false) > jMonster->GetHealth() ||
+						GetDistance(GEntityList->Player(), jMonster) > GEntityList->Player()->GetRealAutoAttackRange(jMonster) + 200 || JunglePassive()))
+					{
+						if (!IsDashingW())
+						{
+							Q->CastOnPlayer();
+							LastSpellTick = GGame->TickCount();
+						}
+					}
+				}
+			}
 		}
-	}	
+	}
 
 	static void Harass()
 	{
@@ -1035,7 +1033,7 @@ public:
 			pos = GGame->CursorPosition();
 		}
 
-		if (IsKeyDown(InsecKey) && InsecText == "kickFlash" && KickAndFlash->Enabled())
+		if (IsKeyDown(InsecKey) && InsecText == "kickFlash" && KickAndFlash->Enabled() || InsecText == "UnderkickFlash")
 		{
 			pos = InsecST;
 		}
@@ -1172,7 +1170,7 @@ public:
 							GetDistanceVectors(JumpPos, ally->GetPosition()) < 200 &&
 							ally != GEntityList->Player() && LeeWone() && 500 < GGame->TickCount() - LastWTick && ally->IsVisible())
 						{
-							W->CastOnUnit(ally);
+							W->CastOnUnit(ally);							
 							return;
 						}
 					}
@@ -1186,7 +1184,7 @@ public:
 							GetDistanceVectors(JumpPos, ally->GetPosition()) < 200 &&
 							ally != GEntityList->Player() && LeeWone() && 500 < GGame->TickCount() - LastWTick && ally->IsVisible())
 						{
-							W->CastOnUnit(ally);
+							W->CastOnUnit(ally);							
 							return;
 						}
 					}
@@ -1207,7 +1205,7 @@ public:
 						return;
 					}
 
-					W->CastOnUnit(ward);
+					W->CastOnUnit(ward);				
 
 					return;
 				}
@@ -1290,7 +1288,7 @@ public:
 
 				if (insec)
 				{
-					InsecType = "ColoqueiWard";
+					InsecType = "ColoqueiWard";					
 				}
 			}
 		}
@@ -1324,7 +1322,7 @@ public:
 		return maxRange;
 	}
 
-	static Vec3 GetInsecPos(IUnit* target)
+	static Vec3 GetInsecPos(IUnit* target, bool under = false)
 	{
 		GetTarget = target;
 
@@ -1359,48 +1357,62 @@ public:
 		}
 		else
 		{
-			if (InsecTo->GetInteger() == 0)
+			if (under)
 			{
-				if (clickInsec->Enabled() && ClickPOS != Vec3(0, 0, 0))
-				{
-					InsecST = ClickPOS;
-				}
-				else if (AliadoPos != nullptr)
-				{
-					InsecST = AliadoPos->GetPosition();
-				}
-				else if (TorrePos != nullptr)
+				if (TorrePos != nullptr)
 				{
 					InsecST = TorrePos->ServerPosition();
 				}
 				else
 				{
-					InsecST = AllySoloPos->GetPosition();
-				}
-			}
-
-			else if (InsecTo->GetInteger() == 1)
-			{
-				if (clickInsec->Enabled() && ClickPOS != Vec3(0, 0, 0))
-				{
-					InsecST = ClickPOS;
-				}
-				else if (TorrePos != nullptr)
-				{
-					InsecST = TorrePos->ServerPosition();
-				}
-				else if (AliadoPos != nullptr)
-				{
-					InsecST = AliadoPos->GetPosition();
-				}
-				else
-				{
-					InsecST = AllySoloPos->GetPosition();
+					InsecST = GEntityList->Player()->ServerPosition();
 				}
 			}
 			else
 			{
-				InsecST = GGame->CursorPosition();
+				if (InsecTo->GetInteger() == 0)
+				{
+					if (clickInsec->Enabled() && ClickPOS != Vec3(0, 0, 0))
+					{
+						InsecST = ClickPOS;
+					}
+					else if (AliadoPos != nullptr)
+					{
+						InsecST = AliadoPos->GetPosition();
+					}
+					else if (TorrePos != nullptr)
+					{
+						InsecST = TorrePos->ServerPosition();
+					}
+					else
+					{
+						InsecST = AllySoloPos->GetPosition();
+					}
+				}
+
+				else if (InsecTo->GetInteger() == 1)
+				{
+					if (clickInsec->Enabled() && ClickPOS != Vec3(0, 0, 0))
+					{
+						InsecST = ClickPOS;
+					}
+					else if (TorrePos != nullptr)
+					{
+						InsecST = TorrePos->ServerPosition();
+					}
+					else if (AliadoPos != nullptr)
+					{
+						InsecST = AliadoPos->GetPosition();
+					}
+					else
+					{
+						InsecST = AllySoloPos->GetPosition();
+					}
+				}
+				else
+				{
+					InsecST = GGame->CursorPosition();
+				}
 			}
 		}
 
@@ -1463,41 +1475,35 @@ public:
 				Q->CastOnPlayer();
 			}
 
-			if (CheckShielded(GetTarget) && GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) < 200 &&
+			if (R->IsReady() && CheckShielded(GetTarget) && GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) < 200 &&
 				(InsecType == "VamosInsec" || InsecType == "Ultimate"))
 			{
 				if (GetDistance(GetTarget, GEntityList->Player()) <= 375)
 				{
-					if (Q->IsReady() && LeeQone() && R->IsReady())
+					if (Q->IsReady() && LeeQone())
 					{
 						GOrbwalking->ResetAA();
 						Q->CastOnTarget(GetTarget, PredicChange());
 						InsecTextQ2 = "Q2Now";
-					}					
-
-					if (R->IsReady())
-					{
-						R->CastOnUnit(GetTarget);
-						InsecTime = GGame->TickCount() + 2000;
 					}
+
+					R->CastOnUnit(GetTarget);
+					InsecTime = GGame->TickCount() + 2000;
 				}
 			}
 
-			else if (KickAndFlash->Enabled() && FoundFlash && GetDistance(GEntityList->Player(), GetTarget) <= R->Range() && CheckShielded(GetTarget) && InsecType == "VamosInsec")
+			else if (KickAndFlash->Enabled() && R->IsReady() && FoundFlash && Flash->IsReady() && GetDistance(GEntityList->Player(), GetTarget) <= R->Range() && CheckShielded(GetTarget) && InsecType == "VamosInsec")
 			{
-				if (Q->IsReady() && LeeQone() && R->IsReady())
+				if (Q->IsReady() && LeeQone())
 				{
 					GOrbwalking->ResetAA();
 					Q->CastOnTarget(GetTarget, PredicChange());
 					InsecTextQ2 = "Q2Now";
 				}
-				
-				if (R->IsReady() && Flash->IsReady())
-				{
-					InsecTime = GGame->TickCount() + 1500;
-					InsecText = "kickFlash";
-					R->CastOnUnit(GetTarget);			
-				}
+
+				InsecTime = GGame->TickCount() + 1500;
+				InsecText = "kickFlash";
+				R->CastOnUnit(GetTarget);
 			}
 			// Se tiver na distancia do WardJump
 			else if (GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) < 650 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
@@ -1695,7 +1701,72 @@ public:
 				}
 			}			
 		}
-	}		
+	}
+
+	static void InsecUnderTower()
+	{
+		auto target = TargetUnder;
+
+		if (!R->IsReady() && !Q->IsReady())
+		{
+			TargetUnder = nullptr;
+		}		
+
+		if (!CheckTarget(target)) return;		
+
+		if (goInsecUnder)
+		{			
+			Vec3 position = GetInsecPos(target, true);
+
+			if (Q->IsReady() && TargetHaveQ(target) && !R->IsReady() && LastRTick - GGame->TickCount() < 2000 && InsecTextQ2 == "Q2Now" &&
+				(CastingR(target) || ExpireQ(target)))
+			{
+				Q->CastOnPlayer();
+			}
+
+			if (InsecUnder->GetInteger() > 0 && R->IsReady() && CheckShielded(target) &&
+				GetDistanceVectors(position, GEntityList->Player()->GetPosition()) < 200)
+			{				
+				if (GetDistance(target, GEntityList->Player()) <= 375)
+				{
+					GOrbwalking->ResetAA();
+					R->CastOnUnit(target);
+					InsecTime = GGame->TickCount() + 2000;
+				}
+			}
+
+			if (InsecUnder->GetInteger() == 1 && FoundFlash && Flash->IsReady() && R->IsReady() && GetDistance(GEntityList->Player(), target) <= R->Range() && CheckShielded(target))
+			{
+				if (Q->IsReady() && LeeQone())
+				{
+					GOrbwalking->ResetAA();
+					Q->CastOnTarget(target, PredicChange());
+					InsecTextQ2 = "Q2Now";
+				}
+
+				InsecTime = GGame->TickCount() + 1500;
+				InsecText = "UnderkickFlash";
+				GOrbwalking->ResetAA();
+				R->CastOnUnit(target);
+			}
+
+			if (InsecUnder->GetInteger() == 2 && GetDistanceVectors(position, GEntityList->Player()->GetPosition()) < 650 &&
+				GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
+				R->IsReady() && checkWardsTemp() && InsecType == "VamosInsec")
+			{
+				if (Q->IsReady() && LeeQone())
+				{
+					GOrbwalking->ResetAA();
+					Q->CastOnTarget(target, PredicChange());
+					InsecTextQ2 = "Q2Now";
+				}
+
+				WardJump(position, false, true);				
+				InsecTime = GGame->TickCount() + 2000;
+				Rposition = position;
+			}
+		}
+	}
 
 	static void SmiteQ(IUnit* target)
 	{
@@ -1812,8 +1883,15 @@ public:
 			{
 				// bubba
 			}
+		}
 
-
+		if (Args.Caster_->IsTurret() && Args.Target_->IsEnemy(GEntityList->Player()) && InsecUnder->GetInteger() > 0 && Args.Target_->IsHero())
+		{			
+			if (!goInsecUnder)
+			{
+				goInsecUnder = true;
+				TargetUnder = Args.Target_;
+			}
 		}
 	}
 
