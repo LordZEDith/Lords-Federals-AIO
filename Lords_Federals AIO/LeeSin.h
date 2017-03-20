@@ -10,7 +10,7 @@ public:
 	
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals LeeSin vBeta");
+		MainMenu = GPluginSDK->AddMenu("Lords & Federals LeeSin vBeta2");
 
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{
@@ -113,7 +113,7 @@ public:
 
 	static void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, (kCollidesWithYasuoWall, kCollidesWithHeroes, kCollidesWithMinions));
 		Q->SetSkillshot(0.25f, 65.f, 1750.f, 1080.f);
 		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, kCollidesWithNothing);
 		W->SetOverrideRange(700);
@@ -579,7 +579,7 @@ public:
 				{
 					for (auto minion : GEntityList->GetAllMinions(false, true, false))
 					{
-						if ((PassiveStacksNum == 0 || ExpireE(minion)) && !CheckIsWard(minion) &&  minion->IsValidTarget(GEntityList->Player(), E2->Range()) && E->CastOnPlayer())
+						if ((PassiveStacksNum == 0 || ExpireE(minion)) && minion->IsCreep() &&  minion->IsValidTarget(GEntityList->Player(), E2->Range()) && E->CastOnPlayer())
 						{
 							LastSpellTick = GGame->TickCount();
 						}
@@ -630,7 +630,7 @@ public:
 						{
 							if (GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 100 || PassiveStacksNum == 0)
 							{
-								if (GEntityList->Player()->IsValidTarget(minion, Q->Range()) && !minion->IsDead() && !minion->IsInvulnerable() && minion->IsVisible() && !CheckIsWard(minion))
+								if (GEntityList->Player()->IsValidTarget(minion, Q->Range()) && !minion->IsDead() && !minion->IsInvulnerable() && minion->IsVisible() && minion->IsCreep())
 								{
 									Q->CastOnUnit(minion);
 									LastSpellTick = GGame->TickCount();
@@ -1737,7 +1737,7 @@ public:
 
 							if (out1.HitChance >= PredicChange())
 							{
-								if (Smite->CastOnUnit(SmiteQu))
+								if (Smites->CastOnUnit(SmiteQu))
 								{
 									Q->CastOnTarget(target, PredicChange());
 								}

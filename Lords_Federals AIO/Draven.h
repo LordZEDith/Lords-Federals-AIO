@@ -26,7 +26,7 @@ public:
 		AxeSettings = MainMenu->AddMenu("Axe Settings");
 		{
 			gotoAxeC = AxeSettings->CheckBox("Catch axe", true);
-			gotoAxeMaxDist = AxeSettings->AddInteger("Max dist to catch axe", 200, 1500, 500);
+			gotoAxeMaxDist = AxeSettings->AddFloat("Max dist to catch axe", 200, 1500, 500);
 			axeKill = AxeSettings->CheckBox("No Catch Axe if can kill 2 AA", true);
 			axeTower = AxeSettings->CheckBox("No Catch Axe Under Turret Combo", true);
 			axeTower2 = AxeSettings->CheckBox("No Catch Axe Under Turret Farm", true);
@@ -108,7 +108,7 @@ public:
 
 			if (DrawAxerange->Enabled())
 			{
-				GRender->DrawOutlinedCircle(GGame->CursorPosition(), Vec4(0, 191, 255, 255), gotoAxeMaxDist->GetInteger());
+				GRender->DrawOutlinedCircle(GGame->CursorPosition(), Vec4(0, 191, 255, 255), gotoAxeMaxDist->GetFloat());
 			}
 		}
 	}	
@@ -210,7 +210,7 @@ public:
 
 	static void CatchAxe(IUnit* target)
 	{
-		auto maxDist = gotoAxeMaxDist->GetInteger();
+		auto maxDist = gotoAxeMaxDist->GetFloat();
 		auto modokey = GOrbwalking->GetOrbwalkingMode();
 
 		/*if (GetDistance(GEntityList->Player(), target) < 30)
@@ -219,25 +219,34 @@ public:
 		return;
 		}*/
 
+		//GUtility->LogConsole("Distancia Axe - %f")
+
 		if (axeTower->Enabled() && modokey == kModeCombo && IsUnderTurretPos(target->GetPosition()))
-		{
-			GOrbwalking->SetOverridePosition(GGame->CursorPosition());			
-		}
-
-		if (axeTower2->Enabled() && modokey == kModeLaneClear  && IsUnderTurretPos(target->GetPosition()))
-		{
-			GOrbwalking->SetOverridePosition(GGame->CursorPosition());			
-		}
-
-		if (axeEnemy->Enabled() && CountEnemy(target->GetPosition(), 550) > 2)
-		{
-			GOrbwalking->SetOverridePosition(GGame->CursorPosition());			
-		}
-
-		if (GetDistance(GEntityList->Player(), target) > maxDist)
 		{
 			GOrbwalking->SetOverridePosition(GGame->CursorPosition());
 		}
+
+		else if (axeTower2->Enabled() && modokey == kModeLaneClear  && IsUnderTurretPos(target->GetPosition()))
+		{
+			GOrbwalking->SetOverridePosition(GGame->CursorPosition());
+		}
+
+		else if (axeEnemy->Enabled() && CountEnemy(target->GetPosition(), 550) > 2)
+		{
+			GOrbwalking->SetOverridePosition(GGame->CursorPosition());
+		}
+		else
+		{
+
+			if (GetDistanceVectors(GGame->CursorPosition(), target->GetPosition()) < maxDist)
+			{
+				GOrbwalking->SetOverridePosition(target->GetPosition());
+			}
+			else
+			{
+				GOrbwalking->SetOverridePosition(GGame->CursorPosition());
+			}
+		}		
 	}
 
 	static void LogicW()

@@ -65,6 +65,7 @@ public:
 			EInterrupter = fedMiscSettings->CheckBox("Automatically E Interrupt Spell", true);
 			CCedQ = fedMiscSettings->CheckBox("Auto Q When Enemies Cant Move", true);
 			CheckShield = fedMiscSettings->CheckBox("No Charm (BlackShield, Banshee)", true);
+			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
 
 		}
 
@@ -86,11 +87,29 @@ public:
 		Q->SetSkillshot(0.25f, 90.f, 1550.f, 870.f);
 		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 		W->SetOverrideRange(580);
-		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
+		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, true, false, (kCollidesWithYasuoWall, kCollidesWithHeroes, kCollidesWithMinions));
 		E->SetSkillshot(0.25f, 60.f, 1550.f, 950.f);
 		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, kCollidesWithNothing);
 		R->SetOverrideRange(600);
-	}	
+	}
+
+	static int PredicChange()
+	{
+		if (Predic->GetInteger() == 0)
+		{
+			return mypredic = kHitChanceMedium;
+		}
+		if (Predic->GetInteger() == 1)
+		{
+			return mypredic = kHitChanceHigh;
+		}
+		if (Predic->GetInteger() == 2)
+		{
+			return mypredic = kHitChanceVeryHigh;
+		}
+
+		return mypredic = kHitChanceLow;
+	}
 
 	static Vec3 CalculateReturnPos(IUnit* Target)
 	{
@@ -202,7 +221,7 @@ public:
 			{
 				if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
 				{
-					Q->CastOnTarget(target, kHitChanceHigh);
+					Q->CastOnTarget(target, PredicChange());
 					return;
 				}
 
@@ -214,19 +233,19 @@ public:
 
 				if (KillstealE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()) && GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) > target->GetHealth())
 				{
-					E->CastOnTarget(target, kHitChanceHigh);
+					E->CastOnTarget(target, PredicChange());
 				}
 			}
 
 			if (AutoHarass->Enabled() && Q->IsReady() && HarassMana->GetInteger() < GEntityList->Player()->ManaPercent() && CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50))
 			{
-				Q->CastOnTarget(target, kHitChanceHigh);
+				Q->CastOnTarget(target, PredicChange());
 				return;
 			}
 
 			if (CCedQ->Enabled() && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50) && Q->IsReady() && !CanMove(target) && !target->IsDead() && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > Q->ManaCost())
 			{
-				Q->CastOnTarget(target, kHitChanceMedium);
+				Q->CastOnTarget(target, PredicChange());
 			}
 		}
 	}
@@ -248,12 +267,12 @@ public:
 			{
 				if (CheckShielded(target))
 				{
-					E->CastOnTarget(target, kHitChanceHigh);
+					E->CastOnTarget(target, PredicChange());
 				}
 			}
 			else
 			{
-				E->CastOnTarget(target, kHitChanceHigh);
+				E->CastOnTarget(target, PredicChange());
 			}
 		}
 
@@ -266,7 +285,7 @@ public:
 		{
 			if (EMissile == nullptr || !EMissile->IsValidObject())
 			{
-				Q->CastOnTarget(target, kHitChanceHigh);
+				Q->CastOnTarget(target, PredicChange());
 			}
 		}
 	}
@@ -285,12 +304,12 @@ public:
 			{
 				if (CheckShielded(target))
 				{
-					E->CastOnTarget(target, kHitChanceHigh);
+					E->CastOnTarget(target, PredicChange());
 				}
 			}
 			else
 			{
-				E->CastOnTarget(target, kHitChanceHigh);
+				E->CastOnTarget(target, PredicChange());
 			}
 		}
 
@@ -301,7 +320,7 @@ public:
 
 		if (HarassQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50))
 		{
-			Q->CastOnTarget(target, kHitChanceHigh);
+			Q->CastOnTarget(target, PredicChange());
 		}
 	}
 
@@ -428,7 +447,7 @@ public:
 		if (EGapCloser->Enabled() && E->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < E->Range())
 
 		{
-			E->CastOnTarget(args.Sender, kHitChanceMedium);
+			E->CastOnTarget(args.Sender, PredicChange());
 		}
 	}
 
@@ -436,7 +455,7 @@ public:
 	{
 		if (EInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < E->Range())
 		{
-			E->CastOnTarget(Args.Target, kHitChanceHigh);
+			E->CastOnTarget(Args.Target, PredicChange());
 		}
 	}
 

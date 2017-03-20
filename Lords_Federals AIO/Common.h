@@ -95,7 +95,21 @@ static bool CheckIsWard(IUnit* minion)
 {
 	if (strstr(minion->GetBaseSkinName(), "YellowTrinket") ||
 		strstr(minion->GetBaseSkinName(), "JammerDevice") ||
-		strstr(minion->GetBaseSkinName(), "SightWard"))
+		strstr(minion->GetBaseSkinName(), "SightWard") ||
+		strstr(minion->GetBaseSkinName(), "ZyraSeed") ||
+		strstr(minion->GetBaseSkinName(), "NidaleeSpear") ||
+		strstr(minion->GetBaseSkinName(), "CaitlynTrap") ||
+		strstr(minion->GetBaseSkinName(), "JhinTrap") ||
+		strstr(minion->GetBaseSkinName(), "IvernTotem") ||
+		strstr(minion->GetBaseSkinName(), "TeemoMushroom") ||
+		strstr(minion->GetBaseSkinName(), "KalistaSpawn") ||
+		strstr(minion->GetBaseSkinName(), "BardFollower") ||
+		strstr(minion->GetBaseSkinName(), "BardHealthShrine") ||
+		strstr(minion->GetBaseSkinName(), "TestCubeRenderwCollision") ||
+		strstr(minion->GetBaseSkinName(), "ThreshLantern") || 
+		strstr(minion->GetBaseSkinName(), "JarvanIVWall") ||
+		strstr(minion->GetBaseSkinName(), "JarvanIVStandard") ||
+		strstr(minion->GetBaseSkinName(), "IllaoiMinion"))		
 	{
 		return true;
 	}
@@ -314,7 +328,7 @@ inline int GetMinionsInRange(Vec3 Position, float Range)
 	for (auto mingon : mingons)
 	{
 		//counts enemies checking if they are enemy heroes and are within radius parameter
-		if (mingon != nullptr && mingon->IsValidTarget() && !mingon->IsDead() && !CheckIsWard(mingon))
+		if (mingon != nullptr && mingon->IsValidTarget() && !mingon->IsDead() && mingon->IsCreep())
 		{
 			auto mingonDistance = (mingon->GetPosition() - Position).Length();
 			if (mingonDistance < Range)
@@ -341,7 +355,7 @@ inline bool FoundMinions(float range)
  {
 	 for (auto Minions : GEntityList->GetAllMinions(false, true, false))
 	 {
-		 if (GEntityList->Player()->IsValidTarget(Minions, range) && !CheckIsWard(Minions))
+		 if (GEntityList->Player()->IsValidTarget(Minions, range) && Minions->IsCreep())
 			 return true;
 	 }
 
@@ -354,7 +368,7 @@ inline int CountMinions(Vec3 Location, int range)
 
 	 for (auto Minions : GEntityList->GetAllMinions(false, true, false))
 	 {		 
-		 if ((Minions->GetPosition() - Location).Length() < range && Minions->IsValidTarget() && !Minions->IsDead() && !CheckIsWard(Minions))
+		 if ((Minions->GetPosition() - Location).Length() < range && Minions->IsValidTarget() && !Minions->IsDead() && Minions->IsCreep())
 		 {
 			 Count++;
 		 }
@@ -368,7 +382,7 @@ inline int CountMinionsAlly(Vec3 Location, int range)
 
 	for (auto Minions : GEntityList->GetAllMinions(true, false, false))
 	{
-		if ((Minions->GetPosition() - Location).Length() < range && Minions->IsValidTarget() && !Minions->IsDead() && !CheckIsWard(Minions))
+		if ((Minions->GetPosition() - Location).Length() < range && Minions->IsValidTarget() && !Minions->IsDead() && Minions->IsCreep())
 		{
 			Count++;
 		}

@@ -3520,10 +3520,11 @@ void LoadChampion()
 	// Support
 	else if (szChampion == "Sona")
 		pChampion = new cSona;
-	else if (szChampion == "Nami")
+	else if (szChampion == "Bardo")
 		pChampion = new cTemplate;
 	else
 	{
+		pChampion = new cTemplate;
 		GGame->PrintChat("Champion Not Supported");
 	}	
 	

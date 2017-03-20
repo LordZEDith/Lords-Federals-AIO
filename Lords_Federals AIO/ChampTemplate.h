@@ -38,9 +38,9 @@ public:
 
 	static void Automatic()
 	{
-		for (auto fed : GEntityList->GetAllMinions(false, false, true))
+		for (auto fed : GEntityList->GetAllMinions(true, false, false))
 		{
-			if (GetDistance(GEntityList->Player(), fed) < 1500 && fed->IsWard())
+			if (GetDistance(GEntityList->Player(), fed) < 1500 && fed->IsCreep())
 			{
 				GUtility->LogConsole("Nome %s", fed->GetBaseSkinName());
 			}
