@@ -78,6 +78,7 @@ public:
 
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{					
+			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
 			CCedQ = fedMiscSettings->CheckBox("Auto Q on CC", true);
 			//AntiDash = fedMiscSettings->CheckBox("Anti Dash", true);
 			EGapCloser = fedMiscSettings->CheckBox("E GapCloser | Anti Meele", true);
@@ -138,6 +139,24 @@ public:
 		}		
 	}
 
+	static int PredicChange()
+	{
+		if (Predic->GetInteger() == 0)
+		{
+			return mypredic = kHitChanceMedium;
+		}
+		if (Predic->GetInteger() == 1)
+		{
+			return mypredic = kHitChanceHigh;
+		}
+		if (Predic->GetInteger() == 2)
+		{
+			return mypredic = kHitChanceVeryHigh;
+		}
+
+		return mypredic = kHitChanceLow;
+	}
+
 	static void CastQ()
 	{
 		auto qtarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
@@ -146,7 +165,7 @@ public:
 
 		if (qtarget->IsValidTarget(GEntityList->Player(), Q->Range()) && Q->IsReady())
 		{
-			Q->CastOnTarget(qtarget, kHitChanceHigh);
+			Q->CastOnTarget(qtarget, PredicChange());
 		}
 	}	
 
@@ -169,13 +188,13 @@ public:
 				if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && 
 					GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
 				{
-					Q->CastOnTarget(target, kHitChanceHigh);
+					Q->CastOnTarget(target, PredicChange());
 				}
 
 				if (KillstealE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()) && 
 					GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) > target->GetHealth())
 				{
-					E->CastOnTarget(target, kHitChanceHigh);
+					E->CastOnTarget(target, PredicChange());
 				}
 
 				auto delay = R->GetDelay() + GetDistance(GEntityList->Player(), target) / R->Speed();
@@ -196,7 +215,7 @@ public:
 			if (CCedQ->Enabled() && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50) && 
 				Q->IsReady() && !CanMove(target) && CheckTarget(target) && GEntityList->Player()->GetMana() > Q->ManaCost())
 			{
-				Q->CastOnTarget(target, kHitChanceMedium);
+				Q->CastOnTarget(target, PredicChange());
 			}
 
 			if (wCCed->Enabled() && target->IsValidTarget(GEntityList->Player(), W->Range() - 50) && W->IsReady() && !CanMove(target) && 
@@ -220,12 +239,12 @@ public:
 
 		if (!ComboE2->Enabled() && ComboE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()))
 		{
-			E->CastOnTarget(target, kHitChanceHigh);
+			E->CastOnTarget(target, PredicChange());
 		}
 
 		if (!ComboE2->Enabled() && ComboQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50) && GEntityList->Player()->GetMana() > Q->ManaCost() + E->ManaCost())
 		{
-			Q->CastOnTarget(target, kHitChanceHigh);
+			Q->CastOnTarget(target, PredicChange());
 		}
 		
 		if (ComboE2->Enabled() && GEntityList->Player()->GetMana() > Q->ManaCost() + E->ManaCost())
@@ -237,12 +256,12 @@ public:
 
 			if (etarget->IsValidTarget(GEntityList->Player(), E->Range()) && Q->IsReady() && E->IsReady())
 			{				
-				E->CastOnTarget(etarget, kHitChanceHigh);
+				E->CastOnTarget(etarget, PredicChange());
 			}		
 			
 			else if (!WForce->Enabled() && qtarget->IsValidTarget(GEntityList->Player(), Q->Range()) && Q->IsReady() && !E->IsReady())
 			{
-				Q->CastOnTarget(qtarget, kHitChanceHigh);				
+				Q->CastOnTarget(qtarget, PredicChange());
 			}
 
 			else if (WForce->Enabled() && !E->IsReady())
@@ -272,12 +291,12 @@ public:
 
 		if (HarassE->Enabled() && etarget->IsValidTarget(GEntityList->Player(), E->Range()) && E->IsReady())
 		{
-			E->CastOnTarget(etarget, kHitChanceHigh);
+			E->CastOnTarget(etarget, PredicChange());
 		}
 
 		if (HarassQ->Enabled() && qtarget->IsValidTarget(GEntityList->Player(), Q->Range()) && Q->IsReady())
 		{
-			Q->CastOnTarget(qtarget, kHitChanceHigh);
+			Q->CastOnTarget(qtarget, PredicChange());
 		}
 	}
 
@@ -453,7 +472,7 @@ public:
 
 	static void DashToMouse()
 	{
-		if (IsKeyDown(SemiManualKey))
+		if (IsKeyDown(SemiManualKey) && E->IsReady())
 		{
 			auto position = GEntityList->Player()->ServerPosition() - (GGame->CursorPosition() - GEntityList->Player()->ServerPosition());
 			E->CastOnPosition(position);
@@ -535,8 +554,7 @@ public:
 		if (GSpellData->GetSlot(Args.Data_) == kSlotQ)
 		{
 			LastQTick = GGame->TickCount();
-		}
-		
+		}		
 	}
 
 	static void OnDash(UnitDash* Source)
@@ -556,11 +574,13 @@ public:
 
 	static void OnGapcloser(GapCloserSpell const& args)
 	{
+		if (!CheckTarget(args.Sender)) return;
+		
 		if (EGapCloser->Enabled() && E->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < E->Range())
 		{
 			if (GapCloserList[args.Sender->GetNetworkId()]->Enabled())
 			{
-				E->CastOnTarget(args.Sender, kHitChanceHigh);
+				E->CastOnTarget(args.Sender, PredicChange());
 			}
 		}
 
@@ -576,7 +596,9 @@ public:
 		{
 			for (auto target : GEntityList->GetAllHeros(false, true))
 			{
-				if (target->IsMelee() && GetDistance(GEntityList->Player(), target) < 300 && !target->IsDead() && target->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())))
+				if (!CheckTarget(target)) return;
+
+				if (target->IsMelee() && GetDistance(GEntityList->Player(), target) < 300  && target->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())))
 				{					
 					auto dashpos = GEntityList->Player()->ServerPosition();
 					auto extend = dashpos.Extend(target->GetPosition(), -E->Range());					
