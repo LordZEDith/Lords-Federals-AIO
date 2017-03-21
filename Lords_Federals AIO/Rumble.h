@@ -150,17 +150,19 @@ public:
 	{
 		keystate3 = GetAsyncKeyState(SemiManualKey->GetInteger());
 
-		if (keystate3 < 0)
+		if (keystate3 < 0 && LastPress < GGame->TickCount())
 		{
 			if (comboKeyWasDown == false)
 			{				
 				if (StackMune->GetInteger() == 0)
 				{
 					StackMune->UpdateInteger(1);
+					LastPress = GGame->TickCount() + 300;
 				}
 				else
 				{
 					StackMune->UpdateInteger(0);
+					LastPress = GGame->TickCount() + 300;
 				}
 
 				comboKeyWasDown = true;
@@ -176,7 +178,7 @@ public:
 	{
 		keystate2 = GetAsyncKeyState(StartComboKey->GetInteger());
 
-		if (keystate2 < 0)
+		if (keystate2 < 0 && LastPress < GGame->TickCount())
 		{
 			if (harassKeyWasDown == false)
 			{
@@ -184,10 +186,12 @@ public:
 				if (AutoHarass->GetInteger() == 0)
 				{
 					AutoHarass->UpdateInteger(1);
+					LastPress = GGame->TickCount() + 300;
 				}
 				else
 				{
 					AutoHarass->UpdateInteger(0);
+					LastPress = GGame->TickCount() + 300;
 				}
 
 				harassKeyWasDown = true;

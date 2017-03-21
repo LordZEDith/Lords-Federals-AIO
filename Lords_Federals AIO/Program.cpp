@@ -2956,7 +2956,7 @@ public:
 
 		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
-			LeeSin().Combo();
+			LeeSin().ComboSelected();
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 		{
@@ -2975,6 +2975,7 @@ public:
 		LeeSin().WardJumpMouse();
 		LeeSin().Automatic();
 		LeeSin().KickBehind();
+		LeeSin().KeyPressComboMode();
 		//Skins().fedSkinChanger();
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();

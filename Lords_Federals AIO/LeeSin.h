@@ -14,6 +14,8 @@ public:
 
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{
+			ComboChange = ComboSettings->AddSelection("Combo Mode ->", 0, std::vector<std::string>({ "Combo Normal", "Gank Mode" }));
+			GankComboKey = ComboSettings->AddKey("Change Combo Mode", 84);
 			ComboQ = ComboSettings->CheckBox("Use Q1", true);
 			ComboQH = ComboSettings->CheckBox("Use Q2", true);
 			ComboW = ComboSettings->CheckBox("Use W", true);
@@ -22,6 +24,14 @@ public:
 			AutoStartWard = ComboSettings->CheckBox("Beta Ward Jump In Auto Star Combo", true);
 			StartComboKey = ComboSettings->AddKey("Start Combo", 74);
 			PassiveStacks = ComboSettings->AddInteger("Passive Stacks", 0, 2, 2);
+		}
+
+		GankSettings = MainMenu->AddMenu("Gank Settings");
+		{			
+			GankQ = GankSettings->CheckBox("Use Q (E in CD)", true);
+			Gankward = GankSettings->CheckBox("Use Ward Gapcloser", true);
+			ChangetoCombo = GankSettings->CheckBox("Auto Change to Normal Combo", true);
+			DrawGankCombo = GankSettings->CheckBox("Draw Text Gank", true);
 		}
 
 		HarassSettings = MainMenu->AddMenu("Harass Settings");
@@ -354,8 +364,7 @@ public:
 		if (GEntityList->Player()->GetSpellBook()->GetLevel(kSlotE) >= 1)
 		{
 			if (strstr(GEntityList->Player()->GetSpellBook()->GetName(kSlotE), "BlindMonkEOne"))
-			{
-
+			{			
 				return true;
 			}
 		}
@@ -470,7 +479,7 @@ public:
 	static void Automatic()
 	{	
 		SaveClick();
-		InsecUnderTower();
+		InsecUnderTower();		
 		
 		if (IsKeyDown(InstaFlashKey) && FoundFlash)
 		{
@@ -529,6 +538,7 @@ public:
 			SmiteQ1->UpdateInteger(0);
 		}
 		
+		//GUtility->LogConsole("Nome: %s", GEntityList->Player()->GetSpellBook()->GetName(kSlotE));
 		//GUtility->LogConsole("Tick: %i - Insec Etapas: %s -- Texto: %s (Wards: %i) - Distancia: %f max: %f", GGame->TickCount(), InsecType.data(), InsecText.data(), checkWardsTemp(), GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()), maxDistance());
 		//GUtility->LogConsole("Skiis %s", GEntityList->Player()->GetSpellBook()->GetName(kSlotQ));		
 	}
@@ -910,7 +920,7 @@ public:
 
 	static void Combo()
 	{
-		ComboTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+		ComboTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 1300);
 		if (!CheckTarget(ComboTarget)) return;
 
 		StartComboKill(ComboTarget);		
@@ -941,7 +951,7 @@ public:
 
 				SmiteQ(ComboTarget);
 
-				if (ComboTarget != nullptr && Q->CastOnTarget(ComboTarget, PredicChange()))
+				if (ComboTarget != nullptr && ComboTarget->IsValidTarget(GEntityList->Player(), Q->Range()) && Q->CastOnTarget(ComboTarget, PredicChange()))
 				{
 					LastSpellTick = GGame->TickCount();					
 				}
@@ -975,7 +985,7 @@ public:
 
 				if (TargetHaveE(qtarget))
 				{
-					if (ComboPassive() && qtarget->IsValidTarget(GEntityList->Player(), E2->Range() && E2->CastOnPlayer()))
+					if (ComboPassive() && qtarget->IsValidTarget(GEntityList->Player(), E2->Range()) && E2->CastOnPlayer())
 					{
 						LastSpellTick = GGame->TickCount() + 300;
 					}
@@ -2062,11 +2072,21 @@ public:
 	}
 
 	static void Drawing()
-	{
+	{	
 		if (DrawReady->Enabled())
 		{
 			if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), Q->Range()); }
 			if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), W->Range()); }
+			
+			if (LeeEone())
+			{
+				if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), E->Range()); }
+			}
+			else
+			{
+				if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), E2->Range()); }
+			}
+			
 			if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), E->Range()); }
 			if (R->IsReady() && DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), R->Range()); }
 		}
@@ -2074,7 +2094,16 @@ public:
 		{
 			if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), Q->Range()); }
 			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), W->Range()); }
-			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), E->Range()); }
+			
+			if (LeeEone())
+			{
+				if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), E->Range()); }
+			}
+			else
+			{
+				if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), E2->Range()); }
+			}
+
 			if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), R->Range()); }
 		}
 
@@ -2133,6 +2162,21 @@ public:
 						GRender->DrawLine(mypos, pointpos, Vec4(255, 0, 0, 255));
 					}
 				}
+			}
+		}
+
+		if (ComboChange->GetInteger() == 1 && DrawGankCombo->Enabled())
+		{
+			Vec2 gPos;
+			if (GEntityList->Player()->GetHPBarPosition(gPos))
+			{
+				auto altura = -30;
+				auto comprimento = 15;
+
+				static auto message2 = GRender->CreateFontW("Impact", 25.f, kFontWeightNormal);
+				message2->SetColor(Vec4(255, 0, 0, 255));
+				message2->SetOutline(true);
+				message2->Render(gPos.x + 10 + comprimento, gPos.y + altura, "GANK ACTIVE!");
 			}
 		}
 
@@ -2201,27 +2245,7 @@ public:
 
 				GRender->DrawLine(mypos, axepos, Vec4(0, 255, 0, 255));
 			}
-		}
-
-		/*for (auto enemys : GEntityList->GetAllHeros(false, true))
-		{
-			if (enemys != nullptr && GEntityList->Player()->IsValidTarget(enemys, 600 + R->Range()))
-			{				
-					auto startPos = enemys->GetPosition();
-					auto pPos = GEntityList->Player()->GetPosition();
-					auto endPos = pPos.Extend(startPos, GetDistance(enemys, GEntityList->Player()) + 700);
-
-					TestPOS = pPos.Extend(startPos, GetDistance(enemys, GEntityList->Player()) - 230);
-
-					auto cRect = Geometry::Rectangle(startPos.To2D(), endPos.To2D(), 80);
-					cRect.Draw(Vec4(255, 255, 255, 255));
-				
-				
-			}
-		}*/
-
-		//GRender->DrawOutlinedCircle(TestPOS, Vec4(102, 255, 102, 255), 100);
-		
+		}		
 	}
 
 	static void SaveClick()
@@ -2248,6 +2272,117 @@ public:
 		else
 		{
 			harassKeyWasDown = false;
+		}
+	}
+
+	static void GankMode()
+	{
+		ComboTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 1300);
+		if (!CheckTarget(ComboTarget)) return;		
+
+		if (Gankward->Enabled())
+		{
+			if (W->IsReady() && LeeWone() && !isDashingQ && GetDistance(ComboTarget, GEntityList->Player()) > E->Range() + ComboTarget->BoundingRadius()
+				&& GetDistance(ComboTarget, GEntityList->Player()) < 590 + E->Range() - 80 && GEntityList->Player()->GetMana() >= 50)
+			{
+				WardJump(ComboTarget->ServerPosition(), false, false);
+			}
+		}
+
+		if (ComboE->Enabled())
+		{
+			if (LeeEone())
+			{
+				if (ComboTarget->IsValidTarget(GEntityList->Player(), E->Range() - 50) && E->CastOnPlayer())
+				{
+					LastSpellTick = GGame->TickCount() + 300;
+				}
+			}
+			else if (!LeeEone())
+			{
+				if (TargetHaveE(ComboTarget))
+				{
+					if (ComboPassive() && ComboTarget->IsValidTarget(GEntityList->Player(), E2->Range() - 50) && E2->CastOnPlayer())
+					{
+						LastSpellTick = GGame->TickCount() + 300;
+					}
+					return;
+				}
+				if ((ComboPassive() || CountEnemy(GEntityList->Player()->GetPosition(), E2->Range()) > 2
+					|| ExpireE(ComboTarget) || GetDistance(ComboTarget, GEntityList->Player()) > GEntityList->Player()->GetRealAutoAttackRange(ComboTarget) + 100)
+					&& E2->CastOnPlayer())
+				{
+					LastSpellTick = GGame->TickCount() + 300;
+				}
+			}
+		}
+
+		if (!LeeQone() && GankQ->Enabled() && Q->IsReady() && TargetHaveQ(ComboTarget) &&
+			((GDamage->GetAutoAttackDamage(GEntityList->Player(), ComboTarget, false) + GHealthPrediction->GetKSDamage(ComboTarget, kSlotQ, Q->GetDelay(), false) > ComboTarget->GetHealth()) ||
+			(GetDistance(GEntityList->Player(), ComboTarget) > GEntityList->Player()->GetRealAutoAttackRange(ComboTarget) + 150) ||
+				(ComboPassive()) || (!R->IsReady() && LastRTick - GGame->TickCount() < 2500 && CastingR(ComboTarget))))
+		{
+			Q->CastOnPlayer();
+			LastSpellTick = GGame->TickCount();		
+		}
+
+		if (GankQ->Enabled() && Q->IsReady() && LastSpellTick < GGame->TickCount())
+		{
+			if (LeeQone() && !E->IsReady() && (GetDistance(GEntityList->Player(), ComboTarget) > GEntityList->Player()->GetRealAutoAttackRange(ComboTarget) + 100 || ComboPassive()))
+			{
+				SmiteQ(ComboTarget);
+
+				if (ComboTarget->IsValidTarget(GEntityList->Player(), Q->Range()) && Q->CastOnTarget(ComboTarget, PredicChange()))
+				{
+					LastSpellTick = GGame->TickCount();
+				}
+			}
+		}
+
+		if ((!Q->IsReady() || !GankQ->Enabled()) && !E->IsReady() && ChangetoCombo->Enabled())
+		{
+			ComboChange->UpdateInteger(0);
+		}
+	}
+
+	static void KeyPressComboMode()
+	{
+		keystate3 = GetAsyncKeyState(GankComboKey->GetInteger());
+
+		if (keystate3 < 0 && LastPress < GGame->TickCount())
+		{
+			if (harassKeyWasDown == false)
+			{				
+				if (ComboChange->GetInteger() == 0)
+				{
+					ComboChange->UpdateInteger(1);
+					LastPress = GGame->TickCount() + 300;
+				}
+				else
+				{
+					ComboChange->UpdateInteger(0);
+					LastPress = GGame->TickCount() + 300;
+				}
+
+				harassKeyWasDown = true;
+			}
+		}
+		else
+		{
+			harassKeyWasDown = false;
+			//LastPress = 0;
+		}
+	}	
+
+	static void ComboSelected()
+	{
+		if (ComboChange->GetInteger() == 0)
+		{
+			Combo();
+		}
+		else
+		{
+			GankMode();
 		}
 	}
 };
