@@ -3126,7 +3126,7 @@ public:
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-		
+		Khazix().OnProcessSpell(Args);
 	}
 
 	void OnExitVisible(IUnit* Source) override

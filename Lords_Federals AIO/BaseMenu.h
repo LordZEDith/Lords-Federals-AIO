@@ -33,6 +33,7 @@ IMenu* Miscs;
 IMenu* Drawings;
 IMenu* Drawingss;
 IMenu* GankSettings;
+IMenu* Jump2Settings;
 
 IMenu* MainMenu;
 IMenu* HarassSettings;
@@ -181,6 +182,16 @@ IMenuOption* ECountEnemy;
 IMenuOption* ESafety;
 IMenuOption* EBypass;
 IMenuOption* EBypassTower;
+IMenuOption* dJumpEnabled;
+IMenuOption* JEDelay;
+IMenuOption* JumpMode;
+IMenuOption* SaveH;
+IMenuOption* Noauto;
+IMenuOption* jCursor;
+IMenuOption* SecondJump;
+IMenuOption* jCursor2;
+IMenuOption* JumpDraw;
+IMenuOption* EUnderTowerAttack;
 
 IMenuOption* ComboR;
 IMenuOption* ComboRKill;
@@ -374,6 +385,8 @@ Vec3 TestPOS;
 Vec3 BarrilQ;
 Vec3 ClickPOS;
 Vec3 JungleSpot;
+Vec3 JumpPos1;
+Vec3 JumpPos2;
 
 IUnit* Teamate01;
 IUnit* Teamate02;
@@ -382,6 +395,7 @@ IUnit* Teamate04;
 IUnit* Teamate05;
 IUnit* QMissile;
 IUnit* EMissile;
+IUnit* CheckQKillable;
 
 //std::vector<IUnit*> axeList;
 std::list<IUnit*> axeListTeste;

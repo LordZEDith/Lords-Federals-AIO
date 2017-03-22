@@ -68,12 +68,26 @@ public:
 		ESettings = MainMenu->AddMenu("Jump Safety");
 		{			
 			ESafety = ESettings->CheckBox("Enable Safety Checks", true);
+			EUnderTowerAttack = ESettings->CheckBox("Jump Under Tower Attack", true);
 			AutoE = ESettings->CheckBox("Jump to get out when low", true);
 			ECountEnemy = ESettings->CheckBox("Allys >= Enemys", true);
 			inUnderTower = ESettings->CheckBox("Avoid Tower Diving", true);
 			EBypassTower = ESettings->CheckBox("Bypass Dive in Big Chances", true);
 			HealthE = ESettings->AddInteger("Min Healthy %", 0, 100, 30);
 			//EBypass = ESettings->CheckBox("Bypass Checks while Stealth", true);
+		}
+
+		Jump2Settings = MainMenu->AddMenu("Double Jumping");
+		{
+			dJumpEnabled = Jump2Settings->CheckBox("Enabled", true);
+			JEDelay = Jump2Settings->AddInteger("Delay Jumps", 250, 500, 250);
+			JumpMode = Jump2Settings->AddSelection("Jump Mode ->", 0, std::vector<std::string>({ "Default (Ur Nexus Pos)", "Custom - Settings Below" }));
+			SaveH = Jump2Settings->CheckBox("Save Double Jump Abilities", false);
+			Noauto = Jump2Settings->CheckBox("Wait for Q instead of autos", false);
+			jCursor = Jump2Settings->CheckBox("Jump to Cursor", false);
+			SecondJump = Jump2Settings->CheckBox("Do second Jump", true);
+			jCursor2 = Jump2Settings->CheckBox("Second Jump to Cursor", true);
+			JumpDraw = Jump2Settings->CheckBox("Enable Jump Drawinsg", true);
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
@@ -218,7 +232,7 @@ public:
 	{
 		if (!CheckTarget(target)) return false;
 
-		if (CountEnemy(target->GetPosition(), 400) == 1)
+		if (CountEnemy(target->GetPosition(), 400) == 1 && CountMinions(target->GetPosition(), 400) == 0)
 		{
 			return true;
 		}
@@ -317,7 +331,8 @@ public:
 	static void Automatic()
 	{
 		//GetBuffName();
-		EvolutionCheck();		
+		EvolutionCheck();
+		DoubleJump();
 
 		if (AA->Enabled() && GEntityList->Player()->HasBuff("khazixrstealth"))
 		{
@@ -326,7 +341,7 @@ public:
 		else
 		{
 			GOrbwalking->SetAttacksAllowed(true);
-		}
+		}		
 		
 		if (AutoHarass->Enabled())
 		{
@@ -369,7 +384,7 @@ public:
 
 	static void AutoEscape()
 	{
-		if (AutoE->Enabled())
+		if (ESafety->Enabled() && AutoE->Enabled())
 		{
 			SArray<IUnit*> sEnemys = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* e) {return e != nullptr &&
 				!e->IsDead() && e->IsVisible() && GetDistance(GEntityList->Player(), e) < E->Range() && IsUnderTurretPos(e->GetPosition()); });
@@ -402,31 +417,10 @@ public:
 					auto jump = pPos.Extend(AliadoPos->ServerPosition(), E->Range());
 
 					E->CastOnPosition(jump);
-					GUtility->LogConsole("Aquiiiiiiiiiii");
+					//GUtility->LogConsole("Aquiiiiiiiiiii");
 					return;
 				}		
 			}			
-			
-			if (IsUnderTurret(GEntityList->Player()) &&	(CountEnemy(GEntityList->Player()->GetPosition(), 900) == 1 && 
-				!Q->IsReady() && !W->IsReady() && CountMinionsAlly(GEntityList->Player()->GetPosition(), 400) <= 1 && CountAlly(GEntityList->Player()->GetPosition(), 900) == 0 && !IsSafeHP() &&
-				enemyhp > GEntityList->Player()->GetHealth() ||
-				CountEnemy(GEntityList->Player()->GetPosition(), 900) >= CountAlly(GEntityList->Player()->GetPosition(), 900) && 
-				CountMinionsAlly(GEntityList->Player()->GetPosition(), 400) == 0))
-			{
-				SArray<IUnit*> sTorres = SArray<IUnit*>(GEntityList->GetAllTurrets(true, false)).Where([](IUnit* Torres) {return Torres != nullptr && 
-					GetDistance(GEntityList->Player(), Torres) < 5000; });
-
-				if (sTorres.Any())
-				{
-					TorrePos = sTorres.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GEntityList->Player()->GetPosition()); });
-				}
-				
-				auto pPos = GEntityList->Player()->ServerPosition();
-				auto jump = pPos.Extend(TorrePos->ServerPosition(), E->Range());
-
-				E->CastOnPosition(jump);				
-				return;
-			}
 		}
 	}
 
@@ -535,7 +529,7 @@ public:
 				}
 			}
 
-			if (JungleW->Enabled() && W->IsReady() && HealthW->GetInteger() < GEntityList->Player()->HealthPercent())
+			if (JungleW->Enabled() && W->IsReady() && HealthW->GetInteger() > GEntityList->Player()->HealthPercent())
 			{
 				if (GEntityList->Player()->IsValidTarget(minion, W->Range()))
 				{
@@ -673,5 +667,159 @@ public:
 				GRender->DrawOutlinedCircle(enemys->GetPosition(), Vec4(255, 0, 0, 255), 400);
 			}
 		}*/
-	}		
+	}
+	
+	static Vec3 GetDoubleJumpPoint(IUnit* Qtarget, bool firstjump = true)
+	{
+		if (JumpMode->GetInteger() == 0)
+		{
+			auto ppos = GEntityList->Player()->ServerPosition();
+			return ppos.Extend(GEntityList->GetTeamNexus()->ServerPosition(), E->Range());
+		}
+
+		if (firstjump && jCursor->Enabled())
+		{
+			return GGame->CursorPosition();
+		}
+
+		if (!firstjump && jCursor2->Enabled())
+		{
+			return GGame->CursorPosition();
+		}
+
+		Vec3 Position = Vec3();
+		IUnit* jumptarget = nullptr;
+		GetTarget = Qtarget;
+		
+		if (IsSafeHP())
+		{
+			SArray<IUnit*> Enemys = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && !m->IsInvulnerable() && m->IsValidTarget(GEntityList->Player(), E->Range()) && m != GetTarget; });
+
+			jumptarget = Enemys.FirstOrDefault();
+		}
+		else
+		{
+			SArray<IUnit*> Allys = SArray<IUnit*>(GEntityList->GetAllHeros(true, false)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()) && m != GEntityList->Player(); });
+
+			jumptarget = Allys.FirstOrDefault();
+		}		
+
+		if (jumptarget != nullptr)
+		{
+			Position = jumptarget->ServerPosition();
+		}
+		if (jumptarget == nullptr)
+		{
+			auto ppos = GEntityList->Player()->ServerPosition();
+			return ppos.Extend(GEntityList->GetTeamNexus()->ServerPosition(), E->Range());
+		}
+
+		return Position;
+	}	
+	
+	static void DoubleJump()
+	{
+		if (!E->IsReady() || !EvolvedE || !dJumpEnabled->Enabled())
+		{
+			return;
+		}
+
+		if (Q->IsReady() && E->IsReady())
+		{
+
+		SArray<IUnit*> tEnemys = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* m) {return m != nullptr &&
+			!m->IsDead() && m->IsVisible() && !m->IsInvulnerable() && m->IsValidTarget(GEntityList->Player(), E->Range()); });
+
+		CheckQKillable = nullptr;
+
+		if (tEnemys.Any())
+		{
+			CheckQKillable = tEnemys.Where([](IUnit* i) {return GetDistance(i, GEntityList->Player()) < Q->Range() && GetDamageKhazix(i,false,true,false,false,false) > i->GetHealth(); }).FirstOrDefault();
+		}
+			if (CheckQKillable != nullptr)
+			{
+				Jumping = true;
+
+				JumpPos1 = GetDoubleJumpPoint(CheckQKillable);
+				E->CastOnPosition(JumpPos1);
+				Q->CastOnUnit(CheckQKillable);
+				auto oldpos = GEntityList->Player()->ServerPosition();
+
+				GPluginSDK->DelayFunctionCall(JEDelay->GetInteger(), []() {
+
+					if (E->IsReady())
+					{
+						JumpPos2 = GetDoubleJumpPoint(CheckQKillable, false);
+						E->CastOnPosition(JumpPos2);
+					}
+
+					Jumping = false;
+
+				});				
+			}
+		}
+	}
+
+	static void OnProcessSpell(CastedSpell const& Args)
+	{
+		if (EvolvedE && !SaveH->Enabled())
+		{
+			if (GSpellData->GetSlot(Args.Data_) == kSlotQ && Args.Target_->IsHero() && dJumpEnabled->Enabled())
+			{
+				auto qdmg = GetDamageKhazix(Args.Target_, false, true, false, false, false);
+				auto dmg = (GetDamageKhazix(Args.Target_, true, false, false, false, false) * 2) + qdmg;
+				if (Args.Target_->GetHealth() < dmg && Args.Target_->GetHealth() > qdmg)
+				{
+					GOrbwalking->SetAttacksAllowed(false);
+				}
+				else
+				{
+					GOrbwalking->SetAttacksAllowed(true);
+				}
+			}
+		}
+
+		if (EUnderTowerAttack->Enabled() && ESafety->Enabled() && Args.Caster_->IsTurret() && Args.Target_ == GEntityList->Player())
+		{
+
+			if ((CountAlly(GEntityList->Player()->GetPosition(), 900) == 0 &&
+				CountEnemy(GEntityList->Player()->GetPosition(), 600) > 1 || !IsSafeHP() || CountEnemy(GEntityList->Player()->GetPosition(), 600) >= 1 && !Q->IsReady() && !W->IsReady()))
+			{
+				SArray<IUnit*> sTorres = SArray<IUnit*>(GEntityList->GetAllTurrets(true, false)).Where([](IUnit* Torres) {return Torres != nullptr &&
+					GetDistance(GEntityList->Player(), Torres) < 5000; });
+
+				if (sTorres.Any())
+				{
+					TorrePos = sTorres.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GEntityList->Player()->GetPosition()); });
+				}
+				else
+				{
+					TorrePos = GEntityList->GetTeamNexus();
+				}
+
+				auto pPos = GEntityList->Player()->ServerPosition();
+				auto jump = pPos.Extend(TorrePos->ServerPosition(), E->Range());
+
+				E->CastOnPosition(jump);				
+			}
+		}
+	}
+
+	static void OnBeforeAttack(IUnit* Target)
+	{
+		if (dJumpEnabled->Enabled() && Noauto->Enabled())
+		{
+			if (Target->GetHealth() < GetDamageKhazix(Target, false, true, false, false, false) &&
+				GEntityList->Player()->ManaPercent() > 15)
+			{
+				GOrbwalking->SetAttacksAllowed(false);
+			}
+			else
+			{
+				GOrbwalking->SetAttacksAllowed(true);
+			}
+		}
+	}
 };

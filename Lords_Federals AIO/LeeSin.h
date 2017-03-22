@@ -10,18 +10,18 @@ public:
 	
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals LeeSin vBeta2");
+		MainMenu = GPluginSDK->AddMenu("Lords & Federals LeeSin");
 
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{
-			ComboChange = ComboSettings->AddSelection("Combo Mode ->", 0, std::vector<std::string>({ "Combo Normal", "Gank Mode" }));
+			ComboChange = ComboSettings->AddSelection("Combo Mode", 0, std::vector<std::string>({ "Combo Normal", "Gank Mode" }));
 			GankComboKey = ComboSettings->AddKey("Change Combo Mode", 84);
 			ComboQ = ComboSettings->CheckBox("Use Q1", true);
 			ComboQH = ComboSettings->CheckBox("Use Q2", true);
 			ComboW = ComboSettings->CheckBox("Use W", true);
 			ComboE = ComboSettings->CheckBox("Use E", true);
-			AutoStartKill = ComboSettings->CheckBox("Beta Auto Star Combo If Killable", true);
-			AutoStartWard = ComboSettings->CheckBox("Beta Ward Jump In Auto Star Combo", true);
+			AutoStartKill = ComboSettings->CheckBox("Auto Star Combo If Killable", true);
+			AutoStartWard = ComboSettings->CheckBox("Ward Jump In Auto Star Combo", true);
 			StartComboKey = ComboSettings->AddKey("Start Combo", 74);
 			PassiveStacks = ComboSettings->AddInteger("Passive Stacks", 0, 2, 2);
 		}
@@ -82,8 +82,8 @@ public:
 
 		InsecSettings = MainMenu->AddMenu("Insec Settings");
 		{
-			InsecSelect = InsecSettings->AddSelection("Target to Insec ->", 0, std::vector<std::string>({ "Selected Target", "Target Selector" }));
-			InsecTo = InsecSettings->AddSelection("Insec To ->", 0, std::vector<std::string>({ "Allys>Tower>Ally", "Tower>Allys", "To Mouse" }));
+			InsecSelect = InsecSettings->AddSelection("Target to Insec", 0, std::vector<std::string>({ "Selected Target", "Target Selector" }));
+			InsecTo = InsecSettings->AddSelection("Insec To", 0, std::vector<std::string>({ "Allys-Tower-Ally", "Tower-Allys", "To Mouse" }));
 			InsecOrbwalk = InsecSettings->CheckBox("Orbwalk to Mouse", true);
 			KickAndFlash = InsecSettings->CheckBox("Priorize Kick & Flash", false);
 			useFlash = InsecSettings->CheckBox("Use Flash if no Wards", true);
@@ -930,8 +930,11 @@ public:
 			(GetDistance(GEntityList->Player(), ComboTarget) > GEntityList->Player()->GetRealAutoAttackRange(ComboTarget) + 100) ||
 				(ComboPassive()) || (!R->IsReady() && LastRTick - GGame->TickCount() < 2500 && CastingR(ComboTarget))))
 		{
-			Q->CastOnPlayer();
-			LastSpellTick = GGame->TickCount();
+			if (ComboTarget->IsValidTarget(GEntityList->Player(), Q2->Range()))
+			{
+				Q->CastOnPlayer();
+				LastSpellTick = GGame->TickCount();
+			}
 		}		
 
 		if (ComboQ->Enabled() && Q->IsReady())
@@ -962,37 +965,37 @@ public:
 		{
 			if (LeeEone() && ComboE->Enabled())
 			{
-				auto qtarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range() + 20);
+				auto etarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range());
 
-				if (!CheckTarget(qtarget))
+				if (!CheckTarget(etarget))
 				{
 					return;
 				}
 
-				if (((ComboPassive() && (LeeWone() || !W->IsReady())  && GEntityList->Player()->GetMana() >= 80) || CountEnemy(GEntityList->Player()->GetPosition(), E->Range() + 20) > 2) && E->CastOnPlayer())
+				if (((ComboPassive() && (LeeWone() || !W->IsReady())  && GEntityList->Player()->GetMana() >= 80) || CountEnemy(GEntityList->Player()->GetPosition(), E->Range()) > 2) && E->CastOnPlayer())
 				{
 					LastSpellTick = GGame->TickCount();
 				}
 			}
 			else if (ComboE->Enabled())
 			{
-				auto qtarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E2->Range());
+				auto e2target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E2->Range());
 
-				if (!CheckTarget(qtarget))
+				if (!CheckTarget(e2target))
 				{
 					return;
 				}
 
-				if (TargetHaveE(qtarget))
+				if (TargetHaveE(e2target))
 				{
-					if (ComboPassive() && qtarget->IsValidTarget(GEntityList->Player(), E2->Range()) && E2->CastOnPlayer())
+					if (ComboPassive() && e2target->IsValidTarget(GEntityList->Player(), E2->Range()) && E2->CastOnPlayer())
 					{
 						LastSpellTick = GGame->TickCount() + 300;
 					}
 					return;
 				}
 				if ((ComboPassive() || CountEnemy(GEntityList->Player()->GetPosition(), E2->Range()) > 2
-					|| ExpireE(qtarget) || GetDistance(qtarget, GEntityList->Player()) > GEntityList->Player()->GetRealAutoAttackRange(qtarget) + 100)
+					|| ExpireE(e2target) || GetDistance(e2target, GEntityList->Player()) > GEntityList->Player()->GetRealAutoAttackRange(e2target) + 100)
 					&& E2->CastOnPlayer())
 				{
 					LastSpellTick = GGame->TickCount();
@@ -2298,6 +2301,7 @@ public:
 					LastSpellTick = GGame->TickCount() + 300;
 				}
 			}
+
 			else if (!LeeEone())
 			{
 				if (TargetHaveE(ComboTarget))
