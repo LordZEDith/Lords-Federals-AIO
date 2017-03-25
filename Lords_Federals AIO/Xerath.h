@@ -83,9 +83,9 @@ public:
 
 	void static InitializeSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, kCollidesWithNothing);
-		Q->SetSkillshot(0.6f, 145.f, 1000.f, 1450.f);
-		Q->SetCharged(750.f, 1450.f, 1.5f);
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, kCollidesWithNothing); //Rytak copy and pasted from Rytak Spell Lib
+		Q->SetSkillshot(0.6f, 100.f, 1000.f, 1600.f);
+		Q->SetCharged(750.f, 1550.f, 1.5f);
 		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, true, kCollidesWithYasuoWall);
 		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
 		R = GPluginSDK->CreateSpell2(kSlotR, kCircleCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
@@ -216,29 +216,33 @@ public:
 
 	}
 
-	static void CastQ(IUnit* target)
+	static void CastQ()
 	{
-		if (Q->IsCharging())
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
-			Q->FindTarget(SpellDamage);
+			auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
+			for (auto target : GEntityList->GetAllHeros(false, true));
+			if (target != nullptr && target->IsValidTarget() && target->IsHero() && !target->IsDead())
 			{
-				if (GetEnemiesInRange(Q->Range()) >= 1)
+				if (ComboQ->Enabled())
 				{
-					Q->CastOnTarget(target, kHitChanceCollision);
+					if (Q->IsCharging())
+					{
+						Q->FindTarget(SpellDamage);
+						{
+							if (GetEnemiesInRange(Q->Range()) >= 1)
+							{
+								Q->CastOnTarget(target, kHitChanceCollision);
+							}
+						}
+					}
+					else if (Q->IsReady())
+					{
+						Q->StartCharging();
+					}
 				}
 			}
-		}
 
-		else if (Q->IsReady())
-		{
-			if (target->IsValidTarget(GEntityList->Player(), Q->Range() - 50))
-			{
-				Q->StartCharging();
-			}
-		}
-		else
-		{
-			return;
 		}
 	}	
 
@@ -252,7 +256,7 @@ public:
 			{
 				if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
 				{
-					CastQ(target);
+					CastQ();
 					return;
 				}
 
@@ -271,12 +275,12 @@ public:
 
 			if (AutoHarass->Enabled() && Q->IsReady() && HarassMana->GetInteger() < GEntityList->Player()->ManaPercent() && CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), Q->Range()))
 			{
-				CastQ(target);
+				CastQ();
 			}
 
 			if (CCedQ->Enabled() && target->IsHero() && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50) && Q->IsReady() && !CanMove(target) && !target->IsDead() && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > Q->ManaCost())
 			{
-				CastQ(target);
+				CastQ();
 			}
 		}
 	}
@@ -307,7 +311,7 @@ public:
 
 		if (ComboQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), 1550) && GEntityList->Player()->GetMana() > Q->ManaCost() + E->ManaCost())
 		{
-			CastQ(target);
+			CastQ();
 		}
 	}
 
@@ -321,7 +325,7 @@ public:
 
 		if (HarassQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()))
 		{
-			CastQ(target);
+			CastQ();
 		}
 
 		if (HarassW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && !Q->IsCharging())

@@ -124,7 +124,7 @@ public:
 
 	static void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, (kCollidesWithYasuoWall, kCollidesWithHeroes, kCollidesWithMinions));
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, (kCollidesWithYasuoWall, /*kCollidesWithHeroes,*/ kCollidesWithMinions));
 		Q->SetSkillshot(0.25f, 65.f, 1750.f, 1080.f);
 		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, kCollidesWithNothing);
 		W->SetOverrideRange(700);
@@ -925,17 +925,18 @@ public:
 
 		StartComboKill(ComboTarget);		
 
-		if (!LeeQone() && ComboQH->Enabled() && Q->IsReady() && TargetHaveQ(ComboTarget) &&
-			((GDamage->GetAutoAttackDamage(GEntityList->Player(), ComboTarget, false) + GHealthPrediction->GetKSDamage(ComboTarget, kSlotQ, Q->GetDelay(), false) > ComboTarget->GetHealth()) ||
-			(GetDistance(GEntityList->Player(), ComboTarget) > GEntityList->Player()->GetRealAutoAttackRange(ComboTarget) + 100) ||
-				(ComboPassive()) || (!R->IsReady() && LastRTick - GGame->TickCount() < 2500 && CastingR(ComboTarget))))
+		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+
+		if (!CheckTarget(target)) return;
+
+		if (!LeeQone() && ComboQH->Enabled() && Q->IsReady() && TargetHaveQ(target) &&
+			((GDamage->GetAutoAttackDamage(GEntityList->Player(), target, false) + GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth()) ||
+			(GetDistance(GEntityList->Player(), target) > GEntityList->Player()->GetRealAutoAttackRange(target) + 100) ||
+				(ComboPassive()) || (!R->IsReady() && LastRTick - GGame->TickCount() < 2500 && CastingR(target))))
 		{
-			if (ComboTarget->IsValidTarget(GEntityList->Player(), Q2->Range()))
-			{
-				Q->CastOnPlayer();
-				LastSpellTick = GGame->TickCount();
-			}
-		}		
+			Q->CastOnPlayer();
+			LastSpellTick = GGame->TickCount();
+		}
 
 		if (ComboQ->Enabled() && Q->IsReady())
 		{
