@@ -291,7 +291,7 @@ public:
 
 		if (!CheckTarget(target)) return;
 
-		if (ComboE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()) && GEntityList->Player()->GetMana() > E->ManaCost() + Q->ManaCost() + W->ManaCost() && !Q->IsCharging())
+		if (ComboE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()) && !Q->IsCharging())
 		{
 			if (CheckShielded(target) && CheckShield->Enabled())
 			{
@@ -304,12 +304,12 @@ public:
 			}
 		}
 
-		if (ComboW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && GEntityList->Player()->GetMana() > Q->ManaCost() + W->ManaCost() && !Q->IsCharging())
+		if (ComboW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && !Q->IsCharging())
 		{
 			W->CastOnTarget(target, PredicChange());
 		}
 
-		if (ComboQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), 1550) && GEntityList->Player()->GetMana() > Q->ManaCost() + E->ManaCost())
+		if (ComboQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), 1550))
 		{
 			CastQ();
 		}
@@ -328,7 +328,7 @@ public:
 			CastQ();
 		}
 
-		if (HarassW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && !Q->IsCharging())
+		if (HarassW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()))
 		{
 			W->CastOnTarget(target, PredicChange());
 		}

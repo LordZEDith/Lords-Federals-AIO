@@ -920,19 +920,19 @@ public:
 
 	static void Combo()
 	{
-		ComboTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 1300);
+		auto ComboTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 1300);
 		if (!CheckTarget(ComboTarget)) return;
 
 		StartComboKill(ComboTarget);		
 
-		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+	
 
-		if (!CheckTarget(target)) return;
+		if (!CheckTarget(ComboTarget)) return;
 
-		if (!LeeQone() && ComboQH->Enabled() && Q->IsReady() && TargetHaveQ(target) &&
-			((GDamage->GetAutoAttackDamage(GEntityList->Player(), target, false) + GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth()) ||
-			(GetDistance(GEntityList->Player(), target) > GEntityList->Player()->GetRealAutoAttackRange(target) + 100) ||
-				(ComboPassive()) || (!R->IsReady() && LastRTick - GGame->TickCount() < 2500 && CastingR(target))))
+		if (!LeeQone() && ComboQH->Enabled() && Q->IsReady() && TargetHaveQ(ComboTarget) &&
+			((GDamage->GetAutoAttackDamage(GEntityList->Player(), ComboTarget, false) + GHealthPrediction->GetKSDamage(ComboTarget, kSlotQ, Q->GetDelay(), false) > ComboTarget->GetHealth()) ||
+			(GetDistance(GEntityList->Player(), ComboTarget) > GEntityList->Player()->GetRealAutoAttackRange(ComboTarget) + 100) ||
+				(ComboPassive()) || (!R->IsReady() && LastRTick - GGame->TickCount() < 2500 && CastingR(ComboTarget))))
 		{
 			Q->CastOnPlayer();
 			LastSpellTick = GGame->TickCount();
