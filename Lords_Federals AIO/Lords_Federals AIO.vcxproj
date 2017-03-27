@@ -168,6 +168,7 @@
     <ClInclude Include="Elise.h" />
     <ClInclude Include="Ezreal.h" />
     <ClInclude Include="Gragas.h" />
+    <ClInclude Include="Jax.h" />
     <ClInclude Include="Khazix.h" />
     <ClInclude Include="LeeSin.h" />
     <ClInclude Include="Polygons.h" />
@@ -196,6 +197,7 @@
     <ClInclude Include="TextHeader.h" />
     <ClInclude Include="Toxic.h" />
     <ClInclude Include="Tristana.h" />
+    <ClInclude Include="Trundle.h" />
     <ClInclude Include="TwistedFate.h" />
     <ClInclude Include="Varus.h" />
     <ClInclude Include="Vector3.h" />

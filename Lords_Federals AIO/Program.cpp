@@ -3776,6 +3776,192 @@ public:
 	}
 };
 
+class cTrundle : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		Message().TopLaneSeries();
+		//Message().ChampionLoadMessage();
+		Trundle().Menu();
+		Trundle().LoadSpells();
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+		Toxic().MenuToxic();
+	}
+
+	virtual void OnRender() override
+	{
+		AutoSmite().DrawingsSmite();
+		Trundle().OnRender();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		Trundle().OnGameUpdate();
+
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+		Trundle().OnGapCloser(Args);
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+		Trundle().OnOrbwalkAfterAttack(Source, Target);
+	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+	
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+		Trundle().OnInterruptible(Args);
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
+};
+
+class cJax : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		Message().TopLaneSeries();
+		//Message().ChampionLoadMessage();
+		Jax().Menu();
+		Jax().LoadSpells();
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+		Toxic().MenuToxic();
+	}
+
+	virtual void OnRender() override
+	{
+		AutoSmite().DrawingsSmite();
+		Jax().OnRender();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		Jax().OnGameUpdate();
+
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+		//Jax().OnGapCloser(Args);
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+		Jax().OnOrbwalkAfterAttack(Source, Target);
+	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+	    // Jax).OnInterruptible(Args);
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
+};
+
 IChampion* pChampion = nullptr;
 
 PLUGIN_EVENT(void) OnRender()
@@ -3928,6 +4114,10 @@ void LoadChampion()
 		pChampion = new cRenekton;
 	else if (szChampion == "ChoGath")
 		pChampion = new cChoGatn;
+	else if (szChampion == "Trundle")
+		pChampion = new cTrundle;
+	else if (szChampion == "Jax")
+		pChampion = new cJax;
 	// Support
 	else if (szChampion == "Sona")
 		pChampion = new cSona;

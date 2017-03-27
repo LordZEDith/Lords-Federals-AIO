@@ -1,4 +1,5 @@
-﻿  Clipper.cpp
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppClean.targets(76,5): warning : The process cannot access the file 'c:\users\docum\lords-federals-aio\lords_federals aio\release\program.obj' because it is being used by another process.
+  Clipper.cpp
   PluginSDK.cpp
 c:\users\docum\lords-federals-aio\lords_federals aio\Vector3.h(228): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
   Program.cpp
@@ -127,6 +128,7 @@ c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(255): warning C4
 c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(274): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(290): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(299): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Trundle.h(109): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\AutoSmite.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 c:\users\docum\lords-federals-aio\lords_federals aio\AutoSmite.h(271): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\AutoSmite.h(321): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
@@ -134,7 +136,7 @@ c:\users\docum\lords-federals-aio\lords_federals aio\Toxic.h(3): warning C4067: 
      Creating library C:\Users\docum\Lords-Federals-AIO\Lords_Federals AIO\Release\Lords_Federals AIO.lib and object C:\Users\docum\Lords-Federals-AIO\Lords_Federals AIO\Release\Lords_Federals AIO.exp
   Generating code
 c:\users\docum\lords-federals-aio\lords_federals aio\common.h(122): warning C4172: returning address of local variable or temporary
-  All 4678 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  All 4735 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
   Lords_Federals AIO.vcxproj -> C:\Users\docum\Lords-Federals-AIO\Lords_Federals AIO\Release\Lords_Federals AIO.dll
   Lords_Federals AIO.vcxproj -> C:\Users\docum\Lords-Federals-AIO\Lords_Federals AIO\Release\Lords_Federals AIO.pdb (Full PDB)

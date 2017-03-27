@@ -37,6 +37,7 @@ IMenu* Drawings;
 IMenu* Drawingss;
 IMenu* GankSettings;
 IMenu* Jump2Settings;
+IMenu* FarmMenu;
 
 IMenu* MainMenu;
 IMenu* HarassSettings;
@@ -147,6 +148,7 @@ IMenuOption* RangeQlh;
 IMenuOption* MinionsQ;
 IMenuOption* JungleQ;
 IMenuOption* CharmedQ;
+IMenuOption* KSQ;
 IMenuOption* ComboEW;
 IMenuOption* Troll;
 IMenuOption* EinWall;
@@ -268,6 +270,7 @@ IMenuOption* DrawEscaW;
 IMenuOption* DrawSelect;
 IMenuOption* DrawPosInsec;
 IMenuOption* DrawNear;
+IMenuOption* WMinions;
 
 IMenuOption* HealthPercent;
 IMenuOption* HealthQ;
@@ -327,6 +330,7 @@ IMenuOption* rSilence;
 IMenuOption* rDisarm;
 IMenuOption* rSnare;
 IMenuOption* useRTF;
+IMenuOption* RHP;
 
 IMenuOption* UseItems;
 IMenuOption* AutoSmites;
@@ -611,6 +615,7 @@ IMenuOption* minManaQHarass;
 
 
 IMenuOption* autoW;
+IMenuOption* AutoStun;
 IMenuOption* minManaWHarass;
 IMenuOption* interupterW;
 IMenuOption* turretW;
@@ -626,6 +631,8 @@ IMenuOption* minManaE;
 
 
 IMenuOption* autoR;
+IMenuOption* AutoR;
+IMenuOption* AutoRHealth;
 IMenuOption* minHpRTarget;
 IMenuOption* Rcc;
 
@@ -649,6 +656,20 @@ IInventoryItem* Biscuit;
 IInventoryItem* RefillPot;
 IInventoryItem* Zhonyas;
 IInventoryItem* Protobelt;
+IInventoryItem* GhostBlade;
+IInventoryItem* BORK;
+IInventoryItem* BilgewaterCut;
+IInventoryItem* titHydra;
+IInventoryItem* ravHydra;
+
+IMenuOption* GBlade;
+IMenuOption* BOTRK;
+IMenuOption* BilgeCut;
+IMenuOption* useIgnite;
+IMenuOption* tHydra;
+IMenuOption* rHydra;
+IMenuOption* tiamat;
+
 
 ISpell2* Q1;
 ISpell2* Q3;
@@ -663,14 +684,14 @@ IUnit* RMissile;
 IUnit* WMissile;
 IUnit* WMissile2;
 
-IInventoryItem* titHydra, *ravHydra;
+
 
 IMenu*dsettings, *csettings, *Hsettings, *Lcsettings, *Msettings;
 
 //dsettings
 IMenuOption* drawqq, *drawee, *drawrr, *drawcombo, *rDamage;
 //csettings
-IMenuOption* useq, *usew, *usee, *user, *userindanger, *furyMode, *useIgnite;
+IMenuOption* useq, *usew, *usee, *user, *userindanger, *furyMode;
 //Hsettings
 IMenuOption* useqH, *usewH, *useCH, *donteqwebtower;
 //Misc Setting
@@ -683,7 +704,9 @@ static Vec3 lastEpos;
 static bool wChancel = false;
 
 bool BlockE = false;
+ISpell2* Ward;
 
+bool eCounterStrike = false;
  
 
  

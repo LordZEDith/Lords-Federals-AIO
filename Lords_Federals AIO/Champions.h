@@ -42,6 +42,8 @@
 #include "Ekko.h"
 #include "Renekton.h"
 #include "ChoGath.h"
+#include "Trundle.h"
+#include "Jax.h"
 
 // Champions Support
 #include "Sona.h"

@@ -216,6 +216,12 @@
     <ClInclude Include="ChoGath.h">
       <Filter>Header Files\Champions\TopLane</Filter>
     </ClInclude>
+    <ClInclude Include="Trundle.h">
+      <Filter>Header Files\Champions\TopLane</Filter>
+    </ClInclude>
+    <ClInclude Include="Jax.h">
+      <Filter>Header Files\Champions\TopLane</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">
