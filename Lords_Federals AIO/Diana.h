@@ -78,7 +78,7 @@ public:
 
 					if (dmg > health)
 					{
-						R->CastOnPlayer();
+						R->CastOnTarget(minion);
 					}
 				}
 			}
@@ -107,7 +107,7 @@ public:
 
 			for (auto enemy : GEntityList->GetAllHeros(false, true))
 			{	
-				if (enemy->IsEnemy(GEntityList->Player()) && (GEntityList->Player()->GetPosition() - enemy->GetPosition()).Length() <= E->Range())
+				if (enemy->IsEnemy(GEntityList->Player()) && (GEntityList->Player()->GetPosition() - enemy->GetPosition()).Length() <= R->Range())
 				{
 					if (enemy->HasBuff("dianamoonlight"))
 

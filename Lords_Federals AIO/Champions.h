@@ -39,6 +39,9 @@
 #include "Warwick.h"
 #include "Poppy.h"
 #include "Rumble.h"
+#include "Ekko.h"
+#include "Renekton.h"
+#include "ChoGath.h"
 
 // Champions Support
 #include "Sona.h"

@@ -83,27 +83,16 @@ public:
 
 	void static InitializeSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, kCollidesWithNothing); //Rytak copy and pasted from Rytak Spell Lib
-		Q->SetSkillshot(0.6f, 100.f, 1000.f, 1600.f);
-		Q->SetCharged(750.f, 1550.f, 1.5f);
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, kCollidesWithNothing); //Malachite
+		Q->SetSkillshot(0.6f, 95.f, 100000.f, 1550.f);
+		Q->SetCharged(750.f, 1550.f, 1.53f);
+		//Q->SetChargedBuffName("XerathArcanopulseChargeUp");
 		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, true, kCollidesWithYasuoWall);
+		W->SetSkillshot(0.7f, 125, std::numeric_limits<float>::infinity(), 1100);
 		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
+		E->SetSkillshot(0.25f, 60, 1400, 1050);	
 		R = GPluginSDK->CreateSpell2(kSlotR, kCircleCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
-
-		W->SetOverrideRange(1100);
-		W->SetOverrideDelay(0.7f);
-		W->SetOverrideRadius(200);
-		W->SetOverrideSpeed(1000);
-
-		E->SetOverrideRange(1050);
-		E->SetOverrideDelay(0.2f);
-		E->SetOverrideRadius(60);
-		E->SetOverrideSpeed(2300);
-
-		R->SetOverrideRange(6160);
-		R->SetOverrideDelay(0.7f);
-		R->SetOverrideRadius(200);
-		R->SetOverrideSpeed(1000);
+		R->SetSkillshot(0.7f, 130, std::numeric_limits<float>::infinity(), 3520);// 4840 , 6160
 	}
 
 	static float RealRange()
@@ -136,6 +125,7 @@ public:
 			return mypredic = kHitChanceVeryHigh;
 		}
 
+
 		return mypredic = kHitChanceLow;
 	}
 
@@ -153,7 +143,9 @@ public:
 				{
 					if (GetDistanceVectors(GGame->CursorPosition(), target->GetPosition()) < RMax->GetInteger())
 					{
-						R->CastOnTarget(target, PredicChange());
+						Vec3 pred;
+						GPrediction->GetFutureUnitPosition(target, 0.3f, true, pred);
+						R->CastOnPosition(pred);
 					}
 
 					return;
@@ -161,12 +153,16 @@ public:
 
 				if (Rdelay->GetInteger() == 0)
 				{
-					R->CastOnTarget(target, PredicChange());
+					Vec3 pred;
+					GPrediction->GetFutureUnitPosition(target, 0.3f, true, pred);
+					R->CastOnPosition(pred);
 				}
 
 				else if (GGame->Time() - RCastSpell > 0.001 * Rdelay->GetInteger())
 				{
-					R->CastOnTarget(target, PredicChange());
+					Vec3 pred;
+					GPrediction->GetFutureUnitPosition(target, 0.3f, true, pred);
+					R->CastOnPosition(pred);
 				}
 
 				return;
@@ -221,7 +217,6 @@ public:
 		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
-			for (auto target : GEntityList->GetAllHeros(false, true));
 			if (target != nullptr && target->IsValidTarget() && target->IsHero() && !target->IsDead())
 			{
 				if (ComboQ->Enabled())
@@ -232,7 +227,10 @@ public:
 						{
 							if (GetEnemiesInRange(Q->Range()) >= 1)
 							{
-								Q->CastOnTarget(target, kHitChanceCollision);
+								Vec3 pred;
+								GPrediction->GetFutureUnitPosition(target, 0.2f, true, pred);		
+								//GPrediction->SimulateMissile(GEntityList->Player()->ServerPosition(), target, 1000000000, 95.f, 1550, 0.6f, kCollidesWithNothing, pred);
+				     			Q->CastOnPosition(pred);
 							}
 						}
 					}

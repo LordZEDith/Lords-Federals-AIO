@@ -132,32 +132,32 @@ public:
 	{
 		//auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 1600());
 
-
-		if (target != nullptr && !target->IsDead() && !target->IsInvulnerable());
+		if (Q->IsReady())
 		{
-			if (ComboQ->Enabled() && Q->IsReady())
+			if (Q->IsCharging())
 			{
-				if (GetEnemiesInRange2(1600) >= 1)
+				Q->FindTarget(PhysicalDamage);
 				{
-					if (Q->IsCharging() || (Q->GetChargePercent() == 100 && !Q->IsCharging()))
+					if (target->IsValidTarget(target, Q->Range()) && GetEnemiesInRange(Q->Range()) >= 1)
 					{
-						Q->FindTarget(PhysicalDamage);
-						{
-							Q->CastOnTarget(target, 4);
-						}
-					}
-					else if (Q->IsReady())
-					{
-						Q->StartCharging();
-					}
-					else
-					{
-						GEntityList->Player()->GetSpellState(kSlotQ);
+						Vec3 pred;
+						GPrediction->GetFutureUnitPosition(target, 0.2f, true, pred);
+						Q->CastOnPosition(pred);
 					}
 				}
 			}
+			else if (Q->IsReady() && GetEnemiesInRange(Q->Range()) >= 1)
+			{
+				Q->StartCharging();
+			}
+			else
+			{
+				GEntityList->Player()->GetSpellState(kSlotQ);
+			}
 		}
 	}
+
+
 
 
 
@@ -354,10 +354,6 @@ public:
 			}
 		}
 	}
-
-
-
-
 
 
 	void Drawing()

@@ -20,6 +20,9 @@ ISpell* Flash;
 ISpell* Wards;
 
 IMenu* HarassMenu;
+IMenu* ItemMenu;
+IMenu* ClearMenu;
+IMenu* DrawMenu;
 IMenu* ComboMenu;
 IMenu* JungleMenu;
 IMenu* LaneClearMenu;
@@ -57,6 +60,14 @@ IMenu* SmiteDraw;
 IMenu* BigMobs;
 IMenu* SmallMobs;
 IMenu* SkinsChange;
+IMenu* KS;
+
+IMenu* Draw;
+IMenu* WOpt;
+IMenu* ROpt;
+IMenu* Farm;
+IMenu* Activator;
+
 
 // Toxic
 IMenu* EmoteSpam;
@@ -145,6 +156,8 @@ IMenuOption* goPassiveH;
 IMenuOption* goPassiveJ;
 IMenuOption* LaneClearQLast;
 IMenuOption* HarassWithFarm;
+IMenuOption* QHelp;
+IMenuOption* onlyReady;
 
 IMenuOption* ComboW;
 IMenuOption* HarassW;
@@ -157,10 +170,14 @@ IMenuOption* CCedW;
 IMenuOption* RangeW;
 IMenuOption* MinionsW;
 IMenuOption* JungleW;
+IMenuOption* farmW;
 IMenuOption* slowW;
 IMenuOption* AutoW;
+IMenuOption* WAOE;
 
 IMenuOption* ComboE;
+IMenuOption* EKS;
+IMenuOption* QKS;
 IMenuOption* ComboE2;
 IMenuOption* ComboEA;
 IMenuOption* HarassE;
@@ -192,6 +209,7 @@ IMenuOption* SecondJump;
 IMenuOption* jCursor2;
 IMenuOption* JumpDraw;
 IMenuOption* EUnderTowerAttack;
+IMenuOption* IgniteKS;
 
 IMenuOption* ComboR;
 IMenuOption* ComboRKill;
@@ -219,6 +237,7 @@ IMenuOption* Rsolo;
 IMenuOption* RAllys;
 IMenuOption* Rdelay;
 IMenuOption* RBlock;
+IMenuOption* rCount;
 
 IMenuOption* Killsteal;
 IMenuOption* KillstealQ;
@@ -318,6 +337,11 @@ IMenuOption* AntiMelee;
 IMenuOption* AntiGrab;
 IMenuOption* AutoShielded;
 IMenuOption* minAutoShield;
+IMenuOption* AutoPotion;
+
+IMenuOption* useProto;
+IMenuOption* useZhonyas;
+IMenuOption* ZhonyasHP;
 
 IMenuOption* QD;
 IMenuOption* WD;
@@ -347,6 +371,22 @@ IMenuOption* Teamate5;
 IMenuOption* PickYellows;
 IMenuOption* PickRedss;
 IMenuOption* PickBluess;
+
+IMenuOption* hQ;
+IMenuOption* hW;
+IMenuOption* hE;
+IMenuOption* hMana;
+
+IMenuOption* laneQ;
+IMenuOption* laneW;
+IMenuOption* laneE;
+IMenuOption* clearMana;
+IMenuOption* QMinions;
+
+IMenuOption* DrawDisabled;
+
+IMenuOption* Interrupt;
+IMenuOption* antigap;
 
 IMenuOption* Debug;
 
@@ -603,7 +643,12 @@ IMenuOption* Rally;
 
 IMenuOption* noti;
 
-
+IInventoryItem* HealthPot;
+IInventoryItem* CorruptPot;
+IInventoryItem* Biscuit;
+IInventoryItem* RefillPot;
+IInventoryItem* Zhonyas;
+IInventoryItem* Protobelt;
 
 ISpell2* Q1;
 ISpell2* Q3;
@@ -611,6 +656,33 @@ ISpell2* Q3;
 Vec3 prediction(0, 0, 0);
 Vec3 sendQHere(0, 0, 0);
 
+float Wtime = 0, Wtime2 = 0;
+float QMANA, WMANA, EMANA, RMANA;
+
+IUnit* RMissile;
+IUnit* WMissile;
+IUnit* WMissile2;
+
+IInventoryItem* titHydra, *ravHydra;
+
+IMenu*dsettings, *csettings, *Hsettings, *Lcsettings, *Msettings;
+
+//dsettings
+IMenuOption* drawqq, *drawee, *drawrr, *drawcombo, *rDamage;
+//csettings
+IMenuOption* useq, *usew, *usee, *user, *userindanger, *furyMode, *useIgnite;
+//Hsettings
+IMenuOption* useqH, *usewH, *useCH, *donteqwebtower;
+//Misc Setting
+IMenuOption* useHydra;
+
+ISpell2* Ignites;
+
+static float lastE;
+static Vec3 lastEpos;
+static bool wChancel = false;
+
+bool BlockE = false;
 
  
 

@@ -117,6 +117,105 @@ static bool CheckIsWard(IUnit* minion)
 	return false;
 }
 
+Vec3& Extend(Vec3 from, Vec3 to, float distance)
+{
+	return from + distance * (to - from).VectorNormalize();
+}
+
+float GetDistancePos(Vec3 from, Vec3 to)
+{
+	float x1 = from.x;
+	float x2 = to.x;
+	float y1 = from.y;
+	float y2 = to.y;
+	float z1 = from.z;
+	float z2 = to.z;
+	return static_cast<float>(sqrt(pow((x2 - x1), 2.0) + pow((y2 - y1), 2.0) + pow((z2 - z1), 2.0)));
+}
+float GetDistance(IUnit * player, IUnit * target)
+{
+	auto x1 = player->GetPosition().x;
+	auto x2 = target->GetPosition().x;
+	auto y1 = player->GetPosition().y;
+	auto y2 = target->GetPosition().y;
+	auto z1 = player->GetPosition().z;
+	auto z2 = target->GetPosition().z;
+	return static_cast<float>(sqrt(pow((x2 - x1), 2.0) + pow((y2 - y1), 2.0) + pow((z2 - z1), 2.0)));
+}
+bool IsUnderTurret(IUnit * Source, bool CheckAllyTurrets, bool CheckEnemyTurrets)
+{
+	for (auto turret : GEntityList->GetAllTurrets(CheckAllyTurrets, CheckEnemyTurrets))
+	{
+		if (Source->IsValidTarget(turret, 950.0f))
+			return true;
+	}
+
+	return false;
+}
+bool PosUnderTurret(Vec3 Pos, bool CheckAllyTurrets, bool CheckEnemyTurrets)
+{
+	for (auto turret : GEntityList->GetAllTurrets(CheckAllyTurrets, CheckEnemyTurrets))
+	{
+		if (GetDistancePos(turret->GetPosition(), Pos) <= 950)
+			return true;
+	}
+
+	return false;
+}
+int CountEnemiesInRange(float range)
+{
+	int enemies = 0;
+	for (auto enemy : GEntityList->GetAllHeros(false, true))
+	{
+		if (enemy != nullptr && GEntityList->Player()->IsValidTarget(enemy, range))
+			enemies++;
+	}
+	return enemies;
+}
+int CountMinionsInRange(Vec3 pos, float range)
+{
+	auto mingons = GEntityList->GetAllMinions(false, true, false);
+	auto mingonsInRange = 0;
+	for (auto mingon : mingons)
+	{
+		//counts enemies checking if they are enemy heroes and are within radius parameter
+		if (mingon != nullptr && mingon->IsValidTarget() && !mingon->IsDead())
+		{
+			auto mingonDistance = (mingon->GetPosition() - pos).Length();
+			if (mingonDistance < range)
+			{
+				mingonsInRange++;
+			}
+		}
+	}
+	return mingonsInRange;
+}
+int CountMinionsInRange(float range)
+{
+	int minions = 0;
+	for (auto enemy : GEntityList->GetAllMinions(false, true, false))
+	{
+		if (enemy != nullptr && GEntityList->Player()->IsValidTarget(enemy, range))
+			minions++;
+	}
+	return minions;
+}
+int CountKillableMinionsInRange(float range)
+{
+	int minionCount = 0;
+	for (auto minion : GEntityList->GetAllMinions(false, true, false))
+	{
+		if (GEntityList->Player()->IsValidTarget(minion, range) && GDamage->CalcPhysicalDamage(GEntityList->Player(), minion, GDamage->GetSpellDamage(GEntityList->Player(), minion, kSlotQ)) > minion->GetHealth())
+		{
+			minionCount++;
+		}
+	}
+	return minionCount;
+}
+int AutosToKill(IUnit * target)
+{
+	return target->GetHealth() / GDamage->CalcPhysicalDamage(GEntityList->Player(), target, GEntityList->Player()->PhysicalDamage());
+}
 inline double GetQAttackDamage(IUnit* target)
 {
 	std::vector<double> AttackDamage = { 20, 25, 30, 35, 40, 45, 50, 55, 60, 70, 80, 90, 110, 130, 150, 170, 190, 210 };
@@ -309,16 +408,7 @@ inline int GetEnemiesInRange(float range)
 	return enemies;
 }
 
-inline float GetDistance(IUnit* source, IUnit* target)
-{
-	auto x1 = source->GetPosition().x;
-	auto x2 = target->GetPosition().x;
-	auto y1 = source->GetPosition().y;
-	auto y2 = target->GetPosition().y;
-	auto z1 = source->GetPosition().z;
-	auto z2 = target->GetPosition().z;
-	return static_cast<float>(sqrt(pow((x2 - x1), 2.0) + pow((y2 - y1), 2.0) + pow((z2 - z1), 2.0)));
-}
+
 
 
 inline int GetMinionsInRange(Vec3 Position, float Range)

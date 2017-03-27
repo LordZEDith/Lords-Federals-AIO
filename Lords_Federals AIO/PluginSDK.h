@@ -283,6 +283,20 @@ public:
 	virtual bool IsTriggeringEvents() = 0;
 	virtual void SetSpellName(std::string const& SpellName) = 0;
 	virtual std::string GetSpellName() = 0;
+
+	/// <summary>
+	/// Sets the name of the charged buff to be used as a more reliable check for IsCharging.
+	/// If only using DeltaTime then it will consider the charge done as soon as you reach max range.
+	/// </summary>
+	/// <param name="BuffName">Name of the buff.</param>
+	virtual void SetChargedBuffName(std::string const& BuffName) = 0;
+
+	/// <summary>
+	/// Gets the name of the charged spell buff.
+	/// </summary>
+	/// <returns>Name of charged buff.</returns>
+	virtual std::string GetChargedBuffName() = 0;
+
 };
 
 class IOrbwalking

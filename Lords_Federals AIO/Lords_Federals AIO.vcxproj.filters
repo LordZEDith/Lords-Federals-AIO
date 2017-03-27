@@ -207,15 +207,24 @@
     <ClInclude Include="Gragas.h">
       <Filter>Header Files\Champions\Jungle</Filter>
     </ClInclude>
+    <ClInclude Include="Ekko.h">
+      <Filter>Header Files\Champions\TopLane</Filter>
+    </ClInclude>
+    <ClInclude Include="Renekton.h">
+      <Filter>Header Files\Champions\TopLane</Filter>
+    </ClInclude>
+    <ClInclude Include="ChoGath.h">
+      <Filter>Header Files\Champions\TopLane</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PluginSDK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Clipper.cpp">
+      <Filter>Header Files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="PluginSDK.cpp">
       <Filter>Header Files\SDK</Filter>
     </ClCompile>
   </ItemGroup>

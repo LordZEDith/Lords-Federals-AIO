@@ -25,6 +25,7 @@ class IChampion
 public:		
 	virtual void OnGameUpdate() = 0;
 	virtual void OnAfterAttack(IUnit* Source, IUnit* Target) = 0;
+	virtual void OnBeforeAttack(IUnit* Target) = 0;
 	virtual void OnGapCloser(GapCloserSpell const& Args) = 0;
 	virtual void OnInterruptible(InterruptibleSpell const& Args) = 0;
 	virtual void OnDash(UnitDash* Args) = 0;
@@ -47,7 +48,7 @@ public:
 
 	virtual void OnLoad() override
 	{
-		Message().SuppLaneSeries();
+		//Message().SuppLaneSeries();
 		//Message().ChampionLoadMessage();
 		Template().InitializeMenu();
 		Template().LoadSpells();
@@ -96,6 +97,10 @@ public:
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
 	{
 		//Template().OnAfterAttack(Source, Target);
+	}
+	void OnBeforeAttack( IUnit* Target) override
+	{
+		
 	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
@@ -207,6 +212,10 @@ public:
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
 	{
 		
+	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
 	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
@@ -323,6 +332,10 @@ public:
 	{
 		
 	}
+	void OnBeforeAttack( IUnit* Target) override
+	{
+
+	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -429,6 +442,10 @@ public:
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
 	{
 		Ashe().OnAfterAttack(Source, Target);
+	}
+	void OnBeforeAttack( IUnit* Target) override
+	{
+
 	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
@@ -548,6 +565,10 @@ public:
 	{
 		Draven().OnAfterAttack(Source, Target);
 	}
+	void OnBeforeAttack( IUnit* Target) override
+	{
+
+	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -659,6 +680,10 @@ public:
 	{
 		Ezreal().OnAfterAttack(Source, Target);
 	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
+	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -768,6 +793,11 @@ public:
 	{
 
 	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
+	}
+	
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -868,6 +898,10 @@ public:
 		Lux().OnGapcloser(Args);
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnBeforeAttack(IUnit* Target) override
 	{
 
 	}
@@ -985,6 +1019,10 @@ public:
 	{
 		Olaf().OnAfterAttack(Source, Target);
 	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
+	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -1096,6 +1134,10 @@ public:
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
 	{
 		DrMundo().OnAfterAttack(Source, Target);
+	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
 	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
@@ -1209,6 +1251,10 @@ public:
 	{
 		
 	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
+	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -1316,6 +1362,10 @@ public:
 		Poppy().OnGapcloser(Args);
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnBeforeAttack(IUnit* Target) override
 	{
 
 	}
@@ -1434,6 +1484,10 @@ public:
 	{
 		
 	}
+	void OnBeforeAttack( IUnit* Target) override
+	{
+
+	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -1541,6 +1595,10 @@ public:
 		Hecarim().OnGapcloser(Args);
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnBeforeAttack(IUnit* Target) override
 	{
 
 	}
@@ -1655,6 +1713,10 @@ public:
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
 	{
 		Elise().OnAfterAttack(Source, Target);
+	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
 	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
@@ -1771,6 +1833,10 @@ public:
 			}
 		}
 	}
+	void OnBeforeAttack( IUnit* Target) override
+	{
+
+	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -1876,6 +1942,10 @@ public:
 		Malphite().GapCloser(Args);
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnBeforeAttack(IUnit* Target) override
 	{
 
 	}
@@ -1990,6 +2060,10 @@ public:
 	{
 
 	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
+	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -2096,6 +2170,10 @@ public:
 
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnBeforeAttack( IUnit* Target) override
 	{
 
 	}
@@ -2215,6 +2293,10 @@ public:
 	{
 
 	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
+	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -2321,6 +2403,10 @@ public:
 
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnBeforeAttack(IUnit* Target) override
 	{
 
 	}
@@ -2433,6 +2519,10 @@ public:
 	{
 
 	}
+	void OnBeforeAttack( IUnit* Target) override
+	{
+
+	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -2539,6 +2629,10 @@ public:
 
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnBeforeAttack(IUnit* Target) override
 	{
 
 	}
@@ -2653,6 +2747,10 @@ public:
 	{
 		zTristana().OnAfterAttack(Source, Target);
 	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
+	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -2764,6 +2862,10 @@ public:
 	{
 		
 	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
+	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -2868,6 +2970,10 @@ public:
 
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnBeforeAttack(IUnit* Target) override
 	{
 
 	}
@@ -2989,6 +3095,10 @@ public:
 	{
 
 	}
+	void OnBeforeAttack( IUnit* Target) override
+	{
+
+	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -3098,6 +3208,10 @@ public:
 
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnBeforeAttack( IUnit* Target) override
 	{
 
 	}
@@ -3212,6 +3326,10 @@ public:
 	{
 
 	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
+	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -3322,6 +3440,10 @@ public:
 	{
 
 	}
+	void OnBeforeAttack( IUnit* Target) override
+	{
+
+	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
 
@@ -3376,6 +3498,284 @@ public:
 	}
 };
 
+class cEkko : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		Message().TopLaneSeries();
+		//Message().ChampionLoadMessage();
+		Ekko().Menu();
+		Ekko().LoadSpells();
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+		Toxic().MenuToxic();
+	}
+
+	virtual void OnRender() override
+	{
+		Ekko().OnRender();
+		AutoSmite().DrawingsSmite();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		Ekko().OnGameUpdate();
+
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+		Ekko().OnCreateObject(Source);
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
+};
+
+class cRenekton : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		Message().TopLaneSeries();
+		//Message().ChampionLoadMessage();
+		Renekton().Menu();
+		Renekton().LoadSpells();
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+		Toxic().MenuToxic();
+	}
+
+	virtual void OnRender() override
+	{
+		AutoSmite().DrawingsSmite();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		Renekton().OnGameUpdate();
+
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+		Renekton().OnGapCloser(Args);
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+		Renekton().OnOrbwalkAfterAttack(Source,Target);
+	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+		Renekton().OnOrbwalkBeforeAttack(Target);
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+		
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+		Renekton().OnInterruptible(Args);
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
+};
+
+class cChoGatn : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		Message().TopLaneSeries();
+		//Message().ChampionLoadMessage();
+		ChoGath().Menu();
+		ChoGath().LoadSpells();
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+		Toxic().MenuToxic();
+	}
+
+	virtual void OnRender() override
+	{
+		AutoSmite().DrawingsSmite();
+		ChoGath().OnRender();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		ChoGath().OnGameUpdate();
+
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+		ChoGath().OnGapCloser(Args);
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+		ChoGath().OnOrbwalkAfterAttack(Source, Target);
+	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+		
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+		ChoGath().OnLevelUp(Source,NewLevel);
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+		ChoGath().OnInterruptible(Args);
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnUnitDeath(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
+};
+
 IChampion* pChampion = nullptr;
 
 PLUGIN_EVENT(void) OnRender()
@@ -3401,6 +3801,10 @@ PLUGIN_EVENT(void) OnInterruptible(InterruptibleSpell const& Args)
 PLUGIN_EVENT(void) OnAfterAttack(IUnit* Source, IUnit* Target)
 {
 	pChampion->OnAfterAttack(Source, Target);
+}
+PLUGIN_EVENT(void) OnBeforeAttack(IUnit* Target)
+{
+	pChampion->OnBeforeAttack(Target);
 }
 
 PLUGIN_EVENT(void) OnLevelUp(IUnit* Source, int NewLevel)
@@ -3518,6 +3922,12 @@ void LoadChampion()
 		pChampion = new cDarius;
 	else if (szChampion == "Rumble")
 		pChampion = new cRumble;
+	else if (szChampion == "Ekko")
+		pChampion = new cEkko;
+	else if (szChampion == "Renekton")
+		pChampion = new cRenekton;
+	else if (szChampion == "ChoGath")
+		pChampion = new cChoGatn;
 	// Support
 	else if (szChampion == "Sona")
 		pChampion = new cSona;
@@ -3535,6 +3945,7 @@ void LoadChampion()
 		GEventManager->AddEventHandler(kEventOnGapCloser, OnGapCloser);
 		GEventManager->AddEventHandler(kEventOnInterruptible, OnInterruptible);
 		GEventManager->AddEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);		
+		GEventManager->AddEventHandler(kEventOrbwalkBeforeAttack, OnBeforeAttack);
 		GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 		GEventManager->AddEventHandler(kEventOnLevelUp, OnLevelUp);
 		GEventManager->AddEventHandler(kEventOnBuffAdd, OnBuffAdd);
@@ -3576,6 +3987,7 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapCloser);
 	GEventManager->RemoveEventHandler(kEventOnInterruptible, OnInterruptible);
 	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);	
+	GEventManager->RemoveEventHandler(kEventOrbwalkBeforeAttack, OnBeforeAttack);
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->RemoveEventHandler(kEventOnLevelUp, OnLevelUp);
 	GEventManager->RemoveEventHandler(kEventOnBuffAdd, OnBuffAdd);

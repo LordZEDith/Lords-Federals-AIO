@@ -155,6 +155,7 @@
     <ClInclude Include="Caitlyn.h" />
     <ClInclude Include="Champions.h" />
     <ClInclude Include="ChampTemplate.h" />
+    <ClInclude Include="ChoGath.h" />
     <ClInclude Include="Clipper.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Common.h" />
@@ -163,12 +164,14 @@
     <ClInclude Include="Diana.h" />
     <ClInclude Include="Draven.h" />
     <ClInclude Include="DrMundo.h" />
+    <ClInclude Include="Ekko.h" />
     <ClInclude Include="Elise.h" />
     <ClInclude Include="Ezreal.h" />
     <ClInclude Include="Gragas.h" />
     <ClInclude Include="Khazix.h" />
     <ClInclude Include="LeeSin.h" />
     <ClInclude Include="Polygons.h" />
+    <ClInclude Include="Renekton.h" />
     <ClInclude Include="Rumble.h" />
     <ClInclude Include="SkinsChange.h" />
     <ClInclude Include="Hecarim.h" />
