@@ -4159,8 +4159,8 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	LoadChampion();
 	pChampion->OnLoad();	
 	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Welcome to Lords & Federals AIO");
-	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "News: Me and Federal decided to merge to bring you the best Scripts");
-	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "New Champions Supported: LeeSin, Khazix, Rumble and Gragas Beta");
+	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "[Fixed]: LeeSin, Xerath is God, Eise, Diana, Varus is God");
+	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "[News]: Added: Gargas, Khazix, Trundle, Jax, ChoGath, Pantheon, Ekko, Renekton, Rumble");
 
 	//GUtility->CreateDebugConsole();	
 }
