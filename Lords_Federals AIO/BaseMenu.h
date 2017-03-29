@@ -240,6 +240,7 @@ IMenuOption* RAllys;
 IMenuOption* Rdelay;
 IMenuOption* RBlock;
 IMenuOption* rCount;
+IMenuOption* RMode;
 
 IMenuOption* Killsteal;
 IMenuOption* KillstealQ;

@@ -4112,7 +4112,7 @@ void LoadChampion()
 		pChampion = new cEkko;
 	else if (szChampion == "Renekton")
 		pChampion = new cRenekton;
-	else if (szChampion == "ChoGath")
+	else if (szChampion == "Chogath")
 		pChampion = new cChoGatn;
 	else if (szChampion == "Trundle")
 		pChampion = new cTrundle;
@@ -4126,6 +4126,7 @@ void LoadChampion()
 	else
 	{
 		pChampion = new cTemplate;
+		GGame->PrintChat(szChampion.data());
 		GGame->PrintChat("Champion Not Supported");
 	}	
 	

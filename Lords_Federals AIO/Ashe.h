@@ -17,19 +17,15 @@ public:
 			ComboW = ComboSettings->CheckBox("Use W", true);
 			AutoUlt = ComboSettings->CheckBox("Use R", true);
 			ComboR = ComboSettings->CheckBox("Use R KS combo R + W + AA", true);
-			UltEnemies = ComboSettings->CheckBox("Auto R Aoe", true);
+			UltEnemies = ComboSettings->CheckBox("Use R Aoe", true);
 			SemiManualKey = ComboSettings->AddKey("Semi-manual cast R key", 71);
+			RMode = ComboSettings->AddSelection("R Semi-manual Mode", 0, std::vector<std::string>({ "Target Selector", "Nearest Mouse" }));
 
-			/*for (auto enemy : GEntityList->GetAllHeros(false, true))
-			{				
-				std::string szMenuName = "Dont Ult - " + std::string(enemy->ChampionName());
-				MenuDontUlt[enemy->GetNetworkId()] = ComboSettings->CheckBox(szMenuName.c_str(), true);				
-			}
-
-			if (MenuDontUlt[target->GetNetworkId()]->Enabled())
+			for (auto enemy : GEntityList->GetAllHeros(false, true))
 			{
-				//code
-			}*/
+				std::string szMenuName = "R Semi-manual WhiteList - " + std::string(enemy->ChampionName());
+				MenuDontUlt[enemy->GetNetworkId()] = ComboSettings->CheckBox(szMenuName.c_str(), true);
+			}
 		}				
 
 		HarassSettings = MainMenu->AddMenu("Harass Settings");
@@ -64,13 +60,14 @@ public:
 		}
 		
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
-		{			
-			RInterrupter = fedMiscSettings->CheckBox("Automatically R Interrupt Spell", true);
-			RGapCloser = fedMiscSettings->CheckBox("Automatically R GapCloser", true);			
-			CCedW = fedMiscSettings->CheckBox("Auto W When Enemies Cant Move", true);
-			CCedR = fedMiscSettings->CheckBox("Auto R When Enemies Cant Move", false);
+		{
+			CCedW = fedMiscSettings->CheckBox("Auto W When Enemies Cant Move", true);			
 			AutoE = fedMiscSettings->CheckBox("Auto E target Brush", true);
-			Predic = fedMiscSettings->CheckBox("HitChance - Off: Medium | On: Hight", true);
+			RInterrupter = fedMiscSettings->CheckBox("Automatically R Interrupt Spell", true);
+			RGapCloser = fedMiscSettings->CheckBox("Automatically R GapCloser", true);
+			CCedR = fedMiscSettings->CheckBox("Auto R When Enemies Cant Move", false);
+			RMax = fedMiscSettings->AddFloat("R Max Range", 1000, 25000, 3000);
+			Predic = fedMiscSettings->AddSelection("Q Prediction ->", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
@@ -90,8 +87,26 @@ public:
 		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, kCollidesWithNothing);
 		E->SetSkillshot(0.25f, 300.f, 1400.f, 2500.f);
 		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, false, false, kCollidesWithYasuoWall);
-		R->SetSkillshot(0.25f, 130.f, 1600.f, 5000.f);
-	}	
+		R->SetSkillshot(0.25f, 130.f, 1600.f, 25000.f);
+	}
+
+	static int PredicChange()
+	{
+		if (Predic->GetInteger() == 0)
+		{
+			return mypredic = kHitChanceMedium;
+		}
+		if (Predic->GetInteger() == 1)
+		{
+			return mypredic = kHitChanceHigh;
+		}
+		if (Predic->GetInteger() == 2)
+		{
+			return mypredic = kHitChanceVeryHigh;
+		}
+
+		return mypredic = kHitChanceLow;
+	}
 
 	static void Automatic()
 	{
@@ -117,30 +132,38 @@ public:
 	{
 		if (IsKeyDown(SemiManualKey))
 		{
-
+			GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
+			
 			if (!R->IsReady())
 			{
 				return;
 			}
-			auto TargetR = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 2000);
 
-			if (TargetR == nullptr || TargetR->IsDead() || TargetR->IsInvulnerable() || !TargetR->IsValidTarget(GEntityList->Player(), R->Range()))
+			IUnit* TargetR = nullptr;
+
+			if (RMode->GetInteger() == 0)
+			{
+				TargetR = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, RMax->GetFloat());
+			}
+			else
+			{
+				SArray<IUnit*> rtarget = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* m) {return m != nullptr &&
+					!m->IsDead() && m->IsVisible() && MenuDontUlt[m->GetNetworkId()]->Enabled() && m->IsValidTarget(GEntityList->Player(), RMax->GetFloat()); });
+
+				if (rtarget.Any())
+				{
+					TargetR = rtarget.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
+				}
+			}
+
+			if (TargetR == nullptr || TargetR->IsDead() || TargetR->IsInvulnerable() || !TargetR->IsValidTarget(GEntityList->Player(), RMax->GetFloat()))
 			{
 				return;
 			}
 
-			auto rdamage = GHealthPrediction->GetKSDamage(TargetR, kSlotR, R->GetDelay(), false);
-			auto wdamage = GHealthPrediction->GetKSDamage(TargetR, kSlotW, W->GetDelay(), false);
-			auto autodamage = GDamage->GetAutoAttackDamage(GEntityList->Player(), TargetR, false);
-
-			if (R->CastOnTargetAoE(TargetR, 2, kHitChanceVeryHigh))
+			if (MenuDontUlt[TargetR->GetNetworkId()]->Enabled())
 			{
-				return;
-			}
-
-			if ((autodamage * 6) + rdamage + wdamage > TargetR->GetHealth())
-			{
-				R->CastOnTarget(TargetR, kHitChanceHigh);
+				R->CastOnTarget(TargetR, PredicChange());
 			}
 		}
 	}
@@ -156,101 +179,66 @@ public:
 			{
 				if (ComboW->Enabled() && W->IsReady() && GOrbwalking->GetOrbwalkingMode() == kModeCombo && GEntityList->Player()->GetMana() > R->ManaCost() + W->ManaCost())
 				{
-					if (Predic->Enabled())
-					{
-						W->CastOnTarget(t, kHitChanceHigh);
-					}
-					else
-					{
-						W->CastOnTarget(t, kHitChanceMedium);
-					}
+					W->CastOnTarget(t, PredicChange());
 				}
 
 				else if (HarassW->Enabled() && W->IsReady() && GOrbwalking->GetOrbwalkingMode() == kModeMixed  && GEntityList->Player()->GetMana() > R->ManaCost() + W->ManaCost() && GEntityList->Player()->ManaPercent() > HarassMana->GetInteger())
 				{
-					if (Predic->Enabled())
-					{
-						W->CastOnTarget(t, kHitChanceHigh);
-					}
-					else
-					{
-						W->CastOnTarget(t, kHitChanceMedium);
-					}
+					W->CastOnTarget(t, PredicChange());
 				}
 
 				else if (AutoHarass->Enabled() && W->IsReady() && GEntityList->Player()->GetMana() > R->ManaCost() + W->ManaCost() && GEntityList->Player()->ManaPercent() > HarassMana->GetInteger())
 				{
-					if (Predic->Enabled())
-					{
-						W->CastOnTarget(t, kHitChanceHigh);
-					}
-					else
-					{
-						W->CastOnTarget(t, kHitChanceMedium);
-					}
+					W->CastOnTarget(t, PredicChange());
 				}
 
 				else if (Killsteal->Enabled() && KillstealW->Enabled() && W->IsReady() && GHealthPrediction->GetKSDamage(t, kSlotW, W->GetDelay(), false) > t->GetHealth())
 				{
-					if (Predic->Enabled())
-					{
-						W->CastOnTarget(t, kHitChanceHigh);
-					}
-					else
-					{
-						W->CastOnTarget(t, kHitChanceMedium);
-					}
+					W->CastOnTarget(t, PredicChange());
 				}
 
 				else if (GOrbwalking->GetOrbwalkingMode() == kModeNone && CCedW->Enabled() && t->IsValidTarget(GEntityList->Player(), W->Range() - 50) && W->IsReady() && !CanMove(t) && !t->IsDead() && !t->IsInvulnerable() && GEntityList->Player()->GetMana() > W->ManaCost() + R->ManaCost())
 				{
-					if (Predic->Enabled())
-					{
-						W->CastOnTarget(t, kHitChanceHigh);
-					}
-					else
-					{
-						W->CastOnTarget(t, kHitChanceMedium);
-					}
+					W->CastOnTarget(t, PredicChange());
 				}
 			}
 		}
 
 		if ((LaneClearW->Enabled() || JungleW->Enabled()) && GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 		{
-			for (auto Minion : GEntityList->GetAllMinions(false, true, false))
+			if (LaneClearW->Enabled() && W->IsReady() && !FoundMinionsNeutral(W->Range() - 300))
 			{
-				if (Minion != nullptr && !Minion->IsDead())
+				for (auto Minion : GEntityList->GetAllMinions(false, true, false))
 				{
-					if (LaneClearW->Enabled() && W->IsReady() && GEntityList->Player()->GetMana() > R->ManaCost() + Q->ManaCost() + W->ManaCost() && GEntityList->Player()->IsValidTarget(Minion, W->Range()) && !FoundMinionsNeutral(W->Range() - 300))
+					if (Minion != nullptr && !Minion->IsDead() && GEntityList->Player()->IsValidTarget(Minion, W->Range()))
 					{
-						if (GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger() && 
+
+						if (GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger() &&
 							CountMinions(Minion->GetPosition(), 350) >= MinionsW->GetInteger() &&
 							GetDistance(GEntityList->Player(), Minion) >= GOrbwalking->GetAutoAttackRange(GEntityList->Player()))
-						{							
+						{
 							W->CastOnUnit(Minion);
 						}
 					}
 				}
 			}
 
-			for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
-			{
-				if (jMinion != nullptr && !jMinion->IsDead())
-				{
-					if (JungleW->Enabled() && W->IsReady() && GEntityList->Player()->GetMana() > R->ManaCost() + Q->ManaCost() + W->ManaCost() && GEntityList->Player()->IsValidTarget(jMinion, W->Range()) && !FoundMinions(W->Range() - 300))
-					{
-						if (GEntityList->Player()->ManaPercent() > JungleMana->GetInteger())
-						{
-							Vec3 pos;
-							int count;
-							W->FindBestCastPosition(true, true, pos, count);
+			if (JungleW->Enabled() && W->IsReady() && !FoundMinions(W->Range() - 300))
+			{				
+				SArray<IUnit*> jMinion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+					!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), W->Range()); });
 
-							if (count >= MinionsW->GetInteger() && W->CastOnPosition(pos))
-							{
-								return;
-							}
-						}
+				if (jMinion.Any())
+				{
+					jMonster = jMinion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
+				}
+
+				if (jMonster != nullptr && !jMonster->IsDead() && !jMonster->IsInvulnerable() && jMonster->IsVisible())
+				{
+
+					if (GEntityList->Player()->ManaPercent() > JungleMana->GetInteger())
+					{
+						W->CastOnUnit(jMonster);
 					}
 				}
 			}
@@ -267,39 +255,18 @@ public:
 				{
 					auto rDmg = GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false);
 
-					if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && CountEnemy(target->GetPosition(), 250) > 2 && UltEnemies->Enabled() && target->IsValidTarget(GEntityList->Player(), 1500))
+					if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && CountEnemy(target->GetPosition(), 250) >= 2 && UltEnemies->Enabled() && target->IsValidTarget(GEntityList->Player(), 2000))
 					{
-						if (Predic->Enabled())
-						{
-							R->CastOnTarget(target, kHitChanceHigh);
-						}
-						else
-						{
-							R->CastOnTarget(target, kHitChanceMedium);
-						}
+						R->CastOnTarget(target, PredicChange());						
 					}
 
 					if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && target->IsValidTarget(GEntityList->Player(), W->Range()) && ComboR && GDamage->GetAutoAttackDamage(GEntityList->Player(), target, false) * 5 + rDmg + GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotW) > target->GetHealth() && target->HasBuffOfType(BUFF_Slow))
 					{
-						if (Predic->Enabled())
-						{
-							R->CastOnTarget(target, kHitChanceHigh);
-						}
-						else
-						{
-							R->CastOnTarget(target, kHitChanceMedium);
-						}
+						R->CastOnTarget(target, PredicChange());						
 					}
 					if (Killsteal->Enabled() && KillstealR->Enabled() && rDmg > target->GetHealth() && CountAlly(target->GetPosition(), 600) == 0 && GetDistance(GEntityList->Player(), target) > 1000)
 					{
-						if (Predic->Enabled())
-						{
-							R->CastOnTarget(target, kHitChanceHigh);
-						}
-						else
-						{
-							R->CastOnTarget(target, kHitChanceMedium);
-						}
+						R->CastOnTarget(target, PredicChange());						
 					}
 				}
 			}
@@ -311,14 +278,7 @@ public:
 			{
 				if (enemy->IsValidTarget(GEntityList->Player(), 300) && enemy->IsMelee() && RGapCloser->Enabled() && ValidUlt(enemy))
 				{
-					if (Predic->Enabled())
-					{
-						R->CastOnTarget(enemy, kHitChanceHigh);
-					}
-					else
-					{
-						R->CastOnTarget(enemy, kHitChanceMedium);
-					}
+					R->CastOnTarget(enemy, PredicChange());					
 				}
 			}
 		}
@@ -376,11 +336,11 @@ public:
 			{
 				if (jMinion != nullptr && !jMinion->IsDead())
 				{
-					if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->GetMana() > R->ManaCost() + Q->ManaCost() + W->ManaCost() && GEntityList->Player()->IsValidTarget(jMinion, W->Range()) && !FoundMinions(W->Range() - 300))
+					if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->IsValidTarget(jMinion, W->Range()) && !FoundMinions(W->Range() - 300))
 					{
 						if (GEntityList->Player()->ManaPercent() > JungleMana->GetInteger())
 						{
-							W->CastOnUnit(jMinion);
+							Q->CastOnPlayer();
 						}
 					}
 				}
@@ -388,17 +348,12 @@ public:
 
 		}
 	}
-			
-	static void OnExitVisible(IUnit* Source)
-	{
-		
-	}
-	
+
 	static void OnInterruptible(InterruptibleSpell const& Args)
 	{
 		if (RInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < 1800 && R->IsReady())
 		{
-			R->CastOnTarget(Args.Target, kHitChanceHigh);
+			R->CastOnTarget(Args.Target, PredicChange());
 		}
 	}
 	
