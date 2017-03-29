@@ -1858,18 +1858,19 @@ public:
 
 				if (InsecText == "FlashDistance" && Rposition != Vec3(0, 0, 0))
 				{
-					GPluginSDK->DelayFunctionCall(120, []() { 
-						
-						if (FoundFlash && Flash->IsReady())
-						{
+					if (FoundFlash && Flash->IsReady())
+					{
+						GPluginSDK->DelayFunctionCall(120, []() {
+
 							Flash->CastOnPosition(Rposition);
 							InsecType = "Ultimate";
 							goUltimate = true;
-						}
-					
-					});									
+
+						});					
 
 					InsecTime = GGame->TickCount() + 2000;
+
+					}
 				}
 			}
 
@@ -1891,12 +1892,7 @@ public:
 				{
 					goUltimate = false;
 				}
-			}
-
-			if (strstr(Args.Name_, "SummonerFlash"))
-			{
-				// bubba
-			}
+			}			
 		}
 
 		if (Args.Caster_->IsTurret() && Args.Target_->IsEnemy(GEntityList->Player()) && InsecUnder->GetInteger() > 0 && Args.Target_->IsHero())

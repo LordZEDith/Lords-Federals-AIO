@@ -222,6 +222,9 @@
     <ClInclude Include="Jax.h">
       <Filter>Header Files\Champions\TopLane</Filter>
     </ClInclude>
+    <ClInclude Include="Galio.h">
+      <Filter>Header Files\Champions\Jungle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">

@@ -167,6 +167,7 @@
     <ClInclude Include="Ekko.h" />
     <ClInclude Include="Elise.h" />
     <ClInclude Include="Ezreal.h" />
+    <ClInclude Include="Galio.h" />
     <ClInclude Include="Gragas.h" />
     <ClInclude Include="Jax.h" />
     <ClInclude Include="Khazix.h" />

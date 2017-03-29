@@ -540,6 +540,7 @@ IMenuOption* InsecTo;
 IMenuOption* InsecUnder;
 IMenuOption* Gankward;
 IMenuOption* GankQ;
+IMenuOption* GankR;
 IMenuOption* ComboChange;
 IMenuOption* ChangetoCombo;
 IMenuOption* DrawGankCombo;
