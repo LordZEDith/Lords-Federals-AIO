@@ -3917,7 +3917,7 @@ public:
 
 	void OnCreateObject(IUnit* Source) override
 	{
-
+		Jax().OnCreateObject(Source);
 	}
 
 	void OnDeleteObject(IUnit* Source) override
@@ -3935,7 +3935,7 @@ public:
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-
+		Jax().OnProcessSpell(Args);
 	}
 
 	void OnExitVisible(IUnit* Source) override
