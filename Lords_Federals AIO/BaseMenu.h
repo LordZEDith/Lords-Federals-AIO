@@ -526,6 +526,7 @@ IMenuOption* clickInsec;
 IMenuOption* ExtraDist;
 IMenuOption* jumpMinion;
 IMenuOption* jumpAliado;
+IMenuOption* jumpWards;
 IMenuOption* AutoStartKill;
 IMenuOption* AutoStartWard;
 IMenuOption* useFlash;

@@ -10,16 +10,20 @@ public:
 	void  Menu()
 	{
 		MainMenu = GPluginSDK->AddMenu("Lords & Federals Jax");
-		ComboMenu = MainMenu->AddMenu("Combo Menu");
-		HarassMenu = MainMenu->AddMenu("Harass Menu");
-		FarmMenu = MainMenu->AddMenu("Farm Menu");
+		ComboMenu = MainMenu->AddMenu("Combo Settings");
+		HarassMenu = MainMenu->AddMenu("Harass Settings");
+		FarmMenu = MainMenu->AddMenu("LaneClear Settings");
+		JungleClearSettings = MainMenu->AddMenu("Jungle Settings");
 		Drawings = MainMenu->AddMenu("Drawings");
-		fedMiscSettings = MainMenu->AddMenu("Flee");
+		fedMiscSettings = MainMenu->AddMenu("Flee Settings");
 
 		ComboQ = ComboMenu->CheckBox("Use Q", true);
-		ComboW = ComboMenu->CheckBox("Use W", true);
+		ComboQH = ComboMenu->CheckBox("Dont Use Q when enemy is in AA Range", false);
+		inUnderTower = ComboMenu->CheckBox("Dont Q Under Tower", false);
+		ComboW = ComboMenu->AddSelection("Use W Mode", 1, std::vector<std::string>({ "Disabled", "Always", "After AA" }));
 		ComboE = ComboMenu->CheckBox("Use E", true);
-		AutoStun = ComboMenu->CheckBox("Auto Stun", true);
+		ComboE2 = ComboMenu->CheckBox("Use E Before Q Jump", true);
+		AutoStun = ComboMenu->CheckBox("Auto Stun (Second E)", true);
 		ComboR = ComboMenu->CheckBox("Use R", true);
 		AutoR = ComboMenu->AddFloat("Auto R when health <= HP%", 10, 100, 50);
 		REnemies = ComboMenu->AddInteger("Or Enemy >=", 1, 5, 3);
@@ -29,14 +33,21 @@ public:
 
 		FarmQ = FarmMenu->CheckBox("Use Q", true);
 		FarmW = FarmMenu->CheckBox("Use W", true);
+
+		JungleQ = JungleClearSettings->CheckBox("Use Q", true);
+		JungleW = JungleClearSettings->CheckBox("Use W", true);
+		JungleE = JungleClearSettings->CheckBox("Use E", true);
+		JungleMana = JungleClearSettings->AddInteger("Min Mana to Jungle", 0, 100, 40);
 		
-		WardJumpKey = fedMiscSettings->AddKey("Ward Jump", 90);
+		WardJumpKey = fedMiscSettings->AddKey("Q Jump", 90);
+		jumpWards = fedMiscSettings->CheckBox("Use Wards", true);
 		WardMax = fedMiscSettings->CheckBox("Ward Max Range", true);
 		jumpMinion = fedMiscSettings->CheckBox("Jump in Minion", true);
 		jumpAliado = fedMiscSettings->CheckBox("Jump in Allys", true);
 
 		DrawQ = Drawings->CheckBox("Draw Q", true);
 		DrawE = Drawings->CheckBox("Draw E", true);
+		DrawWard = Drawings->CheckBox("Draw Ward Range", false);
 	}
 	void LoadSpells()
 	{
@@ -67,6 +78,16 @@ public:
 		Ward14 = GPluginSDK->CreateItemForId(1411, 600);
 		Ward15 = GPluginSDK->CreateItemForId(2043, 600);
 		Ward16 = GPluginSDK->CreateItemForId(2055, 600);
+	}
+
+	static bool JaxEUsed()
+	{
+		if (GEntityList->Player()->HasBuff("JaxCounterStrike"))
+		{
+			return true;			
+		}
+
+		return false;
 	}
 
 	static void WardJump(Vec3 pos, bool maxRange = false)
@@ -148,7 +169,7 @@ public:
 			}
 		}		
 
-		if (!EhWard)
+		if (!EhWard && jumpWards->Enabled())
 		{
 			if (Q->IsReady() && LastWard < GGame->TickCount())
 			{
@@ -234,22 +255,34 @@ public:
 
 	void Combo()
 	{
-		if (ComboE->Enabled() && CountEnemy(GEntityList->Player()->GetPosition(), Q->Range()) > 0)
+		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+
+		if (!CheckTarget(target)) return;
+
+		if (!JaxEUsed() && ComboE->Enabled() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && (ComboE2->Enabled() || !ComboE2->Enabled() && !Q->IsReady() && LastQTick - GGame->TickCount() < 1500))
 		{
+			if (inUnderTower->Enabled() && IsUnderTurret(target) && GetDistance(GEntityList->Player(), target) > E->Range()) return;
+
 			E->CastOnPlayer();
 		}
-		if (ComboQ->Enabled())
+
+		if (ComboQ->Enabled() && (!ComboQH->Enabled() || ComboQH->Enabled() && GetDistance(GEntityList->Player(), target) > GEntityList->Player()->GetRealAutoAttackRange(target)))
 		{
-			Q->CastOnTarget(GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range()));
+			if (inUnderTower->Enabled() && IsUnderTurret(target)) return;
+
+			Q->CastOnUnit(target);
 		}
-		if (AutoStun->Enabled() && GEntityList->Player()->GetSpellState(kSlotE) != DisabledOne)
-		{
-			//E->CastOnPlayer(); temp
-		}
-		if (ComboW->Enabled())
+
+		if (ComboW->GetInteger() == 1 && W->IsReady())
 		{
 			W->CastOnPlayer();
 		}
+
+		if (AutoStun->Enabled() && JaxEUsed())
+		{
+			E->CastOnPlayer();
+		}
+		
 		if (ComboR->Enabled())
 		{
 			if (GEntityList->Player()->HealthPercent() <= AutoR->GetFloat() || CountEnemy(GEntityList->Player()->GetPosition(), Q->Range()) >= REnemies->GetInteger())
@@ -273,13 +306,54 @@ public:
 
 	void LaneClear()
 	{
-		if (FarmQ->Enabled()) {
+		if (FarmQ->Enabled() && Q->IsReady() && !FoundMinionsNeutral(Q->Range()))
+		{
 			Q->LastHitMinion();
 		}
-		if (FarmW->Enabled())
+
+		if (GEntityList->Player()->ManaPercent() < JungleMana->GetInteger()) return;
+
+		SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()); });
+
+		if (Minion.Any())
 		{
-			W->LastHitMinion();
+			jMonster = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
 		}
+
+		if (jMonster != nullptr && !jMonster->IsDead() && !jMonster->IsInvulnerable() && jMonster->IsVisible())
+		{
+			if (FoundMinions(Q->Range())) return;			
+
+			if (JungleE->Enabled() && E->IsReady() && !JaxEUsed())
+			{
+				if (Q->IsReady() && GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
+				{
+					E->CastOnPlayer();
+				}
+				else
+				{
+					if (GEntityList->Player()->IsValidTarget(jMonster, E->Range()))
+					{
+						E->CastOnPlayer();
+					}
+				}
+			}
+
+			if (JungleE->Enabled() && E->IsReady() && JaxEUsed() && CountMinionsNeutral(GEntityList->Player()->GetPosition(), E->Range()) > 0)
+			{
+				E->CastOnPlayer();
+			}
+
+			if (JungleQ->Enabled() && Q->IsReady())
+			{
+				if (GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
+				{
+					Q->CastOnUnit(jMonster);
+				}
+			}
+		}
+		
 	}
 
 	void OnGameUpdate()
@@ -306,16 +380,53 @@ public:
 		{
 			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 255, 64), Q->Range());
 		}
+
 		if (DrawE->Enabled())
 		{
 			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 183, 255), E->Range());
 		}
+
+		if (DrawWard->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), 590); }
 	}
 
      void OnOrbwalkAfterAttack(IUnit* Source, IUnit* Target)
 	{
-		if (W->IsReady() && GOrbwalking->GetOrbwalkingMode() == kModeCombo)
-			W->CastOnPlayer();
+		if (Source != GEntityList->Player() || Target == nullptr || Target->IsTurret())
+			return;
+
+		switch (GOrbwalking->GetOrbwalkingMode())
+		{
+		case kModeCombo:
+			if (ComboW->GetInteger() == 2 && W->IsReady())
+			{
+				W->CastOnPlayer();
+			}
+			break;
+		case kModeMixed:
+			if (HarassW->Enabled() && W->IsReady())
+			{
+				W->CastOnPlayer();
+			}
+			break;
+		case kModeLaneClear:
+			for (auto jMinion : GEntityList->GetAllMinions(false, true, true))
+			{
+				if (jMinion != nullptr && !jMinion->IsDead())
+				{
+					if (FarmW->Enabled() && W->IsReady() && !FoundMinionsNeutral(Q->Range()) && GetDistance(GEntityList->Player(), jMinion) <= W->Range())
+					{
+						W->CastOnPlayer();
+					}
+
+					if (JungleW->Enabled() && W->IsReady() && !FoundMinions(Q->Range()) && GetDistance(GEntityList->Player(), jMinion) <= W->Range())
+					{
+						W->CastOnPlayer();
+					}
+				}
+			}
+			break;
+		default:;
+		}
 	}
 
 	 void OnProcessSpell(CastedSpell const& Args)
