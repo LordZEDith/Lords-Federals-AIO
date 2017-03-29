@@ -4038,7 +4038,7 @@ public:
 	}
 	void OnInterruptible(InterruptibleSpell const& Args) override
 	{
-
+		Galio().OnInterruptible(Args);
 	}
 
 	void OnDash(UnitDash* Args) override

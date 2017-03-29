@@ -628,7 +628,7 @@ public:
 			}
 		}
 
-		if (LaneClearE->Enabled() && E->IsReady() && CountMinions(GEntityList->Player()->GetPosition(), E->Range()) >= MinionsW->GetInteger())
+		if (LaneClearE->Enabled() && E->IsReady() && CountMinions(GEntityList->Player()->GetPosition(), E->Range()) >= MinionsE->GetInteger())
 		{			
 			Vec3 pos;
 			int count;
