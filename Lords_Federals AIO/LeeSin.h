@@ -1895,8 +1895,8 @@ public:
 			}			
 		}
 
-		if (Args.Caster_->IsTurret() && Args.Target_->IsEnemy(GEntityList->Player()) && InsecUnder->GetInteger() > 0 && Args.Target_->IsHero())
-		{			
+		if (Args.Caster_->IsTurret() && CheckTarget(Args.Target_) && Args.Target_->IsEnemy(GEntityList->Player()) && InsecUnder->GetInteger() > 0 && Args.Target_->IsHero())
+		{		
 			if (!goInsecUnder)
 			{
 				goInsecUnder = true;
