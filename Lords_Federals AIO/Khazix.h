@@ -768,6 +768,8 @@ public:
 		{
 			if (GSpellData->GetSlot(Args.Data_) == kSlotQ && Args.Target_->IsHero() && dJumpEnabled->Enabled())
 			{
+				if (!CheckTarget(Args.Target_)) return;
+
 				auto qdmg = GetDamageKhazix(Args.Target_, false, true, false, false, false);
 				auto dmg = (GetDamageKhazix(Args.Target_, true, false, false, false, false) * 2) + qdmg;
 				if (Args.Target_->GetHealth() < dmg && Args.Target_->GetHealth() > qdmg)
@@ -783,7 +785,6 @@ public:
 
 		if (EUnderTowerAttack->Enabled() && ESafety->Enabled() && Args.Caster_->IsTurret() && Args.Target_ == GEntityList->Player())
 		{
-
 			if ((CountAlly(GEntityList->Player()->GetPosition(), 900) == 0 &&
 				CountEnemy(GEntityList->Player()->GetPosition(), 600) > 1 || !IsSafeHP() || CountEnemy(GEntityList->Player()->GetPosition(), 600) >= 1 && !Q->IsReady() && !W->IsReady()))
 			{
