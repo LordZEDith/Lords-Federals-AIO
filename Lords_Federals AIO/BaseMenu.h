@@ -673,6 +673,9 @@ IMenuOption* tHydra;
 IMenuOption* rHydra;
 IMenuOption* tiamat;
 
+IMenuOption* PingLoc;
+IMenuOption* RPingR;
+IMenuOption* PingR;
 
 ISpell2* Q1;
 ISpell2* Q3;

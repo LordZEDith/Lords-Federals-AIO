@@ -279,7 +279,11 @@ public:
 					E->CastOnTarget(target, kHitChanceHigh);
 					}*/
 
-					E->CastOnTarget(target, kHitChanceHigh);
+					//E->CastOnTarget(target, kHitChanceHigh);
+					Vec3 pred;
+					GPrediction->GetFutureUnitPosition(target, 0.15f, true, pred);
+					//GPrediction->SimulateMissile(GEntityList->Player()->ServerPosition(), target, 1000000000, 95.f, 1550, 0.6f, kCollidesWithNothing, pred);
+					E->CastOnPosition(pred);
 				}
 			}
 
@@ -295,7 +299,12 @@ public:
 				Q->CastOnTarget(target, kHitChanceHigh);
 				}*/
 
-				Q->CastOnTarget(target, kHitChanceHigh);
+				//Q->CastOnTarget(target, kHitChanceHigh);
+				Vec3 pred;
+				GPrediction->GetFutureUnitPosition(target, 0.15f, true, pred);
+				//GPrediction->SimulateMissile(GEntityList->Player()->ServerPosition(), target, 1000000000, 95.f, 1550, 0.6f, kCollidesWithNothing, pred);
+				Q->CastOnPosition(pred);
+
 			}
 
 			if (ESkillToggle() && EMissile != nullptr && CountEnemy(EMissile->GetPosition(), E->Radius()) >= 1)

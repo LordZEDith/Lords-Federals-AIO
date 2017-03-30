@@ -3,6 +3,8 @@
 #include "BaseMenu.h"
 #include <string>
 
+#define M_PI 3.14159265358979323846f
+
 
 inline double GetCorrectDamage(IUnit* target)
 {
@@ -681,6 +683,37 @@ static void DrawLine(Vec2 const Start, Vec2 const End, Vec4 const Color)
 
 	if (vecOut1.z < 1.f && vecOut2.z < 1.f)
 		GRender->DrawLine(Vec2(vecOut1.x, vecOut1.y), Vec2(vecOut2.x, vecOut2.y), Color);
+}
+
+static void DrawCircleMinimap(IRender *renderer, IGame *game, const Vec3 &position, const Vec4 &color, float radius, int quality = 30)
+{
+	//Credits to L#.Common
+	//Creds to Tsughi
+	auto points = std::vector<Vec3>();
+	for (auto i = 0; i < quality; i++)
+	{
+		auto angle = i * M_PI * 2 / quality;
+		points.emplace_back(
+			Vec3(
+				position.x + radius * ::cosf(angle),
+				position.y,
+				position.z + radius * ::sinf(angle)
+			)
+		);
+	}
+
+	for (size_t i = 0; i < points.size(); i++)
+	{
+		auto a = points[i];
+		auto b = points[i == points.size() - 1 ? 0 : i + 1];
+
+		Vec2 aonScreen, bonScreen;
+		game->WorldToMinimap(a, aonScreen);
+		game->WorldToMinimap(b, bonScreen);
+
+		renderer->DrawLine(aonScreen, bonScreen, color);
+	}
+
 }
 
 static int GetWardSlot()

@@ -62,11 +62,14 @@ public:
 
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
+			Predic = fedMiscSettings->AddSelection("E Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
 			EGapCloser = fedMiscSettings->CheckBox("Automatically E GapCloser", true);
 			EInterrupter = fedMiscSettings->CheckBox("Automatically E Interrupt Spell", true);
 			CCedQ = fedMiscSettings->CheckBox("Auto Q When Enemies Cant Move", true);
 			CheckShield = fedMiscSettings->CheckBox("No Stun (BlackShield, Banshee)", true);
+			PingLoc = fedMiscSettings->CheckBox("Ping Killable", true);
+			RPingR = fedMiscSettings->CheckBox("Only Ping When Enemy is in Ult Range", true );
+			PingR = fedMiscSettings->AddFloat("Ping if x Ults Kill", 0, 5, 3);
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
@@ -77,14 +80,15 @@ public:
 			DrawE = DrawingSettings->CheckBox("Draw E", false);
 			DrawEA = DrawingSettings->CheckBox("Draw R target radius", true);
 			DrawR = DrawingSettings->CheckBox("Draw R", false);
-			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
+			DrawR2 = DrawingSettings->CheckBox("Draw R MiniMap", true);
+			//DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
 		}
 	}
-
+	 
 	void static InitializeSpells()
 	{
 		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, kCollidesWithNothing); //Malachite
-		Q->SetSkillshot(0.6f, 95.f, 100000.f, 1550.f);
+		Q->SetSkillshot(0.6f, 95.f, 10000.f, 1550.f);
 		Q->SetCharged(750.f, 1550.f, 1.53f);
 		//Q->SetChargedBuffName("XerathArcanopulseChargeUp");
 		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, true, kCollidesWithYasuoWall);
@@ -144,7 +148,7 @@ public:
 					if (GetDistanceVectors(GGame->CursorPosition(), target->GetPosition()) < RMax->GetInteger())
 					{
 						Vec3 pred;
-						GPrediction->GetFutureUnitPosition(target, 0.3f, true, pred);
+						GPrediction->GetFutureUnitPosition(target, 0.28f, true, pred);
 						R->CastOnPosition(pred);
 					}
 
@@ -154,14 +158,14 @@ public:
 				if (Rdelay->GetInteger() == 0)
 				{
 					Vec3 pred;
-					GPrediction->GetFutureUnitPosition(target, 0.3f, true, pred);
+					GPrediction->GetFutureUnitPosition(target, 0.28f, true, pred);
 					R->CastOnPosition(pred);
 				}
 
 				else if (GGame->Time() - RCastSpell > 0.001 * Rdelay->GetInteger())
 				{
 					Vec3 pred;
-					GPrediction->GetFutureUnitPosition(target, 0.3f, true, pred);
+					GPrediction->GetFutureUnitPosition(target, 0.28f, true, pred);
 					R->CastOnPosition(pred);
 				}
 
@@ -228,7 +232,7 @@ public:
 							if (GetEnemiesInRange(Q->Range()) >= 1)
 							{
 								Vec3 pred;
-								GPrediction->GetFutureUnitPosition(target, 0.2f, true, pred);		
+								GPrediction->GetFutureUnitPosition(target, 0.15f, true, pred);		
 								//GPrediction->SimulateMissile(GEntityList->Player()->ServerPosition(), target, 1000000000, 95.f, 1550, 0.6f, kCollidesWithNothing, pred);
 				     			Q->CastOnPosition(pred);
 							}
@@ -260,7 +264,10 @@ public:
 
 				if (KillstealW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && GHealthPrediction->GetKSDamage(target, kSlotW, W->GetDelay(), false) > target->GetHealth() && !Q->IsCharging())
 				{
-					W->CastOnTarget(target, kHitChanceHigh);
+					Vec3 pred;
+					GPrediction->GetFutureUnitPosition(target, 0.2f, true, pred);
+					W->CastOnPosition(pred);
+					//W->CastOnTarget(target, kHitChanceHigh);
 					return;
 				}
 
@@ -304,7 +311,9 @@ public:
 
 		if (ComboW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && !Q->IsCharging())
 		{
-			W->CastOnTarget(target, PredicChange());
+			Vec3 pred;
+			GPrediction->GetFutureUnitPosition(target, 0.2f, true, pred);
+			W->CastOnPosition(pred);
 		}
 
 		if (ComboQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), 1550))
@@ -441,6 +450,51 @@ public:
 		}
 	}
 
+	void RPing()
+	{
+
+		static int LastPingTime2;
+
+		for (auto target : GEntityList->GetAllHeros(false, true))
+		{
+			if (!target->IsDead() && target->IsValidTarget())
+			{
+				if (PingLoc->Enabled())
+				{
+					auto ComboDamage = GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotR);
+					if ( R->IsReady())
+					{
+						if (target->GetHealth() < ComboDamage * PingR->GetFloat() && !RPingR->Enabled() )
+						{
+							if (GGame->Time() - LastPingTime2 >= 1)
+							{
+								GGame->ShowPing(1, target->GetPosition(), true);
+								GGame->ShowPing(1, target->GetPosition(), true);
+								GGame->ShowPing(1, target->GetPosition(), true);
+								LastPingTime2 = GGame->Time();
+
+							}
+						}
+						if (target->GetHealth() < ComboDamage * PingR->GetFloat() && RPingR->Enabled())
+						{
+							if (GetEnemiesInRange(RealRange()) >= 1)
+							{
+								if (GGame->Time() - LastPingTime2 >= 1)
+								{
+									GGame->ShowPing(1, target->GetPosition(), true);
+									GGame->ShowPing(1, target->GetPosition(), true);
+									GGame->ShowPing(1, target->GetPosition(), true);
+									LastPingTime2 = GGame->Time();
+
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	static void LaneClear()
 	{
 		if (GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger() && !FoundMinionsNeutral(600) && FoundMinions(E->Range()))
@@ -525,6 +579,25 @@ public:
 			{
 				GRender->DrawOutlinedCircle(GGame->CursorPosition(), Vec4(255, 255, 0, 255), RMax->GetInteger());
 			}
+		}
+		if (DrawR->Enabled() && !DrawReady->Enabled())
+		{
+			
+			GRender->DrawCircle(GEntityList->Player()->GetPosition(), RealRange(), Vec4(255, 255, 0, 255));
+		}
+		if (DrawR->Enabled() && DrawReady->Enabled() && R->IsReady())
+		{
+
+			GRender->DrawCircle(GEntityList->Player()->GetPosition(), RealRange(), Vec4(255, 255, 0, 255));
+		}
+		if(DrawR2->Enabled() && !DrawReady->Enabled())
+		{
+				DrawCircleMinimap(GRender,GGame, GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), RealRange());
+		}
+		if (DrawR2->Enabled() && DrawReady->Enabled() && R->IsReady())
+		{
+		
+			DrawCircleMinimap(GRender, GGame, GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), RealRange());
 		}
 	}
 
