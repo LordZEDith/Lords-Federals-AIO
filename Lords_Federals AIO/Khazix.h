@@ -77,7 +77,7 @@ public:
 			//EBypass = ESettings->CheckBox("Bypass Checks while Stealth", true);
 		}
 
-		Jump2Settings = MainMenu->AddMenu("Double Jumping");
+		/*Jump2Settings = MainMenu->AddMenu("Double Jumping");
 		{
 			dJumpEnabled = Jump2Settings->CheckBox("Enabled", true);
 			JEDelay = Jump2Settings->AddInteger("Delay Jumps", 250, 500, 250);
@@ -88,7 +88,7 @@ public:
 			SecondJump = Jump2Settings->CheckBox("Do second Jump", true);
 			jCursor2 = Jump2Settings->CheckBox("Second Jump to Cursor", true);
 			JumpDraw = Jump2Settings->CheckBox("Enable Jump Drawinsg", true);
-		}
+		}*/
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
 		{
@@ -332,7 +332,7 @@ public:
 	{
 		//GetBuffName();
 		EvolutionCheck();
-		DoubleJump();
+		//DoubleJump();
 
 		if (AA->Enabled() && GEntityList->Player()->HasBuff("khazixrstealth"))
 		{
@@ -669,7 +669,7 @@ public:
 		}*/
 	}
 	
-	static Vec3 GetDoubleJumpPoint(IUnit* Qtarget, bool firstjump = true)
+	/*static Vec3 GetDoubleJumpPoint(IUnit* Qtarget, bool firstjump = true)
 	{
 		if (JumpMode->GetInteger() == 0)
 		{
@@ -760,11 +760,11 @@ public:
 				});				
 			}
 		}
-	}
+	}*/
 
 	static void OnProcessSpell(CastedSpell const& Args)
 	{
-		if (EvolvedE && !SaveH->Enabled())
+		/*if (EvolvedE && !SaveH->Enabled())
 		{
 			if (GSpellData->GetSlot(Args.Data_) == kSlotQ && Args.Target_->IsHero() && dJumpEnabled->Enabled())
 			{
@@ -781,7 +781,7 @@ public:
 					GOrbwalking->SetAttacksAllowed(true);
 				}
 			}
-		}
+		}*/
 
 		if (EUnderTowerAttack->Enabled() && ESafety->Enabled() && Args.Caster_->IsTurret() && Args.Target_ == GEntityList->Player())
 		{
@@ -808,7 +808,7 @@ public:
 		}
 	}
 
-	static void OnBeforeAttack(IUnit* Target)
+	/*static void OnBeforeAttack(IUnit* Target)
 	{
 		if (dJumpEnabled->Enabled() && Noauto->Enabled())
 		{
@@ -822,5 +822,5 @@ public:
 				GOrbwalking->SetAttacksAllowed(true);
 			}
 		}
-	}
+	}*/
 };

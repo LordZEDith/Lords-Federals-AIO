@@ -33,8 +33,7 @@ public:
 	virtual void OnDeleteObject(IUnit* Object) = 0;
 	virtual void OnLevelUp(IUnit* Source, int NewLevel) = 0;
 	virtual void OnProcessSpell(CastedSpell const& Args) = 0;
-	virtual void OnExitVisible(IUnit* Source) = 0;
-	virtual void OnUnitDeath(IUnit* Source) = 0;	
+	virtual void OnExitVisible(IUnit* Source) = 0;		
 	virtual void OnLoad() = 0;
 	virtual void OnBuffAdd(IUnit* Source, void* BuffData) = 0;
 	virtual void OnBuffRemove(IUnit* Source, void* BuffData) = 0;
@@ -131,11 +130,6 @@ public:
 	}
 
 	void OnExitVisible(IUnit* Source) override
-	{
-
-	}
-
-	void OnUnitDeath(IUnit* Source) override
 	{
 
 	}	
@@ -248,11 +242,6 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
 	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
@@ -363,12 +352,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -474,12 +458,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -596,12 +575,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -711,12 +685,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -826,12 +795,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -939,12 +903,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -1055,12 +1014,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -1171,12 +1125,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -1287,12 +1236,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -1403,12 +1347,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -1519,12 +1458,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -1633,12 +1567,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -1749,12 +1678,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -1868,12 +1792,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -1980,12 +1899,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -2095,12 +2009,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -2208,12 +2117,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -2328,12 +2232,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -2441,12 +2340,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -2554,12 +2448,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -2667,12 +2556,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -2782,12 +2666,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -2898,12 +2777,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -3008,12 +2882,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -3130,12 +2999,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -3246,12 +3110,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -3361,12 +3220,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}		
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -3475,12 +3329,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -3570,12 +3419,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -3662,12 +3506,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -3755,12 +3594,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -3849,12 +3683,7 @@ public:
 	{
 
 	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
-
+	
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
 	}
@@ -3941,12 +3770,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -4053,12 +3877,7 @@ public:
 	void OnExitVisible(IUnit* Source) override
 	{
 
-	}
-
-	void OnUnitDeath(IUnit* Source) override
-	{
-
-	}
+	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
@@ -4130,11 +3949,6 @@ PLUGIN_EVENT(void) OnProcessSpell(CastedSpell const& Args)
 PLUGIN_EVENT(void) OnExitVisible(IUnit* Source)
 {
 	pChampion->OnExitVisible(Source);
-}
-
-PLUGIN_EVENT(void) OnUnitDeath(IUnit* Source)
-{
-	pChampion->OnUnitDeath(Source);
 }
 
 PLUGIN_EVENT(void) OnDash(UnitDash* Source)
@@ -4260,8 +4074,7 @@ void LoadChampion()
 		GEventManager->AddEventHandler(kEventOnSpellCast, OnProcessSpell);
 		GEventManager->AddEventHandler(kEventOnCreateObject, OnCreateObject);
 		GEventManager->AddEventHandler(kEventOnDestroyObject, OnDeleteObject);
-		GEventManager->AddEventHandler(kEventOnExitVisible, OnExitVisible);
-		GEventManager->AddEventHandler(kEventOnUnitDeath, OnUnitDeath);
+		GEventManager->AddEventHandler(kEventOnExitVisible, OnExitVisible);		
 		GEventManager->AddEventHandler(kEventOnDash, OnDash);
 		GEventManager->AddEventHandler(kEventOnGameEnd, OnGameEnd);
 	}
@@ -4303,8 +4116,7 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOnSpellCast, OnProcessSpell);
 	GEventManager->RemoveEventHandler(kEventOnCreateObject, OnCreateObject);
 	GEventManager->RemoveEventHandler(kEventOnDestroyObject, OnDeleteObject);
-	GEventManager->RemoveEventHandler(kEventOnExitVisible, OnExitVisible);
-	GEventManager->RemoveEventHandler(kEventOnUnitDeath, OnUnitDeath);
+	GEventManager->RemoveEventHandler(kEventOnExitVisible, OnExitVisible);	
 	GEventManager->RemoveEventHandler(kEventOnDash, OnDash);
 	GEventManager->RemoveEventHandler(kEventOnGameEnd, OnGameEnd);
 }
