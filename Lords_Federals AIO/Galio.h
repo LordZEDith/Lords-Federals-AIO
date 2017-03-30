@@ -317,12 +317,26 @@ public:
 
 		if (LaneClearQ->Enabled() && Q->IsReady() && CountMinions(GEntityList->Player()->GetPosition(), Q->Range()) >= MinionsQ->GetInteger())
 		{
-			Q->AttackMinions(3);
+			Vec3 pos;
+			int count;
+			Q->FindBestCastPosition(true, true, pos, count);
+
+			if (count >= 3 && Q->CastOnPosition(pos))
+			{
+				return;
+			}
 		}
 
 		if (LaneClearE->Enabled() && E->IsReady() && CountMinions(GEntityList->Player()->GetPosition(), E->Range()) >= MinionsE->GetInteger())
 		{
-			E->AttackMinions(3);
+			Vec3 pos;
+			int count;
+			E->FindBestCastPosition(true, true, pos, count);			
+
+			if (count >= 3 && E->CastOnPosition(pos))
+			{
+				return;
+			}
 		}
 	}
 

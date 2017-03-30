@@ -83,7 +83,7 @@ public:
 		InsecSettings = MainMenu->AddMenu("Insec Settings");
 		{
 			InsecSelect = InsecSettings->AddSelection("Target to Insec", 0, std::vector<std::string>({ "Selected Target", "Target Selector" }));
-			InsecTo = InsecSettings->AddSelection("Insec To", 0, std::vector<std::string>({ "Allys-Tower-Ally", "Tower-Allys", "To Mouse" }));
+			InsecTo = InsecSettings->AddSelection("Insec To", 0, std::vector<std::string>({ "Allys>Tower>Ally", "Tower>Allys", "To Cursor" }));
 			InsecOrbwalk = InsecSettings->CheckBox("Orbwalk to Mouse", true);
 			KickAndFlash = InsecSettings->CheckBox("Priorize Kick & Flash", false);
 			useFlash = InsecSettings->CheckBox("Use Flash if no Wards", true);
