@@ -4278,6 +4278,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Welcome to Lords & Federals AIO");
 	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "[Fixed]: LeeSin, Xerath is God, Eise, Diana, Varus is God");
 	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "[News]: Added: Gargas, Khazix, Trundle, Jax, ChoGath, Pantheon, Ekko, Renekton, Rumble");
+	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "[News]: Galio Beta is Supported now");
 
 	//GUtility->CreateDebugConsole();	
 }
