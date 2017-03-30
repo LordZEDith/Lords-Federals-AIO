@@ -379,9 +379,11 @@ public:
 			}
 		}
 
-		if (Args.Caster_->IsTurret() && Args.Target_->IsEnemy(GEntityList->Player()) && InsecUnder->GetInteger() > 0 && Args.Target_->IsHero())
+		if (!CheckTarget(Args.Target_) || GetDistance(GEntityList->Player(), Args.Caster_) > Q->Range()) return;
+
+		if (CCedE->Enabled() && E->IsReady() && Args.Caster_->IsTurret() && Args.Target_->IsEnemy(GEntityList->Player()) && Args.Target_->IsHero())
 		{
-			if (CCedE->Enabled() && E->IsReady() && Args.Target_->IsValidTarget(GEntityList->Player(), E->Range()))
+			if (Args.Target_->IsValidTarget(GEntityList->Player(), E->Range()))
 			{
 				E->CastOnTarget(Args.Target_, PredicChange());				
 			}

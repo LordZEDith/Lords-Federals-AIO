@@ -1895,13 +1895,11 @@ public:
 			}			
 		}
 
-		if (Args.Caster_->IsTurret() && CheckTarget(Args.Target_) && Args.Target_->IsEnemy(GEntityList->Player()) && InsecUnder->GetInteger() > 0 && Args.Target_->IsHero())
-		{		
-			if (!goInsecUnder)
-			{
-				goInsecUnder = true;
-				TargetUnder = Args.Target_;
-			}
+		if (!goInsecUnder && GetDistance(GEntityList->Player(), Args.Caster_) <= Q->Range() && Args.Caster_->IsTurret() && 
+			CheckTarget(Args.Target_) && Args.Target_->IsEnemy(GEntityList->Player()) && InsecUnder->GetInteger() > 0 && Args.Target_->IsHero())
+		{
+			goInsecUnder = true;
+			TargetUnder = Args.Target_;
 		}
 	}
 

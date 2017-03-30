@@ -632,7 +632,7 @@ public:
 		{			
 			Vec3 pos;
 			int count;
-			E->FindBestCastPosition(true, true, pos, count);
+			E->FindBestCastPosition(true, false, pos, count);
 
 			if (!ucanJump(pos, nullptr, true)) return;
 			
