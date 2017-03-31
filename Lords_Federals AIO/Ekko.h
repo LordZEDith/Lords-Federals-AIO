@@ -1,6 +1,7 @@
 #pragma once
 #include "PluginSDK.h"
-#include "Common.h"#include "BaseMenu.h"
+#include "Common.h"
+#include "BaseMenu.h"
 
 
 class Ekko
@@ -77,73 +78,7 @@ public:
 		W->SetOverrideSpeed(9999);
 		R->SetOverrideSpeed(9999);
 
-	}
-	float GetDistancePos(Vec3 pos1, Vec3 pos2)
-	{
-		return (pos1 - pos2).Length2D();
-	}
-
-	int CountEnemiesInRangePos(float range, Vec3 pos1)
-	{
-		int enemies = 0;
-		for (auto enemy : GEntityList->GetAllHeros(false, true))
-		{
-			if (enemy != nullptr && GEntityList->Player()->IsValidTarget(enemy, range))
-			{
-				enemies++;
-			}
-		}
-		return enemies;
-	}
-
-	bool CanMove(IUnit* target)
-	{
-		if (target->HasBuffOfType(BUFF_Stun) || target->HasBuffOfType(BUFF_Snare) || target->HasBuffOfType(BUFF_Fear) || target->HasBuffOfType(BUFF_Knockup) ||
-			target->HasBuff("Recall") || target->HasBuffOfType(BUFF_Knockback) || target->HasBuffOfType(BUFF_Charm) || target->HasBuffOfType(BUFF_Taunt) || target->HasBuffOfType(BUFF_Suppression))
-		{
-			return false;
-		}
-		else
-			return true;
-	}
-
-	bool ValidUlt(IUnit* t)
-	{
-		if (t->HasBuffOfType(BUFF_PhysicalImmunity) || t->HasBuffOfType(BUFF_SpellImmunity) || t->IsInvulnerable() || t->HasBuffOfType(BUFF_Invulnerability) || t->HasBuff("kindredrnodeathbuff")
-			|| t->HasBuffOfType(BUFF_SpellShield))
-			return false;
-		else
-			return true;
-	}
-
-	float GetDistance(IUnit* Player, IUnit* target)
-	{
-		return (Player->GetPosition() - target->GetPosition()).Length2D();
-	}
-
-	bool IsUnderTurret(IUnit* Source, bool CheckAllyTurrets, bool CheckEnemyTurrets)
-	{
-		for (auto pTurret : GEntityList->GetAllTurrets(CheckAllyTurrets, CheckEnemyTurrets))
-		{
-			if (Source->IsValidTarget(pTurret, 950.f))
-				return true;
-		}
-
-		return false;
-	}
-
-	int CountEnemiesInRange(float range)
-	{
-		int enemies = 0;
-		for (auto enemy : GEntityList->GetAllHeros(false, true))
-		{
-			if (enemy != nullptr && GetDistance(GEntityList->Player(), enemy) <= range)
-			{
-				enemies++;
-			}
-		}
-		return enemies;
-	}
+	}	
 
 	bool CanHarass()
 	{
@@ -242,6 +177,8 @@ public:
 
 		for (auto target : GEntityList->GetAllHeros(false, true))
 		{
+			if (!CheckTarget(target)) return;
+			
 			if (useQKS && Q->IsReady() && target->IsVisible() && GEntityList->Player()->GetMana() >= QMANA && target->GetHealth() < GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) &&
 				GetDistance(GEntityList->Player(), target) <= Q->Range() && target->IsValidTarget())
 			{
@@ -299,9 +236,11 @@ public:
 			RMANA = 0;
 			return;
 		}
+
 		QMANA = Q->ManaCost();
 		WMANA = W->ManaCost();
 		EMANA = W->ManaCost();
+
 		if (R->IsReady())
 			RMANA = R->ManaCost();
 		else
@@ -335,6 +274,9 @@ public:
 		if (useProto->Enabled() && Protobelt->IsOwned() && Protobelt->IsReady())
 		{
 			auto t = GTargetSelector->FindTarget(QuickestKill, SpellDamage, 300);
+
+			if (!CheckTarget(t)) return;
+
 			if (t != nullptr && GetDistance(GEntityList->Player(), t) <= 300)
 				Protobelt->CastOnPosition(t->ServerPosition());
 		}
@@ -347,7 +289,7 @@ public:
 
 	void Save()
 	{
-		if (GEntityList->Player()->HealthPercent() <= 30 && CountEnemiesInRange(Q->Range()) >= 1)
+		if (GEntityList->Player()->HealthPercent() <= 30 && CountEnemiesInRange(Q->Range()) >= 1 && R->IsReady())
 			R->CastOnPlayer();
 	}
 
@@ -357,12 +299,20 @@ public:
 			auto t = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
 			auto t1 = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q1->Range());
 
-			if (t != nullptr && t->IsValidTarget())
+			if (!CheckTarget(t)) return;
+			if (!CheckTarget(t1)) return;
+
+			if (t->IsValidTarget(GEntityList->Player(), Q->Range()))
 			{
 				if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && GEntityList->Player()->GetMana() > RMANA + QMANA)
+				{
 					Q->CastOnTarget(t, kHitChanceHigh);
+				}
 				else if (GetKsDamage(t, Q) * 2 > t->GetHealth())
+				{
 					Q->CastOnTarget(t, kHitChanceHigh);
+				}
+
 				if (GEntityList->Player()->GetMana() > RMANA + QMANA + WMANA)
 				{
 					for (auto enemy : GEntityList->GetAllHeros(false, true))
@@ -413,6 +363,9 @@ public:
 			auto t = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
 			auto t1 = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q1->Range());
 
+			if (!CheckTarget(t)) return;
+			if (!CheckTarget(t1)) return;
+
 			if (t != nullptr && t->IsValidTarget() && GEntityList->Player()->GetMana() > RMANA + WMANA + QMANA + QMANA && CanHarass())
 				Q->CastOnTarget(t, kHitChanceHigh);
 			else if (t1 != nullptr && t1->IsValidTarget() && GEntityList->Player()->GetMana() > RMANA + WMANA + QMANA + QMANA && CanHarass())
@@ -426,7 +379,9 @@ public:
 		{
 			auto t = GTargetSelector->FindTarget(QuickestKill, SpellDamage, W->Range());
 
-			if (t != nullptr && t->IsValidTarget())
+			if (!CheckTarget(t)) return;
+
+			if (t->IsValidTarget(GEntityList->Player(), W->Range()))
 			{
 				if (WAOE->Enabled())
 				{
@@ -442,7 +397,9 @@ public:
 
 			for (auto enemy : GEntityList->GetAllHeros(false, true))
 			{
-				if (enemy != nullptr && GEntityList->Player()->IsValidTarget(enemy, W->Range()) && !CanMove(enemy))
+				if (!CheckTarget(enemy)) return;
+
+				if (GEntityList->Player()->IsValidTarget(enemy, W->Range()) && !CanMove(enemy))
 				{
 					W->CastOnPosition(enemy->ServerPosition());
 				}
@@ -452,10 +409,14 @@ public:
 
 	void LogicW()
 	{
-		if (W->IsReady()) {
+		if (W->IsReady()) 
+		{
 			auto t = GTargetSelector->FindTarget(QuickestKill, SpellDamage, W->Range());
 
-			if (t != nullptr && t->IsValidTarget()) {
+			if (!CheckTarget(t)) return;
+
+			if (t->IsValidTarget(GEntityList->Player(), W->Range())) 
+			{
 				Vec3 pos = Vec3();
 				GPrediction->GetFutureUnitPosition(t, W->GetDelay(), true, pos);
 				W->CastOnPosition(pos);
@@ -475,10 +436,11 @@ public:
 
 	void LogicE()
 	{
-		if (E->IsReady()) {
+		if (E->IsReady()) 
+		{
 			if (WMissile != nullptr)
 			{
-				if (CountEnemiesInRangePos(200, WMissile->GetPosition()) > 0 && GetDistancePos(GEntityList->Player()->GetPosition(), WMissile->GetPosition()) < 100)
+				if (CountEnemy(WMissile->GetPosition(), 200) > 0 && GetDistancePos(GEntityList->Player()->GetPosition(), WMissile->GetPosition()) < 100)
 				{
 					E->CastOnPosition(WMissile->GetPosition());
 				}
@@ -486,28 +448,42 @@ public:
 
 			auto t = GTargetSelector->FindTarget(QuickestKill, SpellDamage, 800);
 
-			if (t != nullptr && E->IsReady() && GEntityList->Player()->GetMana() > RMANA + EMANA && CountEnemiesInRange(260) > 0 && GetDistancePos(GEntityList->Player()->ServerPosition(), GGame->CursorPosition()) <= E->Range()
-				&& CountEnemiesInRange(500) < 3 && GetDistancePos(t->ServerPosition(), GGame->CursorPosition()) > GetDistancePos(t->ServerPosition(), GEntityList->Player()->ServerPosition()))
+			if (!CheckTarget(t)) return;
+
+			if (E->IsReady() && GEntityList->Player()->GetMana() > RMANA + EMANA && CountEnemy(GEntityList->Player()->GetPosition(), 260) > 0 && GetDistancePos(GEntityList->Player()->ServerPosition(), GGame->CursorPosition()) <= E->Range()
+				&& CountEnemy(GEntityList->Player()->GetPosition(),500) < 3 && GetDistancePos(t->ServerPosition(), GGame->CursorPosition()) > GetDistancePos(t->ServerPosition(), GEntityList->Player()->ServerPosition()))
 			{
 				E->CastOnPosition(GGame->CursorPosition());
-				if (t != nullptr && GEntityList->Player()->IsValidTarget(t, 445))
+
+				if (GEntityList->Player()->IsValidTarget(t, 445))
+				{
 					GGame->IssueOrder(GEntityList->Player(), kAutoAttack, t);
+				}
 			}
 			else if (GEntityList->Player()->GetHealth() > GEntityList->Player()->GetMaxHealth() * 0.4 && GEntityList->Player()->GetMana() > RMANA + EMANA
 				&& !IsUnderTurret(GEntityList->Player(), false, true) && CountEnemiesInRange(700) < 3)
 			{
-				if (t != nullptr && t->IsValidTarget() && GEntityList->Player()->GetMana() > QMANA + EMANA + WMANA && GetDistancePos(t->ServerPosition(), GGame->CursorPosition()) + 300 < GetDistancePos(t->ServerPosition(), GEntityList->Player()->ServerPosition()))
+				if (GEntityList->Player()->GetMana() > QMANA + EMANA + WMANA && GetDistancePos(t->ServerPosition(), GGame->CursorPosition()) + 300 < GetDistancePos(t->ServerPosition(), GEntityList->Player()->ServerPosition()))
 				{
 					E->CastOnPosition(GGame->CursorPosition());
-					if (t != nullptr && GEntityList->Player()->IsValidTarget(t, 445))
+					if (GEntityList->Player()->IsValidTarget(t, 445))
+					{
 						GGame->IssueOrder(GEntityList->Player(), kAutoAttack, t);
+					}
 				}
 			}
-			else if (t != nullptr && t->IsValidTarget() && GDamage->GetSpellDamage(GEntityList->Player(), t, kSlotE) + GDamage->GetSpellDamage(GEntityList->Player(), t, kSlotW) > t->GetHealth())
+			else if (GDamage->GetSpellDamage(GEntityList->Player(), t, kSlotE) + GDamage->GetSpellDamage(GEntityList->Player(), t, kSlotW) > t->GetHealth())
 			{
 				E->CastOnPosition(t->ServerPosition());
-				if (t != nullptr && GEntityList->Player()->IsValidTarget(t, 445))
+
+				if (GEntityList->Player()->IsValidTarget(t, 445))
+				{
 					GGame->IssueOrder(GEntityList->Player(), kAutoAttack, t);
+				}
+			}
+			else
+			{
+				return;
 			}
 		}
 	}
@@ -516,7 +492,7 @@ public:
 	{
 		if (autoR->Enabled() && R->IsReady())
 		{
-			if (RMissile != nullptr && CountEnemiesInRangePos(400, RMissile->GetPosition()) >= rCount->GetInteger())
+			if (RMissile != nullptr && CountEnemy(RMissile->GetPosition(), 400) >= rCount->GetInteger())
 			{
 				R->CastOnPlayer();
 			}
@@ -533,10 +509,10 @@ public:
 		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
 			Items();
-			//LogicR(); //No Crash When Isolated.
-			LogicQ(); //No Crash When Isolated
-			LogicW(); //No Crash When Isolated
-			LogicE(); //No Crash When Isolated.
+			LogicR();
+			LogicQ();
+			LogicW();
+			LogicE();
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 		{
@@ -550,6 +526,14 @@ public:
 		if (GOrbwalking->GetOrbwalkingMode() == kModeNone && autoW->Enabled() && GEntityList->Player()->GetMana() > RMANA + WMANA + EMANA + QMANA)
 		{
 			//AutoW(); //Throws exception when isolated.
+		}
+
+		for (auto RMiss : GEntityList->GetAllUnits())
+		{
+			if (!strcmp(RMiss->GetObjectName(), "Ekko") && RMiss->IsVisible())
+			{			
+				RMissile = RMiss;
+			}			
 		}
 	}
 
@@ -577,47 +561,50 @@ public:
 			if (DrawR->Enabled())
 				GRender->DrawOutlinedCircle(GEntityList->Player()->ServerPosition(), Vec4(255, 66, 134, 244), Q->Range());
 		}
+
+		/*if (RMissile != nullptr)
+		{
+			GRender->DrawOutlinedCircle(RMissile->ServerPosition(), Vec4(255, 66, 134, 244), 350);
+		}*/
 	}
 
 	void OnCreateObject(IUnit* Source)
 	{
 		if (Source != nullptr)
-		{
-			if (!strcmp(Source->GetObjectName(), "Ekko"))
-			{
-				RMissile = Source;
-			}
+		{			
 			if (!strcmp(Source->GetObjectName(), "Ekko_Base_W_Indicator.troy"))
 			{
 				WMissile = Source;
-				Wtime = GGame->Time();
+				Wtime = GGame->Time();				
 			}
 			if (!strcmp(Source->GetObjectName(), "Ekko_Base_W_Cas.troy"))
 			{
 				WMissile2 = Source;
-				Wtime2 = GGame->Time();
+				Wtime2 = GGame->Time();				
 			}
 		}
 	}
 
-	/*PLUGIN_EVENT(void) OnDestroyObject(IUnit* Source)
+	void OnDestroyObject(IUnit* Source)
 	{
-	if (Source != nullptr)
-	{
-	if (!strcmp(Source->GetObjectName(), "Ekko"))
-	{
-	RMissile = nullptr;
+
+		if (Source != nullptr)
+		{			
+			if (!strcmp(Source->GetObjectName(), "Ekko"))
+			{
+				RMissile = nullptr;
+			}
+
+			if (!strcmp(Source->GetObjectName(), "Ekko_Base_W_Indicator.troy"))
+			{
+				WMissile = nullptr;				
+			}
+			if (!strcmp(Source->GetObjectName(), "Ekko_Base_W_Cas.troy"))
+			{
+				WMissile2 = nullptr;
+			}
+		}
 	}
-	if (!strcmp(Source->GetObjectName(), "Ekko_Base_W_Indicator.troy"))
-	{
-	WMissile = nullptr;
-	}
-	if (!strcmp(Source->GetObjectName(), "Ekko_Base_W_Cas.troy"))
-	{
-	WMissile2 = nullptr;
-	}
-	}
-	}*/
 
 
 };

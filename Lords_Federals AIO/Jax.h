@@ -273,7 +273,7 @@ public:
 			Q->CastOnUnit(target);
 		}
 
-		if (ComboW->GetInteger() == 1 && W->IsReady())
+		if (ComboW->GetInteger() == 1 && W->IsReady() && GetDistance(GEntityList->Player(), target) < GEntityList->Player()->GetRealAutoAttackRange(target))
 		{
 			W->CastOnPlayer();
 		}
