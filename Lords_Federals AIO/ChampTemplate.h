@@ -1,4 +1,4 @@
-#pragma once
+	#pragma once
 #include "PluginSDK.h"
 #include "BaseMenu.h"
 #include "Common.h"

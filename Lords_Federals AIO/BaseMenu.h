@@ -241,6 +241,7 @@ IMenuOption* Rdelay;
 IMenuOption* RBlock;
 IMenuOption* rCount;
 IMenuOption* RMode;
+IMenuOption* RPush;
 
 IMenuOption* Killsteal;
 IMenuOption* KillstealQ;

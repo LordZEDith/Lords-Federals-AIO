@@ -45,6 +45,7 @@
 #include "ChoGath.h"
 #include "Trundle.h"
 #include "Jax.h"
+#include "Gnar.h"
 
 // Champions Support
 #include "Sona.h"

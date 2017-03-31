@@ -225,6 +225,9 @@
     <ClInclude Include="Galio.h">
       <Filter>Header Files\Champions\Jungle</Filter>
     </ClInclude>
+    <ClInclude Include="Gnar.h">
+      <Filter>Header Files\Champions\TopLane</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">

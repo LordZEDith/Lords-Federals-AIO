@@ -33,8 +33,8 @@ public:
 	virtual void OnDeleteObject(IUnit* Object) = 0;
 	virtual void OnLevelUp(IUnit* Source, int NewLevel) = 0;
 	virtual void OnProcessSpell(CastedSpell const& Args) = 0;
-	virtual void OnExitVisible(IUnit* Source) = 0;		
-	virtual void OnLoad() = 0;
+	virtual void OnExitVisible(IUnit* Source) = 0;
+	virtual void OnLoad() {};
 	virtual void OnBuffAdd(IUnit* Source, void* BuffData) = 0;
 	virtual void OnBuffRemove(IUnit* Source, void* BuffData) = 0;
 	//virtual void OnUnLoad() = 0;
@@ -1965,6 +1965,7 @@ public:
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
+		Xerath().RPing();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -3895,6 +3896,101 @@ public:
 	}
 };
 
+class cGnar : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		Message().TopLaneSeries();
+		Message().ChampionLoadMessage();
+		Gnar().InitializeMenu();
+		Gnar().LoadSpells();
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+		//Skins().Menu();
+		Toxic().MenuToxic();
+	}
+
+	virtual void OnRender() override
+	{
+		Gnar().Drawing();
+		Gnar().Drawing2();
+		AutoSmite().DrawingsSmite();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
+		{
+			return;
+		}
+		Gnar().OnUpdate();
+	    AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+		Gnar().OnGapcloser(Args);
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+		Gnar().OnInterruptible(Args);
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+	
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+
+	}
+
+	void OnGameEnd() override
+	{
+		//Toxic().OnGameEnd();
+	}
+};
+
 IChampion* pChampion = nullptr;
 
 PLUGIN_EVENT(void) OnRender()
@@ -4048,6 +4144,8 @@ void LoadChampion()
 		pChampion = new cTrundle;
 	else if (szChampion == "Jax")
 		pChampion = new cJax;
+	else if (szChampion == "Gnar")
+		pChampion = new cGnar;
 	// Support
 	else if (szChampion == "Sona")
 		pChampion = new cSona;

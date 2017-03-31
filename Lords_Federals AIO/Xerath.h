@@ -87,16 +87,16 @@ public:
 	 
 	void static InitializeSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, kCollidesWithNothing); //Malachite
-		Q->SetSkillshot(0.6f, 95.f, 10000.f, 1550.f);
-		Q->SetCharged(750.f, 1550.f, 1.53f);
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, kCollidesWithNothing); //Tahnks to Malachite :)
+		Q->SetSkillshot(0.3f, 95.f, 10000.f, 1550.f);
+		Q->SetCharged(700.f, 1550.f, 1.5f);
 		//Q->SetChargedBuffName("XerathArcanopulseChargeUp");
 		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, true, kCollidesWithYasuoWall);
-		W->SetSkillshot(0.7f, 125, std::numeric_limits<float>::infinity(), 1100);
+		W->SetSkillshot(0.4f, 125, std::numeric_limits<float>::infinity(), 1100);
 		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
-		E->SetSkillshot(0.25f, 60, 1400, 1050);	
+		E->SetSkillshot(0.f, 60, 1400, 1050);	
 		R = GPluginSDK->CreateSpell2(kSlotR, kCircleCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
-		R->SetSkillshot(0.7f, 130, std::numeric_limits<float>::infinity(), 3520);// 4840 , 6160
+		R->SetSkillshot(0.4f, 130, std::numeric_limits<float>::infinity(), 3520);// 4840 , 6160
 	}
 
 	static float RealRange()
