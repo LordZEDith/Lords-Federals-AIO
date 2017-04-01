@@ -4180,87 +4180,88 @@ PLUGIN_EVENT(void) OnGameEnd()
 void LoadChampion()
 {
 	std::string szChampion = GEntityList->Player()->ChampionName();
+	szChampion = ToLower(szChampion);
 
 	//ADC
-	if (szChampion == "Varus")
+	if (szChampion == ToLower("Varus"))
 		pChampion = new cVarus;
-	else if (szChampion == "Ashe")
+	else if (szChampion == ToLower("Ashe"))
 		pChampion = new cAshe;
-	else if (szChampion == "Draven")
+	else if (szChampion == ToLower("Draven"))
 		pChampion = new cDraven;
-	else if (szChampion == "Tristana")
+	else if (szChampion == ToLower("Tristana"))
 		pChampion = new cTristana;
-	else if (szChampion == "Ezreal")
+	else if (szChampion == ToLower("Ezreal"))
 		pChampion = new cEzreal;
-	else if (szChampion == "Caitlyn")
+	else if (szChampion == ToLower("Caitlyn"))
 		pChampion = new cCaitlyn;
 	// Midlane
-	else if (szChampion == "Ahri")
+	else if (szChampion == ToLower("Ahri"))
 		pChampion = new cAhri;
-	else if (szChampion == "Lux")
+	else if (szChampion == ToLower("Lux"))
 		pChampion = new cLux;
-	else if (szChampion == "Ziggs")
+	else if (szChampion == ToLower("Ziggs"))
 		pChampion = new cZiggs;
-	else if (szChampion == "Xerath")
+	else if (szChampion == ToLower("Xerath"))
 		pChampion = new cXerath;
-	else if (szChampion == "TwistedFate")
+	else if (szChampion == ToLower("TwistedFate"))
 		pChampion = new cTwistedFate;
 	// Jungle
-	else if (szChampion == "Olaf")
+	else if (szChampion == ToLower("Olaf"))
 		pChampion = new cOlaf;
-	else if (szChampion == "Nocturne")
+	else if (szChampion == ToLower("Nocturne"))
 		pChampion = new cNocturne;
-	else if (szChampion == "Hecarim")
+	else if (szChampion == ToLower("Hecarim"))
 		pChampion = new cHecarim;
-	else if (szChampion == "Rengar")
+	else if (szChampion == ToLower("Rengar"))
 		pChampion = new cRengar;
-	else if (szChampion == "Diana")
+	else if (szChampion == ToLower("Diana"))
 		pChampion = new cDiana;
-	else if (szChampion == "Warwick")
+	else if (szChampion == ToLower("Warwick"))
 		pChampion = new cWarwick;
-	else if (szChampion == "Elise")
+	else if (szChampion == ToLower("Elise"))
 		pChampion = new cElise;
-	else if (szChampion == "LeeSin")
+	else if (szChampion == ToLower("LeeSin"))
 		pChampion = new cLeeSin;
-	else if (szChampion == "Khazix")
+	else if (szChampion == ToLower("Khazix"))
 		pChampion = new cKhazix;
-	else if (szChampion == "Gragas")
+	else if (szChampion == ToLower("Gragas"))
 		pChampion = new cGragas;
-	else if (szChampion == "Galio")
+	else if (szChampion == ToLower("Galio"))
 		pChampion = new cGalio;
-	else if (szChampion == "Ivern")
+	else if (szChampion == ToLower("Ivern"))
 		pChampion = new cIvern;
 	// Toplane
-	else if (szChampion == "DrMundo")
+	else if (szChampion == ToLower("DrMundo"))
 		pChampion = new cDrMundo;
-	else if (szChampion == "Maokai")
+	else if (szChampion == ToLower("Maokai"))
 		pChampion = new cMaokai;
-	else if (szChampion == "Poppy")
+	else if (szChampion == ToLower("Poppy"))
 		pChampion = new cPoppy;
-	else if (szChampion == "Malphite")
+	else if (szChampion == ToLower("Malphite"))
 		pChampion = new cMalphite;
-	else if (szChampion == "Kayle")
+	else if (szChampion == ToLower("Kayle"))
 		pChampion = new cKayle;
-	else if (szChampion == "Darius")
+	else if (szChampion == ToLower("Darius"))
 		pChampion = new cDarius;
-	else if (szChampion == "Rumble")
+	else if (szChampion == ToLower("Rumble"))
 		pChampion = new cRumble;
-	else if (szChampion == "Ekko")
+	else if (szChampion == ToLower("Ekko"))
 		pChampion = new cEkko;
-	else if (szChampion == "Renekton")
+	else if (szChampion == ToLower("Renekton"))
 		pChampion = new cRenekton;
-	else if (szChampion == "Chogath")
+	else if (szChampion == ToLower("Chogath"))
 		pChampion = new cChoGatn;
-	else if (szChampion == "Trundle")
+	else if (szChampion == ToLower("Trundle"))
 		pChampion = new cTrundle;
-	else if (szChampion == "Jax")
+	else if (szChampion == ToLower("Jax"))
 		pChampion = new cJax;
-	else if (szChampion == "Gnar")
+	else if (szChampion == ToLower("Gnar"))
 		pChampion = new cGnar;
 	// Support
-	else if (szChampion == "Sona")
+	else if (szChampion == ToLower("Sona"))
 		pChampion = new cSona;
-	else if (szChampion == "Bardo")
+	else if (szChampion == ToLower("Bardo"))
 		pChampion = new cTemplate;
 	else
 	{

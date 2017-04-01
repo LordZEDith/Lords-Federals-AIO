@@ -93,6 +93,16 @@ inline bool CheckTarget(IUnit* target)
 	return false;
 }
 
+inline string ToLower(string String)
+{
+	auto L = String;
+	for (int i = 0; i < L[i]; i++)
+	{
+		L[i] = tolower(L[i]);
+	}
+	return L;
+}
+
 static bool CheckIsWard(IUnit* minion)
 {
 	if (strstr(minion->GetBaseSkinName(), "YellowTrinket") ||

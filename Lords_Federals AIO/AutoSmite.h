@@ -203,7 +203,8 @@ public:
 						{
 							for (auto Obj : GEntityList->GetAllUnits())
 							{
-								if (strstr(Obj->GetObjectName(), "Ivern_Base_P_ring_timer.troy"))
+								if (GetDistance(GEntityList->Player(), Obj) <= 600 && 
+									(strstr(Obj->GetObjectName(), "Ivern_Base_P_ring_timer.troy") || strstr(Obj->GetObjectName(), "Ivern_Base_P_ring_timer_scuttler.troy")))
 								{
 									Smite->CastOnUnit(minion);
 								}

@@ -511,7 +511,62 @@ public:
 
 		if (strstr(Source->GetObjectName(), "Ivern_Base_P_FinishedGround.troy"))
 		{
-			GRender->NotificationEx(Vec4(255,255,0,255), 10, false, true, ("Jungle Camp is now ready."));			
+			// Team Red
+			if (GetDistanceVectors(Source->GetPosition(), Vec3(7098.000000, 56.209999, 10896.000000)) < 200)
+			{
+				GRender->NotificationEx(Vec4(255, 0, 0, 255), 10, false, true, ("Red Jungle Camp is now ready."));
+			}
+			if (GetDistanceVectors(Source->GetPosition(), Vec3(10998.000000, 51.720001, 6992.000000)) < 200)
+			{
+				GRender->NotificationEx(Vec4(255, 0, 0, 255), 10, false, true, ("Blue Jungle Camp is now ready."));
+			}
+			if (GetDistanceVectors(Source->GetPosition(), Vec3(12652.000000, 54.000000, 6444.000000)) < 200)
+			{
+				GRender->NotificationEx(Vec4(255, 0, 0, 255), 10, false, true, ("Gromp Jungle Camp is now ready."));
+			}
+			if (GetDistanceVectors(Source->GetPosition(), Vec3(10978.000000, 62.389999, 8356.000000)) < 200)
+			{
+				GRender->NotificationEx(Vec4(255, 0, 0, 255), 10, false, true, ("Wolf Jungle Camp is now ready."));
+			}
+			if (GetDistanceVectors(Source->GetPosition(), Vec3(7860.000000, 52.000000, 9474.000000)) < 200)
+			{
+				GRender->NotificationEx(Vec4(255, 0, 0, 255), 10, false, true, ("Raptors Jungle Camp is now ready."));
+			}
+			if (GetDistanceVectors(Source->GetPosition(), Vec3(6450.000000, 56.000000, 12198.000000)) < 200)
+			{
+				GRender->NotificationEx(Vec4(255, 0, 0, 255), 10, false, true, ("Krugs Jungle Camp is now ready."));
+			}
+
+			// Team Blue
+			if (GetDistanceVectors(Source->GetPosition(), Vec3(7772.000000, 53.939999, 4006.000000)) < 200)
+			{
+				GRender->NotificationEx(Vec4(51, 153, 255, 255), 10, false, true, ("Red Jungle Camp is now ready."));
+			}
+			if (GetDistanceVectors(Source->GetPosition(), Vec3(3834.000000, 51.970001, 7926.000000)) < 200)
+			{
+				GRender->NotificationEx(Vec4(51, 153, 255, 255), 10, false, true, ("Blue Jungle Camp is now ready."));
+			}
+			if (GetDistanceVectors(Source->GetPosition(), Vec3(2212.000000, 54.000000, 8450.000000)) < 200)
+			{
+				GRender->NotificationEx(Vec4(51, 153, 255, 255), 10, false, true, ("Gromp Jungle Camp is now ready."));
+			}
+			if (GetDistanceVectors(Source->GetPosition(), Vec3(3814.000000, 52.459999, 6468.000000)) < 200)
+			{
+				GRender->NotificationEx(Vec4(51, 153, 255, 255), 10, false, true, ("Wolf Jungle Camp is now ready."));
+			}
+			if (GetDistanceVectors(Source->GetPosition(), Vec3(6970.000000, 52.000000, 5422.000000)) < 200)
+			{
+				GRender->NotificationEx(Vec4(51, 153, 255, 255), 10, false, true, ("Raptors Jungle Camp is now ready."));
+			}
+			if (GetDistanceVectors(Source->GetPosition(), Vec3(8390.000000, 51.000000, 2676.000000)) < 200)
+			{
+				GRender->NotificationEx(Vec4(51, 153, 255, 255), 10, false, true, ("Krugs Jungle Camp is now ready."));
+			}
+		}
+
+		if (strstr(Source->GetObjectName(), "Ivern_Base_P_FinishedGround_scuttler.troy"))
+		{
+			GRender->NotificationEx(Vec4(255, 255, 255, 255), 10, false, true, ("Crab Jungle Camp is now ready."));
 		}
 
 		if (strstr(Source->GetObjectName(), "Ivern_Base_P_ChannelGround.troy") && GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
@@ -526,6 +581,11 @@ public:
 			GOrbwalking->SetAttacksAllowed(true);
 			GOrbwalking->SetMovementAllowed(true);			
 		}
+
+		if (GetDistance(Source, GEntityList->Player()) < 500)
+		{
+			//GUtility->LogConsole("Obj %s", Source->GetObjectName());
+		}
 	}
 
 	static void OnDeleteObject(IUnit* Source)
@@ -534,6 +594,12 @@ public:
 		{
 			IvernBush.RemoveAll([&](IUnit* i) {return i->GetNetworkId() == Source->GetNetworkId(); });
 		}
+
+		if (strstr(Source->GetObjectName(), "Ivern_Base_P_ChannelGround.troy"))
+		{
+			GOrbwalking->SetAttacksAllowed(true);
+			GOrbwalking->SetMovementAllowed(true);
+		}		
 	}
 
 	static void GetBuffName()
