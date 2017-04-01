@@ -3535,7 +3535,7 @@ public:
 		ChoGath().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
-		Toxic().MenuToxic();
+		//Toxic().MenuToxic();
 	}
 
 	virtual void OnRender() override
@@ -3550,7 +3550,7 @@ public:
 
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
-		Toxic().SpamEmote();
+		//Toxic().SpamEmote();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
@@ -3607,7 +3607,7 @@ public:
 
 	void OnGameEnd() override
 	{
-		Toxic().OnGameEnd();
+		//Toxic().OnGameEnd();
 	}
 };
 

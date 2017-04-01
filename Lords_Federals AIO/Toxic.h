@@ -8,13 +8,10 @@ class Toxic
 public:
 
 	static void MenuToxic()
-	{
-		/*GameEvents = MainMenu->AddMenu("Toxic & GGwp");*/
-		
-		
+	{		
 		EmoteSpam = MainMenu->AddMenu("Mastery Emote Spam");
 		{
-			EmoteMode = EmoteSpam->AddSelection("Emote Mode ->", 0, std::vector<std::string>({ "MASTERY", "LAUGH", "DISABLED" }));
+			EmoteMode = EmoteSpam->AddSelection("Emote Mode", 0, std::vector<std::string>({ "Mastery", "Laugh", "Off" }));
 			EmoteOnKill = EmoteSpam->CheckBox("After Kill", true);
 			EmoteOnAssis = EmoteSpam->CheckBox("After Assist", false);
 			EmoteOnDeath = EmoteSpam->CheckBox("After Death", false);

@@ -444,8 +444,9 @@ public:
 
 	static void OnGapcloser(GapCloserSpell const& args)
 	{
+		if (!CheckTarget(args.Sender)) return;
+		
 		if (EGapCloser->Enabled() && E->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < E->Range())
-
 		{
 			E->CastOnTarget(args.Sender, PredicChange());
 		}
@@ -453,6 +454,8 @@ public:
 
 	static void OnInterruptible(InterruptibleSpell const& Args)
 	{
+		if (!CheckTarget(Args.Target)) return;
+
 		if (EInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < E->Range())
 		{
 			E->CastOnTarget(Args.Target, PredicChange());

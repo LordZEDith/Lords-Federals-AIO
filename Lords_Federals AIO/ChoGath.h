@@ -36,8 +36,7 @@ public:
 
 		DrawDisabled = DrawMenu->CheckBox("Disable Drawings", false);
 		DrawQ = DrawMenu->CheckBox("Draw Q", true);
-		DrawW = DrawMenu->CheckBox("Draw W", false);
-		DrawE = DrawMenu->CheckBox("Draw E", false);
+		DrawW = DrawMenu->CheckBox("Draw W", false);		
 		DrawR = DrawMenu->CheckBox("Draw R", false);
 
 		Interrupt = Misc->CheckBox("Interrupt Spells", true);
@@ -47,7 +46,7 @@ public:
 
 	void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kCircleCast, false, false, (kCollidesWithNothing));
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kCircleCast, true, false, (kCollidesWithNothing));
 		Q->SetSkillshot(0.625f, 175.f, 1200.f, 950.f);		
 
 		W = GPluginSDK->CreateSpell2(kSlotW, kConeCast, false, false, (kCollidesWithNothing));
@@ -94,11 +93,11 @@ public:
 		auto t = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
 		if (t != nullptr && GEntityList->Player()->IsValidTarget(t, Q->Range()) && Q->IsReady() && ComboQ->Enabled())
 		{
-			auto delay = Q->GetDelay() + GetDistance(GEntityList->Player(), t) / Q->Speed();			
-			Vec3 pos;
-			GPrediction->GetFutureUnitPosition(t, delay, true, pos);
-			Q->CastOnPosition(pos);
-			//Q->CastOnTarget(t, kHitChanceVeryHigh);
+			//auto delay = Q->GetDelay() + GetDistance(GEntityList->Player(), t) / Q->Speed();			
+			//Vec3 pos;
+			//GPrediction->GetFutureUnitPosition(t, delay, true, pos);
+			//Q->CastOnPosition(pos);
+			Q->CastOnTarget(t, kHitChanceVeryHigh);
 		}
 		if (t != nullptr && GEntityList->Player()->IsValidTarget(t, W->Range()) && W->IsReady() && ComboW->Enabled())
 		{
@@ -207,9 +206,7 @@ public:
 		if (DrawQ->Enabled())
 			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 255, 64), Q->Range());
 		if (DrawW->Enabled())
-			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 134, 97), W->Range());
-		if (DrawE->Enabled())
-			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 183, 255), E->Range());
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 134, 97), W->Range());		
 		if (DrawR->Enabled())
 			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 234, 104), R->Range());
 	}
