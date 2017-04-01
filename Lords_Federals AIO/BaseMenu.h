@@ -4,6 +4,8 @@
 #include <list>
 #include <map>
 
+SArray<IUnit*> IvernBush;
+
 ISpell2* Q;
 ISpell2* W;
 ISpell2* E;
@@ -176,6 +178,9 @@ IMenuOption* farmW;
 IMenuOption* slowW;
 IMenuOption* AutoW;
 IMenuOption* WAOE;
+IMenuOption* ComboWRengar;
+IMenuOption* ComboWAlly;
+IMenuOption* ComboWSelf;
 
 IMenuOption* ComboE;
 IMenuOption* EKS;
@@ -212,6 +217,7 @@ IMenuOption* jCursor2;
 IMenuOption* JumpDraw;
 IMenuOption* EUnderTowerAttack;
 IMenuOption* IgniteKS;
+IMenuOption* EOrder;
 
 IMenuOption* ComboR;
 IMenuOption* ComboRKill;
@@ -273,6 +279,7 @@ IMenuOption* DrawSelect;
 IMenuOption* DrawPosInsec;
 IMenuOption* DrawNear;
 IMenuOption* WMinions;
+IMenuOption* DrawPetStatus;
 
 IMenuOption* HealthPercent;
 IMenuOption* HealthQ;

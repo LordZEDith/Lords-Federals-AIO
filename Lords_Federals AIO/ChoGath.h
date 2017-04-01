@@ -47,19 +47,16 @@ public:
 
 	void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kCircleCast, false, true, kCollidesWithNothing);
-		W = GPluginSDK->CreateSpell2(kSlotW, kConeCast, false, true, kCollidesWithNothing);
-		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, kCollidesWithNothing);
-		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, kCollidesWithNothing);
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kCircleCast, false, false, (kCollidesWithNothing));
+		Q->SetSkillshot(0.625f, 175.f, 1200.f, 950.f);		
 
-		Q->SetOverrideRange(950);
-		W->SetOverrideRange(650);
-		E->SetOverrideRange(500);
-		R->SetOverrideRange(175);
-		Q->SetOverrideDelay(1200);
-		Q->SetOverrideSpeed(1300);
-		W->SetOverrideDelay(0.5f);
-		R->SetOverrideDelay(0.25f);
+		W = GPluginSDK->CreateSpell2(kSlotW, kConeCast, false, false, (kCollidesWithNothing));
+		W->SetSkillshot(0.25f, 210.f, 3200.f, 650.f);		
+
+		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, (kCollidesWithNothing));				
+
+		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, (kCollidesWithNothing));
+		R->SetSkillshot(0.25f, 0.f, 1000.f, 175.f);		
 	}
 
 	void checkE(bool shouldBeOn)
@@ -97,9 +94,11 @@ public:
 		auto t = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
 		if (t != nullptr && GEntityList->Player()->IsValidTarget(t, Q->Range()) && Q->IsReady() && ComboQ->Enabled())
 		{
+			auto delay = Q->GetDelay() + GetDistance(GEntityList->Player(), t) / Q->Speed();			
 			Vec3 pos;
-			GPrediction->GetFutureUnitPosition(t,0.3f,true,pos);
+			GPrediction->GetFutureUnitPosition(t, delay, true, pos);
 			Q->CastOnPosition(pos);
+			//Q->CastOnTarget(t, kHitChanceVeryHigh);
 		}
 		if (t != nullptr && GEntityList->Player()->IsValidTarget(t, W->Range()) && W->IsReady() && ComboW->Enabled())
 		{
@@ -112,10 +111,10 @@ public:
 		auto RTarget = GTargetSelector->FindTarget(QuickestKill, TrueDamage, R->Range());
 		if (RTarget != nullptr && GEntityList->Player()->IsValidTarget(RTarget, CalcUltRange(GEntityList->Player()) + RTarget->BoundingRadius()) && R->IsReady() && ComboR->Enabled())
 		{
-			GGame->PrintChat("Step 1");
+			//GGame->PrintChat("Step 1");
 			if (CalcUltDamage(GEntityList->Player()) > RTarget->GetHealth())
 			{
-				GGame->PrintChat("Step 2");
+				//GGame->PrintChat("Step 2");
 				R->CastOnUnit(RTarget);
 			}
 		}

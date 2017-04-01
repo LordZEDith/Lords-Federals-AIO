@@ -3991,6 +3991,116 @@ public:
 	}
 };
 
+class cIvern : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		//Message().JungleLaneSeries();
+		//Message().ChampionLoadMessage();
+		Ivern().InitializeMenu();
+		Ivern().LoadSpells();
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+		//Skins().Menu();
+		Toxic().MenuToxic();
+	}
+
+	virtual void OnRender() override
+	{
+		Ivern().Drawing();
+		AutoSmite().DrawingsSmite();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
+		{
+			return;
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		{
+			Ivern().Combo();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		{
+			Ivern().Harass();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		{
+			Ivern().JungleClear();
+			Ivern().LaneClear();
+			Ivern().WUnderTower();
+		}
+
+		Ivern().Automatic();
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+
+	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+		Ivern().OnCreateObject(Source);
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+		Ivern().OnDeleteObject(Source);
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+		
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+		
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+
+	}
+
+	void OnGameEnd() override
+	{
+		//Toxic().OnGameEnd();
+	}
+};
+
 IChampion* pChampion = nullptr;
 
 PLUGIN_EVENT(void) OnRender()
@@ -4119,6 +4229,8 @@ void LoadChampion()
 		pChampion = new cGragas;
 	else if (szChampion == "Galio")
 		pChampion = new cGalio;
+	else if (szChampion == "Ivern")
+		pChampion = new cIvern;
 	// Toplane
 	else if (szChampion == "DrMundo")
 		pChampion = new cDrMundo;
@@ -4189,7 +4301,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Welcome to Lords & Federals AIO");
 	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "[Fixed]: LeeSin, Xerath is God, Eise, Diana, Varus is God");
 	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "[News]: Added: Gargas, Khazix, Trundle, Jax, ChoGath, Pantheon, Ekko, Renekton, Rumble");
-	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "[News]: Galio Beta is Supported now");
+	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "[News]: Galio, Gnar and Ivern is Supported now");
 
 	//GUtility->CreateDebugConsole();	
 }
