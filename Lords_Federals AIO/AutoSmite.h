@@ -199,6 +199,21 @@ public:
 								Smite->CastOnUnit(minion);
 							}
 						}
+						else if (NameChampion == "Ivern")
+						{
+							for (auto Obj : GEntityList->GetAllUnits())
+							{
+								if (strstr(Obj->GetObjectName(), "Ivern_Base_P_ring_timer.troy"))
+								{
+									Smite->CastOnUnit(minion);
+								}
+							}
+
+							if (damage >= minion->GetHealth())
+							{
+								Smite->CastOnUnit(minion);
+							}
+						}
 						else
 						{
 							if (damage >= minion->GetHealth())

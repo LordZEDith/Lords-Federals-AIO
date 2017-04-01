@@ -121,11 +121,11 @@ public:
 	}
 
 	static void Automatic()
-	{
+	{		
 		AutoShield();
 		LogicW();
 		//GetBuffName();
-		PetFollow();
+		PetFollow();		
 
 		if (AutoHarass->Enabled())
 		{
@@ -391,12 +391,7 @@ public:
 				Q->CastOnPlayer();
 			}
 		}
-	}	
-
-	static void JungleClear()
-	{
 	}
-
 	static void LaneClear()
 	{
 		if (GEntityList->Player()->ManaPercent() < LaneClearMana->GetInteger()) return;		
@@ -517,6 +512,19 @@ public:
 		if (strstr(Source->GetObjectName(), "Ivern_Base_P_FinishedGround.troy"))
 		{
 			GRender->NotificationEx(Vec4(255,255,0,255), 10, false, true, ("Jungle Camp is now ready."));			
+		}
+
+		if (strstr(Source->GetObjectName(), "Ivern_Base_P_ChannelGround.troy") && GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		{
+			GOrbwalking->SetAttacksAllowed(false);
+			GOrbwalking->SetMovementAllowed(false);
+
+		}
+
+		if (strstr(Source->GetObjectName(), "Ivern_Base_P_ring_timer.troy"))
+		{
+			GOrbwalking->SetAttacksAllowed(true);
+			GOrbwalking->SetMovementAllowed(true);			
 		}
 	}
 

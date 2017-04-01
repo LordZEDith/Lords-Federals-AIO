@@ -4029,8 +4029,7 @@ public:
 			Ivern().Harass();
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
-		{
-			Ivern().JungleClear();
+		{			
 			Ivern().LaneClear();
 			Ivern().WUnderTower();
 		}
@@ -4058,7 +4057,7 @@ public:
 	}
 
 	void OnCreateObject(IUnit* Source) override
-	{
+	{		
 		Ivern().OnCreateObject(Source);
 	}
 
@@ -4298,10 +4297,10 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	//VersionCheck().RunVersionChecker();
 	LoadChampion();
 	pChampion->OnLoad();	
-	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Welcome to Lords & Federals AIO");
-	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "[Fixed]: LeeSin, Xerath is God, Eise, Diana, Varus is God");
-	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "[News]: Added: Gargas, Khazix, Trundle, Jax, ChoGath, Pantheon, Ekko, Renekton, Rumble");
-	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, true, "[News]: Galio, Gnar and Ivern is Supported now");
+	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "Welcome to Lords & Federals AIO");
+	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, false, "[Fixed]: LeeSin, Xerath is God, Eise, Diana, Varus is God");
+	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, false, "[News]: Added: Gargas, Khazix, Trundle, Jax, ChoGath, Pantheon, Ekko, Renekton, Rumble");
+	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "[News]: Galio, Gnar and Ivern is Supported now");
 
 	//GUtility->CreateDebugConsole();	
 }
