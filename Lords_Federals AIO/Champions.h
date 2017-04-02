@@ -32,6 +32,7 @@
 #include "Gragas.h"
 #include "Galio.h"
 #include "Ivern.h"
+#include "Kindred.h"
 
 // Champions Toplane
 #include "DrMundo.h"

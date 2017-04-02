@@ -201,6 +201,7 @@ IMenuOption* CCedE;
 IMenuOption* RangeE;
 IMenuOption* MinionsE;
 IMenuOption* JungleE;
+IMenuOption* JungleEBig;
 IMenuOption* WAllyrisk;
 IMenuOption* ECountEnemy;
 IMenuOption* ESafety;
@@ -248,6 +249,13 @@ IMenuOption* RBlock;
 IMenuOption* rCount;
 IMenuOption* RMode;
 IMenuOption* RPush;
+
+//Dash
+IMenuOption* EnemyCheck;
+IMenuOption* WallCheck;
+IMenuOption* TurretCheck;
+IMenuOption* AAcheck;
+// Dash
 
 IMenuOption* Killsteal;
 IMenuOption* KillstealQ;
@@ -457,6 +465,7 @@ std::map<int, IMenuOption*> ChampionUse;
 std::map<int, IMenuOption*> ChampionUseW;
 std::map<int, IMenuOption*> ChampionAntiMelee;
 std::map<int, IMenuOption*> GapCloserList;
+std::map<int, IMenuOption*> ChampionUseE;
 
 bool FoundSmite = false;
 bool FoundSmiteQ = false;

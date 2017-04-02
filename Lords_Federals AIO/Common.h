@@ -895,3 +895,19 @@ T MaxOrDefault(vector<T> vec, function<T2(T)> max_function)
 	}
 	return returnelem;
 }
+
+std::vector<Vec3> CirclePoints(float CircleLineSegmentN, float radius, Vec3 position)
+{
+
+	std::vector<Vec3> points;
+
+	for (auto i = 1; i <= CircleLineSegmentN; i++)
+	{
+
+		auto angle = i * 2 * 3.1415927 / CircleLineSegmentN;
+		auto point = Vec3(position.x + radius * static_cast<float>(std::cos(angle)), position.y + radius * static_cast<float>(std::sin(angle)), position.z);
+
+		points.push_back(point);
+	}
+	return points;
+}

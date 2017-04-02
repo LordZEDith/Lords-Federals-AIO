@@ -228,6 +228,12 @@
     <ClInclude Include="Gnar.h">
       <Filter>Header Files\Champions\TopLane</Filter>
     </ClInclude>
+    <ClInclude Include="Ivern.h">
+      <Filter>Header Files\Champions\Jungle</Filter>
+    </ClInclude>
+    <ClInclude Include="Kindred.h">
+      <Filter>Header Files\Champions\Jungle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">
