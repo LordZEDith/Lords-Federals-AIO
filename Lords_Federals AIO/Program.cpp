@@ -4375,8 +4375,7 @@ void LoadChampion()
 	else if (szChampion == "bardo")
 		pChampion = new cTemplate;
 	else
-	{
-		pChampion = new cTemplate;
+	{		
 		GGame->PrintChat(szChampion.data());
 		GGame->PrintChat("Champion Not Supported");
 	}	
