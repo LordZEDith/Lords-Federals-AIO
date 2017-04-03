@@ -183,6 +183,7 @@ IMenuOption* ComboWAlly;
 IMenuOption* ComboWSelf;
 
 IMenuOption* ComboE;
+IMenuOption* ComboERange;
 IMenuOption* EKS;
 IMenuOption* QKS;
 IMenuOption* ComboE2;
@@ -219,6 +220,7 @@ IMenuOption* JumpDraw;
 IMenuOption* EUnderTowerAttack;
 IMenuOption* IgniteKS;
 IMenuOption* EOrder;
+IMenuOption* DrawECustom;
 
 IMenuOption* ComboR;
 IMenuOption* ComboRKill;
@@ -290,6 +292,7 @@ IMenuOption* WMinions;
 IMenuOption* DrawPetStatus;
 
 IMenuOption* HealthPercent;
+IMenuOption* FarmMana;
 IMenuOption* HealthQ;
 IMenuOption* HealthW;
 IMenuOption* HealthE;

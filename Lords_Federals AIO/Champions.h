@@ -49,6 +49,7 @@
 #include "Trundle.h"
 #include "Jax.h"
 #include "Gnar.h"
+#include "Pantheon.h";
 
 // Champions Support
 #include "Sona.h"

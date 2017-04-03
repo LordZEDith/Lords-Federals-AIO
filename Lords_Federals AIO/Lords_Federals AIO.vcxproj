@@ -175,6 +175,7 @@
     <ClInclude Include="Khazix.h" />
     <ClInclude Include="Kindred.h" />
     <ClInclude Include="LeeSin.h" />
+    <ClInclude Include="Pantheon.h" />
     <ClInclude Include="Polygons.h" />
     <ClInclude Include="Renekton.h" />
     <ClInclude Include="Rumble.h" />

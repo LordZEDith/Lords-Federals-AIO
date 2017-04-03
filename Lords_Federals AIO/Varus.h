@@ -59,23 +59,22 @@ public:
 	}
 	void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
-		Q->SetCharged(925.f, 1700.f, 1.45f);
-		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
-		E = GPluginSDK->CreateSpell2(kSlotE, kCircleCast, false, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
-		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, false, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
-		//Q->SetOverrideRange(1600);
-		Q->SetOverrideDelay(0.25f);
-		Q->SetOverrideRadius(70);
-		Q->SetOverrideSpeed(1650);
-		E->SetOverrideRange(975);
-		E->SetOverrideRadius(120);
-		E->SetOverrideDelay(0.35f);
-		E->SetOverrideSpeed(1500);
-		R->SetOverrideRange(1050);
-		R->SetOverrideRadius(120);
-		R->SetOverrideDelay(0.25f);
-		R->SetOverrideSpeed(1950);
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, (kCollidesWithYasuoWall | kCollidesWithHeroes | kCollidesWithMinions));
+		Q->SetSkillshot(0.25f, 50.f, 1850.f, 925.f);
+		Q->SetCharged(925.f, 1600.f, 1.5f);
+		//std::string(GEntityList->Player()->GetSpellBook()->GetName(kSlotQ)) == "VarusQ";
+
+		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, (kCollidesWithNothing));
+		W->SetSkillshot(0.25f, 0.f, 1000.f, FLT_MAX);
+		//std::string(GEntityList->Player()->GetSpellBook()->GetName(kSlotW)) == "VarusW";
+
+		E = GPluginSDK->CreateSpell2(kSlotE, kCircleCast, false, true, (kCollidesWithYasuoWall));
+		E->SetSkillshot(0.25f, 200.f, 1000.f, 925.f);
+		//std::string(GEntityList->Player()->GetSpellBook()->GetName(kSlotE)) == "VarusE";
+
+		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, false, true, (kCollidesWithYasuoWall | kCollidesWithHeroes));
+		R->SetSkillshot(0.25f, 50.f, 1850.f, 1075.f);
+		//std::string(GEntityList->Player()->GetSpellBook()->GetName(kSlotR)) == "VarusR";
 
 	}
 	int GetEnemiesInRange2(float range)
@@ -141,7 +140,7 @@ public:
 					if (target->IsValidTarget(target, Q->Range()) && GetEnemiesInRange(Q->Range()) >= 1)
 					{
 						Vec3 pred;
-						GPrediction->GetFutureUnitPosition(target, 0.2f, true, pred);
+						GPrediction->GetFutureUnitPosition(target, 0.15f, true, pred);
 						Q->CastOnPosition(pred);
 					}
 				}
