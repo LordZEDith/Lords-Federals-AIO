@@ -204,6 +204,7 @@
     <ClInclude Include="Trundle.h" />
     <ClInclude Include="TwistedFate.h" />
     <ClInclude Include="Varus.h" />
+    <ClInclude Include="Vayne.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Version Checker.h" />
     <ClInclude Include="Warwick.h" />

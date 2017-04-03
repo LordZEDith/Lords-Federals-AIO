@@ -234,6 +234,9 @@
     <ClInclude Include="Kindred.h">
       <Filter>Header Files\Champions\Jungle</Filter>
     </ClInclude>
+    <ClInclude Include="Vayne.h">
+      <Filter>Header Files\Champions\ADC</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">

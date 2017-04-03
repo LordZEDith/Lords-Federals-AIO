@@ -300,21 +300,23 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()) && minion->IsCreep())
 				{
-					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false);
+					auto delay = Q->GetDelay() + GetDistance(GEntityList->Player(), minion) / Q->Speed();
+					//auto damage = GDamage->GetSpellDamage(GEntityList->Player(), minion, kSlotQ);
+					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, delay, false);
 
 					if (damage > minion->GetHealth())
 					{
 						if (RangeQlh->Enabled() && GetDistance(GEntityList->Player(), minion) > 400)
 						{
 							GOrbwalking->ResetAA();
-							Q->CastOnUnit(minion);
+							Q->CastOnTarget(minion);
 						}
 						else if (!RangeQlh->Enabled())
 						{
 							GOrbwalking->ResetAA();
-							Q->CastOnUnit(minion);
+							Q->CastOnTarget(minion);
 						}
 					}
 				}
@@ -326,13 +328,13 @@ public:
 	{
 		if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() > JungleMana->GetInteger())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, false, true))
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsJungleCreep(); });
+
+			if (Minion.Any())
 			{
-				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
-				{
-					Q->CastOnUnit(minion);
-				}
-			}
+				Q->CastOnUnit(Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); }));
+			}			
 		}
 	}
 
@@ -342,7 +344,7 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()) && minion->IsCreep())
 				{
 					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), true);
 					

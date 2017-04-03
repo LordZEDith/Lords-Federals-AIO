@@ -310,7 +310,7 @@ public:
 				if (JungleE->Enabled() && E->IsReady() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
 				{
 
-					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
+					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()) && minion->IsJungleCreep())
 					{
 						if (strstr(minion->GetObjectName(), "Dragon") || strstr(minion->GetObjectName(), "Baron") ||
 							strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "RiftHerald"))
@@ -329,7 +329,7 @@ public:
 
 				else if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
 				{
-					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()) && minion->IsJungleCreep())
 					{
 						Vec3 posQ;
 						int hitQ;
@@ -366,11 +366,25 @@ public:
 			{
 				if (MinionsQ->GetInteger() >= 3)
 				{
-					Q->AttackMinions(3);
+					Vec3 pos;
+					int count;
+					Q->FindBestCastPosition(true, true, pos, count);
+
+					if (count >= 3 && Q->CastOnPosition(pos))
+					{
+						return;
+					}
 				}
 				else
 				{
-					Q->AttackMinions(MinionsQ->GetInteger());
+					Vec3 pos;
+					int count;
+					Q->FindBestCastPosition(true, true, pos, count);
+
+					if (count >= MinionsQ->GetInteger() && Q->CastOnPosition(pos))
+					{
+						return;
+					}
 				}
 			}
 
@@ -383,7 +397,7 @@ public:
 					{
 						auto damage = GHealthPrediction->GetKSDamage(minion, kSlotE, E->GetDelay(), false);
 
-						if (damage > minion->GetHealth() && minion->IsValidTarget(GEntityList->Player(), R->Range()) &&
+						if (minion->IsCreep() && damage > minion->GetHealth() && minion->IsValidTarget(GEntityList->Player(), R->Range()) &&
 							GetDistance(GEntityList->Player(), minion) > GOrbwalking->GetAutoAttackRange(GEntityList->Player()) + 50 )
 						{
 							GOrbwalking->ResetAA();
