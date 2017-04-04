@@ -162,6 +162,8 @@ IMenuOption* LaneClearQLast;
 IMenuOption* HarassWithFarm;
 IMenuOption* QHelp;
 IMenuOption* onlyReady;
+IMenuOption* QAfterAA;
+IMenuOption* QAntiMelee;
 
 IMenuOption* ComboW;
 IMenuOption* HarassW;
@@ -219,6 +221,7 @@ IMenuOption* JumpDraw;
 IMenuOption* EUnderTowerAttack;
 IMenuOption* IgniteKS;
 IMenuOption* EOrder;
+IMenuOption* PushDistance;
 
 IMenuOption* ComboR;
 IMenuOption* ComboRKill;

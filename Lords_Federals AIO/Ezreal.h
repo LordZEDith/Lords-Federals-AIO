@@ -138,26 +138,6 @@ public:
 		return false;
 	}	
 
-	static void EAntiMelee()
-	{
-		if (AntiMelee->Enabled() && E->IsReady())
-		{
-			for (auto target : GEntityList->GetAllHeros(false, true))
-			{
-				if (target->IsMelee() && GetDistance(GEntityList->Player(), target) < 300 && !target->IsDead() && target->IsValidTarget())
-				{
-					auto dashpos = GEntityList->Player()->ServerPosition();
-					auto extend = dashpos.Extend(target->GetPosition(), -E->Range());
-
-					if (!GNavMesh->IsPointWall(extend))
-					{
-						E->CastOnPosition(extend);
-					}
-				}
-			}
-		}
-	}
-
 	static void StackMuneItem()
 	{
 		if (StackMune->Enabled() && GOrbwalking->GetOrbwalkingMode() == kModeNone && CountEnemy(GEntityList->Player()->GetPosition(), 1600) == 0 && CountMinions(GEntityList->Player()->GetPosition(), 1300) == 0 &&
@@ -193,8 +173,7 @@ public:
 	}
 
 	static void Automatic()
-	{
-		
+	{		
 		for (auto target : GEntityList->GetAllHeros(false, true))
 		{
 			if (!CheckTarget(target)) continue;
@@ -300,7 +279,7 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()) && minion->IsCreep())
+				if (minion != nullptr && !minion->IsDead() && minion->IsVisible() && GEntityList->Player()->IsValidTarget(minion, Q->Range()) && minion->IsCreep())
 				{
 					auto delay = Q->GetDelay() + GetDistance(GEntityList->Player(), minion) / Q->Speed();
 					//auto damage = GDamage->GetSpellDamage(GEntityList->Player(), minion, kSlotQ);
@@ -344,7 +323,7 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()) && minion->IsCreep())
+				if (minion != nullptr && !minion->IsDead() && minion->IsVisible() && GEntityList->Player()->IsValidTarget(minion, Q->Range()) && minion->IsCreep())
 				{
 					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), true);
 					
@@ -367,7 +346,6 @@ public:
 					}
 					else
 					{
-
 						if (RangeQ->Enabled() && GetDistance(GEntityList->Player(), minion) > 400)
 						{							
 							Q->CastOnUnit(minion);
@@ -376,7 +354,6 @@ public:
 						{							
 							Q->CastOnUnit(minion);
 						}
-
 					}
 				}
 			}
@@ -493,6 +470,22 @@ public:
 			{
 				E->CastOnPosition(extend);
 			}
-		}	
+		}
+
+		if (Args.Caster_->IsEnemy(GEntityList->Player()) && Args.Target_ == GEntityList->Player() && Args.Caster_->IsMelee() && Args.AutoAttack_)
+		{
+			if (!CheckTarget(Args.Caster_)) return;
+
+			if (AntiMelee->Enabled() && E->IsReady())
+			{
+				auto dashpos = GEntityList->Player()->ServerPosition();
+				auto extend = dashpos.Extend(Args.Caster_->GetPosition(), -E->Range());
+
+				if (!GNavMesh->IsPointWall(extend) && !IsUnderTurretPos(extend) && (CountAlly(extend, 1000) > CountEnemy(extend, 1000) || CountEnemy(extend, 1000) == 0))
+				{
+					E->CastOnPosition(extend);
+				}				
+			}
+		}		
 	}
 };

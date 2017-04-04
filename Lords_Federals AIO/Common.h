@@ -911,3 +911,8 @@ std::vector<Vec3> CirclePoints(float CircleLineSegmentN, float radius, Vec3 posi
 	}
 	return points;
 }
+
+float DegreeToRadian(double angle)
+{
+	return float(M_PI * angle / 180.0);
+}

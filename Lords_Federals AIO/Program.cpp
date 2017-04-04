@@ -634,8 +634,7 @@ public:
 			Ezreal().JungleClear();
 		}
 		
-		Ezreal().Automatic();
-		Ezreal().EAntiMelee();
+		Ezreal().Automatic();		
 		Ezreal().StackMuneItem();
 		Ezreal().KsJungle();
 		//Skins().fedSkinChanger();
@@ -4259,15 +4258,15 @@ public:
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
-
+		Vayne().OnGapcloser(Args);
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
 	{
-		
+		Vayne().OnAfterAttack(Source, Target);
 	}
 	void OnBeforeAttack(IUnit* Target) override
 	{
-
+		Vayne().OnBeforeAttack(Target);
 	}
 	void OnLevelUp(IUnit* Source, int NewLevel) override
 	{
@@ -4294,7 +4293,7 @@ public:
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-		
+		//Vayne().OnProcessSpell(Args);		
 	}
 
 	void OnExitVisible(IUnit* Source) override
@@ -4304,12 +4303,12 @@ public:
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
 	{
-
+		//Vayne().OnBuffAdd(Source, BuffData);
 	}
 
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
-		
+		//Vayne().OnBuffRemove(Source, BuffData);
 	}
 
 	void OnGameEnd() override

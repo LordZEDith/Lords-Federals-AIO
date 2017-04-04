@@ -210,11 +210,10 @@ public:
 			{
 				for (auto Minion : GEntityList->GetAllMinions(false, true, false))
 				{
-					if (Minion != nullptr && !Minion->IsDead() && GEntityList->Player()->IsValidTarget(Minion, W->Range()))
+					if (Minion != nullptr && !Minion->IsDead() && GEntityList->Player()->IsValidTarget(Minion, W->Range()) && Minion->IsCreep())
 					{
-
 						if (GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger() &&
-							CountMinions(Minion->GetPosition(), 350) >= MinionsW->GetInteger() &&
+							CountMinions(Minion->GetPosition(), 400) >= MinionsW->GetInteger() &&
 							GetDistance(GEntityList->Player(), Minion) >= GOrbwalking->GetAutoAttackRange(GEntityList->Player()))
 						{
 							W->CastOnUnit(Minion);
@@ -253,7 +252,8 @@ public:
 			{
 				if (target->IsValidTarget(GEntityList->Player(), 2000) && ValidUlt(target) && R->IsReady())
 				{
-					auto rDmg = GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false);
+					auto delay = R->GetDelay() + GetDistance(GEntityList->Player(), target) / R->Speed();
+					auto rDmg = GHealthPrediction->GetKSDamage(target, kSlotR, delay, false);
 
 					if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && CountEnemy(target->GetPosition(), 250) >= 2 && UltEnemies->Enabled() && target->IsValidTarget(GEntityList->Player(), 2000))
 					{
@@ -298,11 +298,6 @@ public:
 		}
 	}
 
-	static void OnGapcloser(GapCloserSpell const& args)
-	{
-
-	}
-
 	static void OnAfterAttack(IUnit* source, IUnit* target)
 	{
 		if (source != GEntityList->Player() || target == nullptr)
@@ -313,21 +308,23 @@ public:
 			Q->CastOnPlayer();
 		}
 
-		else if (GOrbwalking->GetOrbwalkingMode() == kModeMixed && HarassQ->Enabled() && GEntityList->Player()->GetMana() > R->ManaCost() + Q->ManaCost() + W->ManaCost())
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed && HarassQ->Enabled() && GEntityList->Player()->GetMana() > R->ManaCost() + Q->ManaCost() + W->ManaCost())
 		{
 			Q->CastOnPlayer();
 		}
 
-		else if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 		{
 			for (auto Minion : GEntityList->GetAllMinions(false, true, false))
 			{
 				if (Minion != nullptr && !Minion->IsDead())
 				{
-					if (LaneClearQ->Enabled() && Q->IsReady() && GEntityList->Player()->GetMana() > R->ManaCost() + Q->ManaCost() + W->ManaCost() && GEntityList->Player()->IsValidTarget(Minion, W->Range()) && !FoundMinionsNeutral(W->Range() - 300))
+					if (LaneClearQ->Enabled() && Q->IsReady() && GEntityList->Player()->IsValidTarget(Minion, W->Range()) && !FoundMinionsNeutral(W->Range() - 300))
 					{
-						if (CountMinions(GEntityList->Player()->GetPosition(), W->Range() >= MinionsQ->GetInteger()) && GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger())
+						if (CountMinions(GEntityList->Player()->GetPosition(), W->Range()) >= MinionsQ->GetInteger() && GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger())
+						{
 							Q->CastOnPlayer();
+						}
 					}
 				}
 			}
@@ -345,7 +342,6 @@ public:
 					}
 				}
 			}
-
 		}
 	}
 

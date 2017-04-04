@@ -12,102 +12,416 @@ public:
 	{
 		MainMenu = GPluginSDK->AddMenu("Lords & Federals Vayne");
 
-		ComboSettings = MainMenu->AddMenu("Vayne Coming Soon");
+		QSettings = MainMenu->AddMenu("Tumble Settings");
 		{
-			ComboE = ComboSettings->AddSelection("Modo", 0, std::vector<std::string>({ "Modo 1", "Mode 2" }));
+			ComboQH = QSettings->AddSelection("Q Modes", 0, std::vector<std::string>({ "Q To Cursor", "Q Side", "Safe Q", "Teste" }));
+			AutoQ = QSettings->CheckBox("Use Q Combo", true);
+			HarassQ = QSettings->CheckBox("Use Q Harass", true);
+			ComboQH = QSettings->CheckBox("Auto Q when R active", true);
+			PassiveStacks = QSettings->AddInteger("Q at X stack", 1, 2, 2);
+			QAfterAA = QSettings->CheckBox("Q only after AA", false);			
+			EnemyCheck = QSettings->AddInteger("Block Q in x enemies", 1, 5, 3);
+			WallCheck = QSettings->CheckBox("Block Q in wall", false);
+			TurretCheck = QSettings->CheckBox("Block Q under turret", false);
+			AAcheck = QSettings->CheckBox("Q only in AA range", false);
+			QAntiMelee = QSettings->CheckBox("Auto Q Anti Melee", true);
+		}
+
+		ESettings = MainMenu->AddMenu("Condemn Settings");
+		{
+			AutoE = ESettings->AddSelection("Condemn Mode", 0, std::vector<std::string>({ "Combo & Harass", "Automatic", "Off" }));
+			ComboE = ESettings->AddSelection("Modo", 2, std::vector<std::string>({ "Modo 1", "Mode 2", "Mode 3" }));
+			RangeE = ESettings->AddFloat("Condemn Max Range", 400, 760, 550);
+			PushDistance = ESettings->AddInteger("Push Distance", 300, 470, 420);
+			RWall = ESettings->AddSelection("Flash E Mode", 1, std::vector<std::string>({ "Automatic", "PressKey + LowHP", "Press Key", "OFF" }));
+			HealthE = ESettings->AddInteger("Flash E Low HP% (1x1)", 1, 60, 15);
+			SemiManualKey = ESettings->AddKey("Flash E Key", 71);
+		}
+
+		RSettings = MainMenu->AddMenu("Ultimate Settings");
+		{
+			AutoR = RSettings->CheckBox("Use Ultimate", true);
+			REnemies = RSettings->AddInteger("Min Enemys in Range", 1, 5, 3);
+			RBlock = RSettings->CheckBox("Dont AA while Stealthed", true);
+			RMode = RSettings->AddSelection("Stealh Mode", 0, std::vector<std::string>({ "Time Duration", "Enemys Range", "Both" }));
+			UltEnemies = RSettings->AddInteger("Min Enemys for Stealh", 1, 5, 3);
+			UltPercent = RSettings->AddInteger("Min Health %", 1, 100, 40);
+			Rdelay = RSettings->AddInteger("Stealh Duration", 0, 1000, 500);
+		}
+
+		JungleClearSettings = MainMenu->AddMenu("JungleClear Settings");
+		{
+			JungleQ = JungleClearSettings->CheckBox("Use Q in Jungle", true);
+			jPassiveStacks = JungleClearSettings->AddInteger("Q at X stack", 1, 2, 2);
+			JungleE = JungleClearSettings->CheckBox("Use E in Jungle", true);			
+			JungleMana = JungleClearSettings->AddInteger("Min Mana to Jungle", 1, 100, 40);
+		}
+
+		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
+		{			
+			EOrder = fedMiscSettings->CheckBox("Focus W stacks Target", true);
+			EGapCloser = fedMiscSettings->CheckBox("E GapCloser | Anti Meele", false);
+			for (auto enemy : GEntityList->GetAllHeros(false, true))
+			{
+				std::string szMenuName = "Anti Gapcloser - " + std::string(enemy->ChampionName());
+				GapCloserList[enemy->GetNetworkId()] = fedMiscSettings->CheckBox(szMenuName.c_str(), true);
+			}
+
+			for (auto enemy : GEntityList->GetAllHeros(false, true))
+			{
+				if (enemy->IsMelee())
+				{
+					std::string szMenuName = "Anti Melee - " + std::string(enemy->ChampionName());
+					ChampionAntiMelee[enemy->GetNetworkId()] = fedMiscSettings->CheckBox(szMenuName.c_str(), true);
+				}
+			}
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
 		{
 			DrawReady = DrawingSettings->CheckBox("Draw Only Ready Spells", true);
-			DrawQ = DrawingSettings->CheckBox("Draw Q", false);
-			DrawW = DrawingSettings->CheckBox("Draw W", false);
-			DrawE = DrawingSettings->CheckBox("Draw E", true);
-			DrawR = DrawingSettings->CheckBox("Draw R", false);
+			DrawQ = DrawingSettings->CheckBox("Draw Q", false);			
+			DrawE = DrawingSettings->CheckBox("Draw E", true);			
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
-		}
-
-		
+		}		
 	}
 
 	static void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kCircleCast, true, false, (kCollidesWithYasuoWall));
-		Q->SetSkillshot(1.0, 150, 3200, 1625);
-
-		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, true, false, (kCollidesWithNothing));
-		W->SetSkillshot(0.25, 0, 1450, 725);
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, kCollidesWithNothing);
+		Q->SetOverrideRange(300.f);		
 
 		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, true, false, kCollidesWithNothing);
-		E->SetSkillshot(0.25f, FLT_MAX, 1200.f, 710.f);
+		E->SetSkillshot(0.25f, 0.f, 1600.f, 760.f);
 
-		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, true, false, (kCollidesWithYasuoWall));
-		R->SetSkillshot(0.5, 250, 850, 2750);
+		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, kCollidesWithNothing);
+
+		if (strstr(GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1), "SummonerFlash"))
+		{
+			Flash = GPluginSDK->CreateSpell(kSummonerSlot1, 425);
+			FoundFlash = true;
+		}
+		else if (strstr(GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2), "SummonerFlash"))
+		{
+			Flash = GPluginSDK->CreateSpell(kSummonerSlot2, 425);
+			FoundFlash = true;
+		}
+		else
+		{
+			FoundFlash = false;
+		}
 	}
 
-	static bool CondemnCheck(Vec3 Position, IUnit* target)
-	{		
-		auto distance = GetDistance(GEntityList->Player(), target);
+	static double Wdmg(IUnit* target)
+	{
+		return target->GetMaxHealth() * (4.5 + GEntityList->Player()->GetSpellBook()->GetLevel(kSlotW) * 1.5) * 0.01;
+	}
 
-		Vec3 prepos;
-		Vec3 pPos = GEntityList->Player()->GetPosition();
-
-		auto delay = E->GetDelay() + distance / E->Speed();
-		GPrediction->GetFutureUnitPosition(target, delay, true, prepos);
-
-		auto pushDistance = 470.f;
-
-		if (GEntityList->Player()->ServerPosition() != Position)
+	static void FocusTargetW()
+	{
+		if (EOrder->Enabled())
 		{
-			pushDistance = 410.f;
+			SArray<IUnit*> enemy = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), GEntityList->Player()->AttackRange()) &&
+				m->HasBuff("VayneSilveredDebuff"); });
+
+			SArray<IUnit*> minions = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, true)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), GEntityList->Player()->AttackRange()) &&
+				m->HasBuff("VayneSilveredDebuff"); });
+
+			if (enemy.Any())
+			{
+				GOrbwalking->SetOverrideTarget(enemy.MaxOrDefault<float>([](IUnit* i) {return i->GetBuffCount("VayneSilveredDebuff"); }));
+			}
+
+			else if (minions.Any() && GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+			{
+				//GOrbwalking->SetOverrideTarget(minions.MaxOrDefault<float>([](IUnit* i) {return i->GetBuffCount("VayneSilveredDebuff"); }));
+			}
+
+			else
+			{
+				GOrbwalking->SetOverrideTarget(nullptr);
+			}
+		}
+	}
+
+	static bool AARange(Vec3 point)
+	{
+		if (!AAcheck->Enabled())
+		{
+			return true;
+		}
+		else if (GOrbwalking->GetLastTarget() != nullptr && GOrbwalking->GetLastTarget()->IsHero())
+		{
+			return GetDistanceVectors(point, GOrbwalking->GetLastTarget()->GetPosition()) < GEntityList->Player()->AttackRange();
+		}
+		else
+		{
+			return CountEnemy(point, GEntityList->Player()->AttackRange()) > 0;
+		}
+	}
+
+	static bool GPosition(Vec3 Pos)
+	{
+		if (WallCheck->Enabled())
+		{
+			float segment = Q->Range() + 50 / 5;
+
+			for (int i = 1; i <= 5; i++)
+			{
+				auto pPos = GEntityList->Player()->GetPosition();
+
+				if (GPrediction->IsPointWall(pPos.Extend(Pos, i * segment)))
+				{
+					return false;
+				}
+			}
 		}
 
-		auto radius = 250;
-		auto start2 = target->ServerPosition();
-		auto end2 = prepos.Extend(Position, -pushDistance);
-
-		Vec2 start = start2.To2D();
-		Vec2 end = end2.To2D();
-		auto dir = (end - start).VectorNormalize();
-		auto pDir = dir.Perpendicular();
-
-		auto rightEndPos = end + pDir * radius;
-		auto leftEndPos = end - pDir * radius;
-
-		auto rEndPos = Vec3(rightEndPos.x, GEntityList->Player()->GetPosition().y, rightEndPos.y);
-		auto lEndPos = Vec3(leftEndPos.x, GEntityList->Player()->GetPosition().y, leftEndPos.y);
-
-		auto step = GetDistanceVectors(start2, rEndPos) / 10;
-
-		for (auto i = 0; i < 10; i++)
+		if (TurretCheck->Enabled())
 		{
-			auto pr = start2.Extend(rEndPos, step * i);
-			auto pl = start2.Extend(lEndPos, step * i);
-			if (GPrediction->IsPointWall(pr) && GPrediction->IsPointWall(pl))
+			if (IsUnderTurretPos(Pos) && !IsUnderTurret(GEntityList->Player()))
 			{
-				return true;
+				return false;
 			}
+		}
+
+		auto enemyCheck = EnemyCheck->GetInteger();
+		auto enemyCount = CountEnemy(Pos, 600);
+
+		if (enemyCheck > enemyCount)
+		{
+			return true;
+		}
+
+		auto enemyCountPlayer = CountEnemy(GEntityList->Player()->GetPosition(), 400);
+
+		if (enemyCount <= enemyCountPlayer)
+		{
+			return true;
 		}
 
 		return false;
 	}
 
-	static bool CheckWallsVayne(IUnit* player, IUnit* enemy)
+	static Vec3 PosQ(bool asap = false, IUnit* target = nullptr)
+	{
+		int Mode = ComboQH->GetInteger();
+
+		Vec3 bestpoint;
+		auto pPos = GEntityList->Player()->GetPosition();
+		auto cPos = GGame->CursorPosition();
+
+		if (Mode == 0)
+		{
+			bestpoint = pPos.Extend(cPos, Q->Range());
+		}
+		else if (Mode == 1)
+		{
+			auto orbT = GOrbwalking->GetLastTarget();
+
+			if (orbT != nullptr && orbT->IsHero())
+			{
+				Vec2 start = pPos.To2D();
+				Vec2 end = orbT->GetPosition().To2D();
+
+				auto dir = (end - start).VectorNormalize();
+				auto pDir = dir.Perpendicular();
+
+				auto rightEndPos = end + pDir * GetDistance(GEntityList->Player(), orbT);
+				auto leftEndPos = end - pDir * GetDistance(GEntityList->Player(), orbT);
+
+				auto rEndPos = Vec3(rightEndPos.x, GEntityList->Player()->GetPosition().y, rightEndPos.y);
+				auto lEndPos = Vec3(leftEndPos.x, GEntityList->Player()->GetPosition().y, leftEndPos.y);
+
+				if (GetDistanceVectors(cPos, rEndPos) < GetDistanceVectors(cPos, lEndPos))
+				{
+					bestpoint = pPos.Extend(rEndPos, Q->Range());
+				}
+				else
+				{
+					bestpoint = pPos.Extend(lEndPos, Q->Range());
+				}
+			}
+		}
+		else if (Mode == 2)
+		{
+			auto points = CirclePoints(15, Q->Range(), pPos);
+			bestpoint = pPos.Extend(cPos, Q->Range());
+			auto enemies = CountEnemy(bestpoint, 350);
+
+			for (auto point : points)
+			{
+				auto count = CountEnemy(point, 350);
+
+				if (!AARange(point))
+					continue;
+				if (IsUnderTurretPosAlly(point))
+				{
+					bestpoint = point;
+					enemies = count - 1;
+				}
+				else if (count < enemies)
+				{
+					enemies = count;
+					bestpoint = point;
+				}
+				else if (count == enemies && GetDistanceVectors(cPos, point) < GetDistanceVectors(cPos, bestpoint))
+				{
+					enemies = count;
+					bestpoint = point;
+				}
+			}
+		}
+		else
+		{
+			auto direction = GEntityList->Player()->Direction().To2D().Perpendicular();
+			for (auto i = 0.f; i < 360.f; i += 45)
+			{
+				auto angleRads = DegreeToRadian(i);
+				auto rotatedPosition = GEntityList->Player()->GetPosition().To2D() + (300.f * direction.Rotated(angleRads));
+
+				if (target->IsValidTarget(GEntityList->Player(), 300.f) && GPosition(Get3DPoint(rotatedPosition)))
+				{
+					bestpoint = Get3DPoint(rotatedPosition);
+				}
+			}
+		}		
+
+		auto GoodPos = GPosition(bestpoint);
+
+		if (asap && GoodPos)
+		{
+			return bestpoint;
+		}
+		else if (GoodPos && AARange(bestpoint))
+		{
+			return bestpoint;
+		}
+
+		return Vec3(0, 0, 0);
+	}
+
+	static void FlashCondemn()
+	{
+		if (E->IsReady() && FoundFlash && Flash->IsReady())
+		{
+			auto target = GTargetSelector->GetFocusedTarget() != nullptr
+				? GTargetSelector->GetFocusedTarget()
+				: GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, RangeE->GetFloat() + 425.f);
+
+			if (!IsCondemable2(target, GEntityList->Player()->GetPosition(), PushDistance->GetInteger(), false))
+			{
+				auto pPos = GEntityList->Player()->ServerPosition();
+				auto fPos = pPos.Extend(GGame->CursorPosition(), 425);
+
+				Rposition = fPos;
+
+				if (target != nullptr && Rposition != Vec3(0,0,0) && target->IsValidTarget() && !target->IsDead() && !target->IsInvulnerable())
+				{
+					if (IsCondemable2(target, fPos, PushDistance->GetInteger(), false))
+					{
+						E->CastOnUnit(target);
+						Flash->CastOnPosition(fPos);
+					}
+				}
+			}
+		}
+	}
+
+	static bool CheckWallsVayne(IUnit* player, IUnit* enemy, float Push)
 	{
 		auto distance = GetDistance(player, enemy);
+		auto check = Push / 40;
 
-		for (auto i = 1; i < 6; i++)
+		for (auto i = 1; i < 40; i++)
 		{
 			Vec3 position;
 			Vec3 pPos = GEntityList->Player()->GetPosition();
 			auto delay = E->GetDelay() + distance / E->Speed();
 			GPrediction->GetFutureUnitPosition(enemy, delay, true, position);
 
-			Vec3 PositionTarget = pPos.Extend(position, distance + (90 * i));
+			Vec3 PositionTarget = pPos.Extend(position, distance + (check * i));
 
 			if (GNavMesh->IsPointWall(PositionTarget))
 			{
+				if (enemy->GetHealth() + 10 <= GDamage->GetAutoAttackDamage(GEntityList->Player(), enemy, true) * 2)
+				{
+					return false;
+				}
+				
 				return true;
+			}
+		}
+		return false;
+	}
+
+	static bool IsCondemable1(IUnit* target, Vec3 from, int PushDistance, bool CondemnCurrent)
+	{
+		if (target == nullptr || !target->IsValidTarget(GEntityList->Player(), RangeE->GetFloat())
+			|| target->IsDead() || target->IsDashing()
+			|| target->HasBuffOfType(BUFF_SpellShield)
+			|| target->HasBuffOfType(BUFF_SpellImmunity)
+			|| (!target->IsHero() && !target->IsJungleCreep()))
+			return false;
+
+		AdvPredictionOutput prediction_output;
+		E->RunPrediction(target, false, kCollidesWithYasuoWall, &prediction_output);
+
+		// VHR
+		if (prediction_output.HitChance >= kHitChanceHigh)
+		{
+			auto checks = static_cast<float>(ceil(PushDistance / 30));
+			for (auto i = 0; i < 30; ++i)
+			{
+				auto normalizedVector = (prediction_output.TargetPosition - from).VectorNormalize();
+				auto extendedPosition = prediction_output.TargetPosition + normalizedVector * (checks * i);
+				if (GNavMesh->IsPointWall(extendedPosition) && !target->IsDashing())
+				{
+					if (CondemnCurrent && GOrbwalking->GetLastTarget() != nullptr && GOrbwalking->GetLastTarget()->GetNetworkId() != target->GetNetworkId())
+						return false;
+
+					if (target->GetHealth() + 10 <= GDamage->GetAutoAttackDamage(GEntityList->Player(), target, true) * 2)
+						return false;
+
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	static bool IsCondemable2(IUnit* target, Vec3 from, int PushDistance, bool CondemnCurrent)
+	{
+		if (target == nullptr || !target->IsValidTarget(GEntityList->Player(), RangeE->GetFloat())
+			|| target->IsDead() || target->IsDashing()
+			|| target->HasBuffOfType(BUFF_SpellShield)
+			|| target->HasBuffOfType(BUFF_SpellImmunity)
+			|| (!target->IsHero() && !target->IsJungleCreep()))
+			return false;
+
+		AdvPredictionOutput prediction_output;
+		E->RunPrediction(target, false, kCollidesWithYasuoWall, &prediction_output);
+
+		// Shine
+		if (prediction_output.HitChance >= kHitChanceHigh)
+		{
+			auto pushDirection = (prediction_output.TargetPosition - from).VectorNormalize();
+			auto checkDistance = PushDistance / 40;
+			for (auto i = 0; i < 40; ++i)
+			{
+				auto finalPosition = prediction_output.TargetPosition + (pushDirection * checkDistance * i);
+				if (GNavMesh->IsPointWall(finalPosition))
+				{
+					if (CondemnCurrent && GOrbwalking->GetLastTarget() != nullptr && GOrbwalking->GetLastTarget()->GetNetworkId() != target->GetNetworkId())
+						return false;
+
+					if (target->GetHealth() + 10 <= GDamage->GetAutoAttackDamage(GEntityList->Player(), target, true) * 2)
+						return false;
+
+					return true;
+				}
 			}
 		}
 		return false;
@@ -115,28 +429,117 @@ public:
 
 	static void Automatic()
 	{
+		FocusTargetW();
+		UseUltimate();
 		
-		for (auto target : GEntityList->GetAllHeros(false, true))
+		// Flash E
+		if (RWall->GetInteger() != 3)
 		{
-			if (!CheckTarget(target)) return;
-			
-			if (ComboE->GetInteger() == 1)
+			if (RWall->GetInteger() == 0)
 			{
-				if (CondemnCheck(GEntityList->Player()->ServerPosition(), target) && target->IsValidTarget(GEntityList->Player(), E->Range()))
+				FlashCondemn();
+			}
+			else if (RWall->GetInteger() == 1)
+			{
+				if (IsKeyDown(SemiManualKey) || GEntityList->Player()->HealthPercent() <= HealthE->GetInteger() && CountEnemy(GEntityList->Player()->GetPosition(), 700) == 1)
+				{
+					FlashCondemn();
+				}
+			}
+			else
+			{
+				if (IsKeyDown(SemiManualKey))
+				{
+					FlashCondemn();
+				}
+			}
+		}
+		
+		if (Q->IsReady())
+		{
+			if (ComboQH->Enabled() &&
+				GOrbwalking->GetOrbwalkingMode() != kModeNone &&
+				GEntityList->Player()->HasBuff("VayneInquisition") && CountEnemy(GEntityList->Player()->GetPosition(), 1500) > 0 && 
+				CountEnemy(GEntityList->Player()->GetPosition(), 670) != 1)
+			{
+				auto dashPos = PosQ();
+				if (dashPos != Vec3(0, 0, 0))
+				{
+					Q->CastOnPosition(dashPos);
+				}
+			}
+
+			if ((GOrbwalking->GetOrbwalkingMode() == kModeCombo && AutoQ->Enabled() || GOrbwalking->GetOrbwalkingMode() == kModeMixed && HarassQ->Enabled()) && 
+				(!QAfterAA->Enabled() || GEntityList->Player()->GetSpellBook()->GetLevel(kSlotW) == 0))
+			{
+				auto qtarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, GEntityList->Player()->AttackRange() + 250);
+
+				if (!CheckTarget(qtarget)) return;
+
+				if (GetDistance(GEntityList->Player(), qtarget) > GEntityList->Player()->AttackRange() &&
+					GetDistanceVectors(qtarget->GetPosition(), GGame->CursorPosition()) < GetDistance(GEntityList->Player(), qtarget) && !qtarget->IsFacing(GEntityList->Player()))
+				{
+					auto pPos = GEntityList->Player()->GetPosition();
+					auto dash = pPos.Extend(qtarget->GetPosition(), Q->Range());
+
+					if (!GPosition(dash)) return;
+
+					Q->CastOnPosition(dash);
+				}
+			}
+		}
+
+		if (AutoE->GetInteger() != 2 && (AutoE->GetInteger() == 0 && 
+			(GOrbwalking->GetOrbwalkingMode() == kModeCombo || GOrbwalking->GetOrbwalkingMode() == kModeMixed) || 
+			AutoE->GetInteger() == 1))
+		{
+			auto target = GTargetSelector->GetFocusedTarget() != nullptr
+				? GTargetSelector->GetFocusedTarget()
+				: GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, RangeE->GetFloat());
+
+			if (!CheckTarget(target) || !target->IsValidTarget(GEntityList->Player(), RangeE->GetFloat())) return;
+
+			if (ComboE->GetInteger() == 0)
+			{
+				if (CheckWallsVayne(GEntityList->Player(), target, PushDistance->GetInteger()))
+				{
+					E->CastOnUnit(target);
+				}
+			}
+			else if (ComboE->GetInteger() == 1)
+			{
+				if (IsCondemable1(target, GEntityList->Player()->GetPosition(), PushDistance->GetInteger(), false))
 				{
 					E->CastOnUnit(target);
 				}
 			}
 			else
 			{
-				if (CheckWallsVayne(GEntityList->Player(), target) && target->IsValidTarget(GEntityList->Player(), E->Range()))
+				if (IsCondemable2(target, GEntityList->Player()->GetPosition(), PushDistance->GetInteger(), false))
 				{
 					E->CastOnUnit(target);
 				}
-
 			}
 		}
-		
+	}
+
+	static void UseUltimate()
+	{
+		if (R->IsReady() && AutoR->Enabled())
+		{
+			if (CountEnemy(GEntityList->Player()->GetPosition(), 700) > 3)
+			{
+				R->CastOnPlayer();
+			}
+			else if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && CountEnemy(GEntityList->Player()->GetPosition(), 700) >= REnemies->GetInteger())
+			{
+				R->CastOnPlayer();
+			}
+			else if (GEntityList->Player()->HealthPercent() < 25 && CountEnemy(GEntityList->Player()->GetPosition(), 400) > 0)
+			{
+				R->CastOnPlayer();
+			}
+		}
 	}
 
 	static void Combo()
@@ -153,6 +556,55 @@ public:
 
 	static void JungleClear()
 	{
+		if (GEntityList->Player()->ManaPercent() < JungleMana->GetInteger()) return;
+
+		SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()); });
+
+		if (Minion.Any())
+		{
+			jMonster = Minion.MaxOrDefault<float>([](IUnit* i) {return i->GetMaxHealth(); });
+		}
+
+		if (jMonster != nullptr)
+		{
+			if (JungleE->Enabled() && E->IsReady())
+			{
+				if (GEntityList->Player()->IsValidTarget(jMonster, E->Range()))
+				{
+					if (strstr(jMonster->GetObjectName(), "Red") ||
+						strstr(jMonster->GetObjectName(), "Blue") ||
+						strstr(jMonster->GetObjectName(), "Gromp") ||
+						strstr(jMonster->GetObjectName(), "Crab") ||
+						strstr(jMonster->GetObjectName(), "Razorbeak3") ||
+						strstr(jMonster->GetObjectName(), "SRU_Krug") ||
+						strstr(jMonster->GetObjectName(), "SRU_Murkwolf2"))
+					{						
+						if (ComboE->GetInteger() == 0)
+						{
+							if (CheckWallsVayne(GEntityList->Player(), jMonster, PushDistance->GetInteger()))
+							{
+								E->CastOnUnit(jMonster);
+							}
+						}
+						else if (ComboE->GetInteger() == 1)
+						{
+							if (IsCondemable1(jMonster, GEntityList->Player()->GetPosition(), PushDistance->GetInteger(), false))
+							{
+								E->CastOnUnit(jMonster);
+							}
+						}
+						else
+						{
+							if (IsCondemable2(jMonster, GEntityList->Player()->GetPosition(), PushDistance->GetInteger(), false))
+							{
+								E->CastOnUnit(jMonster);
+							}
+						}
+					}
+				}
+			}				
+		}
 	}
 
 	static void LaneClear()
@@ -164,32 +616,110 @@ public:
 		if (DrawReady->Enabled())
 		{
 			if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range()); }
-			if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
-			if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }
-			if (R->IsReady() && DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range()); }
+			if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), RangeE->GetFloat()); }
 		}
 		else
 		{
 			if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range()); }
-			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
-			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }
-			if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range()); }
+			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), RangeE->GetFloat()); }
 		}
+
+		//GRender->DrawOutlinedCircle(PosQ(), Vec4(255, 255, 255, 255), 30);
 	}
 
 	static void OnGapcloser(GapCloserSpell const& args)
 	{
+		if (!CheckTarget(args.Sender)) return;
 
+		if (EGapCloser->Enabled() && E->IsReady() && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.Sender->GetPosition()) <= E->Range())
+		{
+			if (GapCloserList[args.Sender->GetNetworkId()]->Enabled())
+			{
+				E->CastOnUnit(args.Sender);
+			}
+		}		
 	}
 
 	static void OnAfterAttack(IUnit* source, IUnit* target)
 	{
-		
+		auto afterQ = false;
+
+		if (target->IsHero())
+		{
+			if (Q->IsReady() && (target->GetBuffCount("VayneSilveredDebuff") == PassiveStacks->GetInteger() - 1 || GEntityList->Player()->HasBuff("VayneInquisition")))
+			{				
+				auto dashPos = PosQ(true);
+				if (dashPos != Vec3(0, 0, 0))
+				{
+					Q->CastOnPosition(dashPos);
+					afterQ = true;
+				}				
+			}			
+		}
+
+		if (target->IsJungleCreep())
+		{
+			if (Q->IsReady() && JungleQ->Enabled() && target->GetBuffCount("VayneSilveredDebuff") == jPassiveStacks->GetInteger() - 1)
+			{
+				if (GEntityList->Player()->ManaPercent() < JungleMana->GetInteger()) return;
+
+				auto pPos = GEntityList->Player()->GetPosition();
+				auto dash = pPos.Extend(GGame->CursorPosition(), Q->Range());
+
+				if (!GPosition(dash)) return;
+
+				Q->CastOnPosition(dash);
+				afterQ = true;
+			}		
+		}
+
+		if (afterQ && GEntityList->Player()->HasBuff("vaynetumblebonus") && GetDistance(GEntityList->Player(), target) <= GEntityList->Player()->AttackRange())
+		{
+			GGame->IssueOrder(GEntityList->Player(), kAutoAttack, target);
+			afterQ = false;
+		}
 	}
 
 	static void OnProcessSpell(CastedSpell const& Args)
 	{
-		
+		if (Args.Caster_ == GEntityList->Player())
+		{
+			if (GSpellData->GetSlot(Args.Data_) == kSlotE && Rposition != Vec3(0,0,0))
+			{
+				if (FoundFlash && Flash->IsReady())
+				{
+					Flash->CastOnPosition(Rposition);
+					Rposition = Vec3(0, 0, 0);
+				}
+			}
+		}
+
+		if (Args.Caster_->IsEnemy(GEntityList->Player()) && Args.Target_ == GEntityList->Player() && Args.Caster_->IsMelee() && Args.AutoAttack_)
+		{
+			if (!CheckTarget(Args.Caster_)) return;
+			
+			if (QAntiMelee->Enabled() && Q->IsReady())
+			{
+				auto pPos = GEntityList->Player()->GetPosition();
+				Q->CastOnPosition(pPos.Extend(Args.Caster_->GetPosition(), -Q->Range()));
+			}
+
+
+			if (EGapCloser->Enabled() && E->IsReady())
+			{
+				auto pPos = GEntityList->Player()->ServerPosition();
+				auto distance = GetDistance(GEntityList->Player(), Args.Caster_);
+				Vec3 PositionTarget = pPos.Extend(Args.Caster_->ServerPosition(), distance + 470);
+
+				if (CountAlly(PositionTarget, 1000) > CountEnemy(PositionTarget, 1000) || CountAlly(PositionTarget, 1000) == 0)
+				{
+					if (ChampionAntiMelee[Args.Caster_->GetNetworkId()]->Enabled() && (Args.Caster_->HealthPercent() > 30 || Args.Caster_->HealthPercent() < 50 && Args.Caster_->HealthPercent() > GEntityList->Player()->HealthPercent()))
+					{
+						E->CastOnUnit(Args.Caster_);
+					}
+				}
+			}
+		}
 	}
 
 	static void OnCreateObject(IUnit* Source)
@@ -200,5 +730,49 @@ public:
 	static void OnDeleteObject(IUnit* Source)
 	{
 
+	}
+
+	static void OnBuffRemove(IUnit* Source, void* BuffData)
+	{
+		if (GetDistance(GEntityList->Player(), Source) < 500)
+		{
+			GGame->PrintChat(GBuffData->GetBuffName(BuffData));
+		}
+	}
+
+	static void OnBeforeAttack(IUnit* target)
+	{
+		if (target != nullptr && target->IsHero() && RBlock->Enabled() && !IsUnderTurret(GEntityList->Player()) && CountEnemy(GEntityList->Player()->GetPosition(), 800) >= 1)
+		{
+			auto duration = Rdelay->GetInteger();
+			auto buff = GEntityList->Player()->GetBuffDataByName("vaynetumblefade");
+			auto pHP = GEntityList->Player()->HealthPercent();
+			
+			if (RMode->GetInteger() == 0 && pHP <= UltPercent->GetInteger())
+			{
+				if (GBuffData->GetEndTime(buff) - GGame->Time() > GBuffData->GetEndTime(buff) - GBuffData->GetStartTime(buff) - duration / 1000)
+				{					
+					GOrbwalking->DisableNextAttack();
+				}
+			}
+
+			else if (RMode->GetInteger() == 1 && pHP <= UltPercent->GetInteger())
+			{
+				if (CountEnemy(GEntityList->Player()->GetPosition(), 1100) >= UltEnemies->GetInteger())
+				{
+					GOrbwalking->DisableNextAttack();
+				}
+			}
+
+			else
+			{
+				if (GBuffData->GetEndTime(buff) - GGame->Time() > GBuffData->GetEndTime(buff) - GBuffData->GetStartTime(buff) - duration / 1000 &&
+					CountEnemy(GEntityList->Player()->GetPosition(), 1100) >= UltEnemies->GetInteger() &&
+					pHP <= UltPercent->GetInteger())
+				{
+					GOrbwalking->DisableNextAttack();
+				}
+			}
+		}
 	}
 };
