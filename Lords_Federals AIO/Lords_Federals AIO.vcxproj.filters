@@ -237,6 +237,9 @@
     <ClInclude Include="Vayne.h">
       <Filter>Header Files\Champions\ADC</Filter>
     </ClInclude>
+    <ClInclude Include="Pantheon.h">
+      <Filter>Header Files\Champions\TopLane</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">

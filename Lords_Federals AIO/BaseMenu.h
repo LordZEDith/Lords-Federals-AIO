@@ -185,6 +185,7 @@ IMenuOption* ComboWAlly;
 IMenuOption* ComboWSelf;
 
 IMenuOption* ComboE;
+IMenuOption* ComboERange;
 IMenuOption* EKS;
 IMenuOption* QKS;
 IMenuOption* ComboE2;
@@ -291,8 +292,10 @@ IMenuOption* DrawPosInsec;
 IMenuOption* DrawNear;
 IMenuOption* WMinions;
 IMenuOption* DrawPetStatus;
+IMenuOption* DrawECustom;
 
 IMenuOption* HealthPercent;
+IMenuOption* FarmMana;
 IMenuOption* HealthQ;
 IMenuOption* HealthW;
 IMenuOption* HealthE;

@@ -202,6 +202,8 @@ int CountMinionsInRange(Vec3 pos, float range)
 	}
 	return mingonsInRange;
 }
+
+
 int CountMinionsInRange(float range)
 {
 	int minions = 0;

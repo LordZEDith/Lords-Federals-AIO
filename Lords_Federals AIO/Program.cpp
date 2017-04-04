@@ -4317,6 +4317,96 @@ public:
 	}
 };
 
+class cPantheon : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		Message().TopLaneSeries();
+		//Message().ChampionLoadMessage();
+		Pantheon().Menu();
+		Pantheon().LoadSpells();
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+		//Skins().Menu();
+		Toxic().MenuToxic();
+	}
+
+	virtual void OnRender() override
+	{
+		Pantheon().OnRender();
+		AutoSmite().DrawingsSmite();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		Pantheon().OnGameUpdate();
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+		Pantheon().OnOrbwalkAfterAttack(Source, Target);
+	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+		
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+
+	}
+
+	void OnGameEnd() override
+	{
+		//Toxic().OnGameEnd();
+	}
+};
+
 IChampion* pChampion = nullptr;
 
 PLUGIN_EVENT(void) OnRender()
@@ -4479,6 +4569,8 @@ void LoadChampion()
 		pChampion = new cJax;
 	else if (szChampion == "gnar")
 		pChampion = new cGnar;
+	else if (szChampion == "pantheon")
+		pChampion = new cPantheon;
 	// Support
 	else if (szChampion == "sona")
 		pChampion = new cSona;
@@ -4519,9 +4611,9 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	LoadChampion();
 	pChampion->OnLoad();	
 	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "Welcome to Lords & Federals AIO");
-	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, false, "[Fixed]: LeeSin, Xerath is God, Eise, Diana, Varus is God");
-	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, false, "[News]: Added: Gargas, Khazix, Trundle, Jax, ChoGath, Pantheon, Ekko, Renekton, Rumble");
-	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "[News]: Galio, Gnar and Ivern is Supported now");
+	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, false, "[Changes]: LeeSin, Varus, Caitlyn, Ziggs, Xerath, Ekko, ChoGath, Jax ");
+	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "[News]: Galio, Pantheon, Gnar, Kindred and Ivern are now Supported");
+	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "[Donations]: If you like our plugins please leave a donation, link can be found in our signatures");
 
 	//GUtility->CreateDebugConsole();	
 }
