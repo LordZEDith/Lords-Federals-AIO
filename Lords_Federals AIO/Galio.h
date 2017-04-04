@@ -406,9 +406,9 @@ public:
 
 	static void OnInterruptible(InterruptibleSpell const& Args)
 	{
-		if (EInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) <= E->Range() && E->IsReady())
+		if (EInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Source) <= E->Range() && E->IsReady())
 		{
-			E->CastOnTarget(Args.Target, PredicChange());
+			E->CastOnTarget(Args.Source, PredicChange());
 		}
 	}
 };

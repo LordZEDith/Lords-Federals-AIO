@@ -423,7 +423,7 @@ public:
 		if (EGapCloser->Enabled() && E->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < 300)
 		{			
 			auto dashpos = GEntityList->Player()->ServerPosition();
-			auto extend = dashpos.Extend(args.Sender->GetPosition(), -E->Range());
+			auto extend = dashpos.Extend(args.Source->GetPosition(), -E->Range());
 
 			if (!GNavMesh->IsPointWall(extend))
 			{

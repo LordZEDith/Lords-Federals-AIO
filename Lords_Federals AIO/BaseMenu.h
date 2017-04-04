@@ -164,6 +164,7 @@ IMenuOption* QHelp;
 IMenuOption* onlyReady;
 IMenuOption* QAfterAA;
 IMenuOption* QAntiMelee;
+IMenuOption* QCancelAnimation;
 
 IMenuOption* ComboW;
 IMenuOption* HarassW;
@@ -361,6 +362,7 @@ IMenuOption* AutoHarass;
 IMenuOption* AntiDash;
 IMenuOption* CheckShield;
 IMenuOption* AntiMelee;
+IMenuOption* AntiMeleeMode;
 IMenuOption* AntiGrab;
 IMenuOption* AutoShielded;
 IMenuOption* minAutoShield;
@@ -528,6 +530,7 @@ bool WardCheck = true;
 bool enemyscheck;
 bool goUltimate = false;
 bool goInsecUnder = false;
+bool canAttack = false;
 
 IMenuOption* PassiveStacks;
 IMenuOption* jPassiveStacks;
@@ -589,6 +592,7 @@ IUnit* GetTarget = nullptr;
 IUnit* GetTargetDraw = nullptr;
 IUnit* TargetUnder = nullptr;
 IUnit* jMonster = nullptr;
+IUnit* BaseTarget = nullptr;
 
 // Elise
 float _humQcd, _humWcd, _humEcd;

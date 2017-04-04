@@ -505,7 +505,7 @@ public:
 	{
 		if (QGapCloser->Enabled() && Q->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < Q->Range())
 		{
-			Q->CastOnTarget(args.Sender, kHitChanceMedium);
+			Q->CastOnTarget(args.Source, kHitChanceMedium);
 		}
 	}
 

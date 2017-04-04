@@ -588,17 +588,17 @@ public:
 
 	static void OnGapcloser(GapCloserSpell const& args)
 	{
-		if (!CheckTarget(args.Sender)) return;
+		if (!CheckTarget(args.Source)) return;
 		
 		if (EGapCloser->Enabled() && E->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < E->Range())
 		{
-			if (GapCloserList[args.Sender->GetNetworkId()]->Enabled())
+			if (GapCloserList[args.Source->GetNetworkId()]->Enabled())
 			{
-				E->CastOnTarget(args.Sender, PredicChange());
+				E->CastOnTarget(args.Source, PredicChange());
 			}
 		}
 
-		if (ChampionUse[args.Sender->GetNetworkId()]->Enabled() && W->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < W->Range())
+		if (ChampionUse[args.Source->GetNetworkId()]->Enabled() && W->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < W->Range())
 		{
 			W->CastOnPosition(args.EndPosition);
 		}

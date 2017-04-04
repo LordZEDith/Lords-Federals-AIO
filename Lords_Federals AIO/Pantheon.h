@@ -87,7 +87,7 @@ public:
 	{
 		if (GEntityList->Player()->ManaPercent() >= HarassMana->GetInteger())
 		{
-			if (HarassQ->Enabled() && GEntityList->Player()->GetSpellState(kSlotE) != DisabledOne)
+			if (HarassQ->Enabled() && Q->IsReady())
 				Q->CastOnTarget(GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range()));
 			if (HarassE->Enabled())
 				E->CastOnTarget(GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range() - 200));
@@ -98,9 +98,9 @@ public:
 	{
 		if (GEntityList->Player()->ManaPercent() >= FarmMana->GetInteger())
 		{
-			if (FarmQ->Enabled() && GEntityList->Player()->GetSpellState(kSlotE) != DisabledOne)
+			if (FarmQ->Enabled() && Q->IsReady())
 				Q->LastHitMinion();
-			if (FarmE->Enabled())
+			if (FarmE->Enabled() && E->IsReady())
 			{
 				int enemies = 0;
 				Vec3 pos = Vec3();

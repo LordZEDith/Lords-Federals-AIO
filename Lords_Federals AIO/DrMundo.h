@@ -316,7 +316,7 @@ public:
 	{
 		if (QGapCloser->Enabled() && Q->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < Q->Range())
 			{
-				Q->CastOnTarget(args.Sender, PredicChange());
+				Q->CastOnTarget(args.Source, PredicChange());
 			}		
 	}
 

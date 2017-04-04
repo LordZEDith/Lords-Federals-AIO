@@ -525,13 +525,13 @@ public:
 	{
 		if (QGapCloser->Enabled() && Q->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < Q->Range())
 		{
-			if (args.Sender != nullptr && args.Sender->IsValidTarget(GEntityList->Player(), Q->Range()) && !args.Sender->IsInvulnerable() && !args.Sender->IsDead())
+			if (args.Source != nullptr && args.Source->IsValidTarget(GEntityList->Player(), Q->Range()) && !args.Source->IsInvulnerable() && !args.Source->IsDead())
 			{
 				auto Distance = GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition);
 
 				Vec3 position;
 				auto delay = 0.25f + Distance / 1600;
-				GPrediction->GetFutureUnitPosition(args.Sender, delay, true, position);
+				GPrediction->GetFutureUnitPosition(args.Source, delay, true, position);
 
 				if (Distance < Q->Range() && Q->CastOnPosition(position))
 				{

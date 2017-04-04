@@ -389,7 +389,7 @@ public:
 	{
 		if (EGapCloser->Enabled() && E->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < E->Range())
 		{
-			E->CastOnTarget(args.Sender, kHitChanceMedium);
+			E->CastOnTarget(args.Source, kHitChanceMedium);
 		}
 	}
 

@@ -444,21 +444,21 @@ public:
 
 	static void OnGapcloser(GapCloserSpell const& args)
 	{
-		if (!CheckTarget(args.Sender)) return;
+		if (!CheckTarget(args.Source)) return;
 		
 		if (EGapCloser->Enabled() && E->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < E->Range())
 		{
-			E->CastOnTarget(args.Sender, PredicChange());
+			E->CastOnTarget(args.Source, PredicChange());
 		}
 	}
 
 	static void OnInterruptible(InterruptibleSpell const& Args)
 	{
-		if (!CheckTarget(Args.Target)) return;
+		if (!CheckTarget(Args.Source)) return;
 
-		if (EInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < E->Range())
+		if (EInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Source) < E->Range())
 		{
-			E->CastOnTarget(Args.Target, PredicChange());
+			E->CastOnTarget(Args.Source, PredicChange());
 		}
 	}
 

@@ -489,7 +489,7 @@ public:
 
 	static void OnGapcloser(GapCloserSpell const& args)
 	{
-		if (args.Sender->IsEnemy(GEntityList->Player()) && args.Sender->IsHero())
+		if (args.Source->IsEnemy(GEntityList->Player()) && args.Source->IsHero())
 		{
 			if (gapcloserE->Enabled() && E->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < E->Range())
 			{
@@ -503,11 +503,11 @@ public:
 
 	static void OnInterruptible(InterruptibleSpell const& Args)
 	{
-		if (interupterW->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < W->Range())
+		if (interupterW->Enabled() && GetDistance(GEntityList->Player(), Args.Source) < W->Range())
 		{
 			if (GEntityList->Player()->GetSpellBook()->GetToggleState(kSlotW) == 0)
 			{
-				W->CastOnTarget(Args.Target, kHitChanceHigh);
+				W->CastOnTarget(Args.Source, kHitChanceHigh);
 			}
 			else
 			{

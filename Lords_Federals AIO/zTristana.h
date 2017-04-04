@@ -472,20 +472,20 @@ public:
 
 	static void OnGapcloser(GapCloserSpell const& args)
 	{
-		if (RGapCloser->Enabled() && R->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.Sender->GetPosition()) < R->Range())
+		if (RGapCloser->Enabled() && R->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.Source->GetPosition()) < R->Range())
 		{
-			if (args.Sender->IsValidTarget(GEntityList->Player(), R->Range()) && GapCloserList[args.Sender->GetNetworkId()]->Enabled() && CheckTarget(args.Sender))
+			if (args.Source->IsValidTarget(GEntityList->Player(), R->Range()) && GapCloserList[args.Source->GetNetworkId()]->Enabled() && CheckTarget(args.Source))
 			{
-				R->CastOnUnit(args.Sender);
+				R->CastOnUnit(args.Source);
 			}
 		}
 	}
 
 	static void OnInterruptible(InterruptibleSpell const& Args)
 	{
-		if (RInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < R->Range() && R->IsReady() && CheckTarget(Args.Target))
+		if (RInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Source) < R->Range() && R->IsReady() && CheckTarget(Args.Source))
 		{
-			R->CastOnUnit(Args.Target);
+			R->CastOnUnit(Args.Source);
 		}
 	}
 

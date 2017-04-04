@@ -308,22 +308,22 @@ public:
 		if (QGapCloser->Enabled() && Q->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < Q->Range())
 
 		{
-			Q->CastOnTarget(args.Sender, kHitChanceMedium);
+			Q->CastOnTarget(args.Source, kHitChanceMedium);
 		}
 	}
 
 	static void OnInterruptible(InterruptibleSpell const& Args)
 	{
-		if (QInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < Q->Range())
+		if (QInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Source) < Q->Range())
 		{
 			if (W->IsReady())
 			{
-				W->CastOnUnit(Args.Target);
+				W->CastOnUnit(Args.Source);
 			}
 
 			if (!W->IsReady() && Q->IsReady())
 			{
-				Q->CastOnTarget(Args.Target, kHitChanceHigh);
+				Q->CastOnTarget(Args.Source, kHitChanceHigh);
 			}
 		}
 	}

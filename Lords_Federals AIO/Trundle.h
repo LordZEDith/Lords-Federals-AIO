@@ -172,14 +172,14 @@ public:
 
     void OnInterruptible(InterruptibleSpell const& Args)
 	{
-		if (E->IsReady() && GEntityList->Player()->IsValidTarget(Args.Target, E->Range()) && Interrupt->Enabled())
-			E->CastOnTarget(Args.Target, kHitChanceHigh);
+		if (E->IsReady() && GEntityList->Player()->IsValidTarget(Args.Source, E->Range()) && Interrupt->Enabled())
+			E->CastOnTarget(Args.Source, kHitChanceHigh);
 	}
 
 	void OnGapCloser(GapCloserSpell const& Args)
 	{
-		if (E->IsReady() && GEntityList->Player()->IsValidTarget(Args.Sender, E->Range()) && antigap->Enabled())
-			E->CastOnTarget(Args.Sender, kHitChanceHigh);
+		if (E->IsReady() && GEntityList->Player()->IsValidTarget(Args.Source, E->Range()) && antigap->Enabled())
+			E->CastOnTarget(Args.Source, kHitChanceHigh);
 	}
 
 	void OnOrbwalkAfterAttack(IUnit* Source, IUnit* Target)

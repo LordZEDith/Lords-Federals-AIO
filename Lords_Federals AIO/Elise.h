@@ -405,39 +405,48 @@ public:
 				if (strstr(Args.Name_, "EliseHumanQ"))
 				{
 					_humQcd = GGame->Time() + GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotQ) + 1.f;
+					GUtility->LogConsole("Q EliseHumanQ CD: %f", GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotQ));
 				}
 
 				if (strstr(Args.Name_, "EliseHumanW"))
 				{
 					_humWcd = GGame->Time() + GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotW) + 1.f;
+					GUtility->LogConsole("W EliseHumanW CD: %f", GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotW));
 				}
 
 				if (strstr(Args.Name_, "EliseHumanE"))
 				{
 					_humEcd = GGame->Time() + GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotE) + 1.f;
+					GUtility->LogConsole("E EliseHumanE CD: %f", GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotE));
 				}
 			}
 			if (EliseSpider())
 			{
 				if (strstr(Args.Name_, "EliseSpiderQCast"))
 				{
-					_spidQcd = GGame->Time() + GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotQ) + 1.f;					
+					_spidQcd = GGame->Time() + GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotQ) + 1.f;
+					GUtility->LogConsole("Q EliseSpiderQCast CD: %f", GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotQ));
 				}
 
 				if (strstr(Args.Name_, "EliseSpiderW"))
 				{
 					_spidWcd = GGame->Time() + GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotW) + 1.f;
+					GUtility->LogConsole("W EliseSpiderW CD: %f", GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotW));
 				}
 
 				if (strstr(Args.Name_, "EliseSpiderEInitial"))
 				{
 					_spidEcd = GGame->Time() + GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotE) + 1.f;
+					GUtility->LogConsole("E EliseSpiderEInitial CD: %f", GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotE));
+
 				}
 			}
 
 			if (strstr(Args.Name_, "EliseRSpider") || strstr(Args.Name_, "EliseR"))
 			{
 				_Rcd = GGame->Time() + GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotR) + 1.f;
+				GUtility->LogConsole("Ultimate CD: %f", GEntityList->Player()->GetSpellBook()->GetTotalCooldown(kSlotR));
+
 			}			
 		}
 	}
@@ -472,28 +481,28 @@ public:
 	{
 		if (EliseHuman() && EGapCloser->Enabled() && E->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < E->Range())
 		{
-			E->CastOnTarget(args.Sender, kHitChanceHigh);
+			E->CastOnTarget(args.Source, kHitChanceHigh);
 		}
 
 		if (!EliseHuman() && QGapCloser->Enabled() && E2->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < E2->Range())
 		{
-			E2->CastOnUnit(args.Sender);
+			E2->CastOnUnit(args.Source);
 		}
 	}
 
 	static void OnInterruptible(InterruptibleSpell const& Args)
 	{
-		if (EInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < E->Range())
+		if (EInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Source) < E->Range())
 		{
 			if (EliseSpider() && E->IsReady() && R->IsReady())
 			{
 				R->CastOnPlayer();
-				E->CastOnTarget(Args.Target, kHitChanceHigh);
+				E->CastOnTarget(Args.Source, kHitChanceHigh);
 			}
 
 			if (EliseHuman() && E->IsReady())
 			{
-				E->CastOnTarget(Args.Target, kHitChanceHigh);
+				E->CastOnTarget(Args.Source, kHitChanceHigh);
 			}
 		}
 	}

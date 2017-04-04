@@ -378,20 +378,20 @@ public:
 		if (EGapCloser->Enabled() && E->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < E->Range())
 
 		{
-			if (CheckWalls(GEntityList->Player(), args.Sender))
+			if (CheckWalls(GEntityList->Player(), args.Source))
 			{
-				E->CastOnUnit(args.Sender);
+				E->CastOnUnit(args.Source);
 			}
 		}
 	}
 
 	static void OnInterruptible(InterruptibleSpell const& Args)
 	{
-		if (EInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < E->Range())
+		if (EInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Source) < E->Range())
 		{
 			if (E->IsReady())
 			{
-				E->CastOnUnit(Args.Target);
+				E->CastOnUnit(Args.Source);
 			}
 		}
 	}

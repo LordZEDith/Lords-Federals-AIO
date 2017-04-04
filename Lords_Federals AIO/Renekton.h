@@ -311,8 +311,8 @@ public:
 
 	void OnInterruptible(InterruptibleSpell const& Args)
 	{
-		if (Args.Target != nullptr && W->IsReady() && GEntityList->Player()->IsValidTarget(Args.Target, W->Range() + GEntityList->Player()->BoundingRadius()))
-			W->CastOnUnit(Args.Target);
+		if (Args.Source != nullptr && W->IsReady() && GEntityList->Player()->IsValidTarget(Args.Source, W->Range() + GEntityList->Player()->BoundingRadius()))
+			W->CastOnUnit(Args.Source);
 	}
 
     void OnGapCloser(GapCloserSpell const& Args)

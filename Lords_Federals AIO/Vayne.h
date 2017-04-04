@@ -15,8 +15,7 @@ public:
 		QSettings = MainMenu->AddMenu("Tumble Settings");
 		{
 			ComboQH = QSettings->AddSelection("Q Modes", 0, std::vector<std::string>({ "Q To Cursor", "Q Side", "Safe Q", "Teste" }));
-			AutoQ = QSettings->CheckBox("Use Q Combo", true);
-			HarassQ = QSettings->CheckBox("Use Q Harass", true);
+			AutoQ = QSettings->CheckBox("Auto Use Q", true);			
 			ComboQH = QSettings->CheckBox("Auto Q when R active", true);
 			PassiveStacks = QSettings->AddInteger("Q at X stack", 1, 2, 2);
 			QAfterAA = QSettings->CheckBox("Q only after AA", false);			
@@ -25,6 +24,7 @@ public:
 			TurretCheck = QSettings->CheckBox("Block Q under turret", false);
 			AAcheck = QSettings->CheckBox("Q only in AA range", false);
 			QAntiMelee = QSettings->CheckBox("Auto Q Anti Melee", true);
+			QCancelAnimation = QSettings->CheckBox("Q Cancel Animation", false);
 		}
 
 		ESettings = MainMenu->AddMenu("Condemn Settings");
@@ -36,6 +36,7 @@ public:
 			RWall = ESettings->AddSelection("Flash E Mode", 1, std::vector<std::string>({ "Automatic", "PressKey + LowHP", "Press Key", "OFF" }));
 			HealthE = ESettings->AddInteger("Flash E Low HP% (1x1)", 1, 60, 15);
 			SemiManualKey = ESettings->AddKey("Flash E Key", 71);
+			KillstealE = ESettings->CheckBox("Smart E KS", false);
 		}
 
 		RSettings = MainMenu->AddMenu("Ultimate Settings");
@@ -61,6 +62,7 @@ public:
 		{			
 			EOrder = fedMiscSettings->CheckBox("Focus W stacks Target", true);
 			EGapCloser = fedMiscSettings->CheckBox("E GapCloser | Anti Meele", false);
+			AntiMeleeMode = fedMiscSettings->AddSelection("Anti Meele Mode", 0, std::vector<std::string>({ "After Hit Me", "Near Me" }));
 			for (auto enemy : GEntityList->GetAllHeros(false, true))
 			{
 				std::string szMenuName = "Anti Gapcloser - " + std::string(enemy->ChampionName());
@@ -115,6 +117,32 @@ public:
 	static double Wdmg(IUnit* target)
 	{
 		return target->GetMaxHealth() * (4.5 + GEntityList->Player()->GetSpellBook()->GetLevel(kSlotW) * 1.5) * 0.01;
+	}
+
+	static void EAntiMelee()
+	{		
+		if (EGapCloser->Enabled() && E->IsReady() && AntiMeleeMode->GetInteger() == 0)
+		{
+			for (auto target : GEntityList->GetAllHeros(false, true))
+			{
+				if (!CheckTarget(target)) return;
+
+				if (target->IsMelee() && GetDistance(GEntityList->Player(), target) < 300 && target->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())))
+				{
+					auto pPos = GEntityList->Player()->ServerPosition();
+					auto distance = GetDistance(GEntityList->Player(), target);
+					Vec3 PositionTarget = pPos.Extend(target->ServerPosition(), distance + 470);
+
+					if (CountAlly(PositionTarget, 1000) > CountEnemy(PositionTarget, 1000) || CountAlly(PositionTarget, 1000) == 0)
+					{
+						if (ChampionAntiMelee[target->GetNetworkId()]->Enabled() && (target->HealthPercent() > 30 || target->HealthPercent() < 50 && target->HealthPercent() > GEntityList->Player()->HealthPercent()))
+						{
+							E->CastOnUnit(target);
+						}
+					}
+				}
+			}
+		}		
 	}
 
 	static void FocusTargetW()
@@ -339,8 +367,8 @@ public:
 		{
 			Vec3 position;
 			Vec3 pPos = GEntityList->Player()->GetPosition();
-			auto delay = E->GetDelay() + distance / E->Speed();
-			GPrediction->GetFutureUnitPosition(enemy, delay, true, position);
+
+			GPrediction->GetFutureUnitPosition(enemy, 0.2f, true, position);
 
 			Vec3 PositionTarget = pPos.Extend(position, distance + (check * i));
 
@@ -430,7 +458,32 @@ public:
 	static void Automatic()
 	{
 		FocusTargetW();
-		UseUltimate();
+		UseUltimate();		
+		
+		// AutoAttack after Q
+		if (canAttack && GEntityList->Player()->HasBuff("vaynetumblebonus") && GetDistance(GEntityList->Player(), BaseTarget) <= GEntityList->Player()->AttackRange())
+		{
+			GGame->IssueOrder(GEntityList->Player(), kAutoAttack, BaseTarget);
+			canAttack = false;
+			BaseTarget = nullptr;
+		}
+
+		// SmartKS E
+		if (KillstealE->Enabled())
+		{
+			for (auto Hero : GEntityList->GetAllHeros(false, true))
+			{
+				if (!CheckTarget(Hero) || !CheckShielded(Hero)) return;
+
+				//GUtility->LogConsole("Dano %f, Enemy Vida %f", (Wdmg(Hero) + GDamage->GetSpellDamage(GEntityList->Player(), Hero, kSlotE)), Hero->GetHealth());
+
+				if (E->IsReady() && Wdmg(Hero) + GDamage->GetSpellDamage(GEntityList->Player(), Hero, kSlotE) > Hero->GetHealth() + (Hero->HPRegenRate() * 2) + 10 && Hero->GetBuffCount("VayneSilveredDebuff") == 2)
+				{
+					E->CastOnUnit(Hero);
+					//GUtility->LogConsole("Kiiiiiiiiiiiiiiil");
+				}
+			}
+		}
 		
 		// Flash E
 		if (RWall->GetInteger() != 3)
@@ -469,7 +522,7 @@ public:
 				}
 			}
 
-			if ((GOrbwalking->GetOrbwalkingMode() == kModeCombo && AutoQ->Enabled() || GOrbwalking->GetOrbwalkingMode() == kModeMixed && HarassQ->Enabled()) && 
+			if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && AutoQ->Enabled() && 
 				(!QAfterAA->Enabled() || GEntityList->Player()->GetSpellBook()->GetLevel(kSlotW) == 0))
 			{
 				auto qtarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, GEntityList->Player()->AttackRange() + 250);
@@ -540,15 +593,7 @@ public:
 				R->CastOnPlayer();
 			}
 		}
-	}
-
-	static void Combo()
-	{
-	}
-
-	static void Harass()
-	{
-	}
+	}	
 
 	static void LastHit()
 	{
@@ -609,7 +654,8 @@ public:
 
 	static void LaneClear()
 	{
-	}
+
+	}	
 
 	static void Drawing()
 	{
@@ -629,37 +675,40 @@ public:
 
 	static void OnGapcloser(GapCloserSpell const& args)
 	{
-		if (!CheckTarget(args.Sender)) return;
+		if (!CheckTarget(args.Source)) return;
 
-		if (EGapCloser->Enabled() && E->IsReady() && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.Sender->GetPosition()) <= E->Range())
+		if (EGapCloser->Enabled() && E->IsReady() && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.Source->GetPosition()) <= E->Range())
 		{
-			if (GapCloserList[args.Sender->GetNetworkId()]->Enabled())
+			if (GapCloserList[args.Source->GetNetworkId()]->Enabled())
 			{
-				E->CastOnUnit(args.Sender);
+				E->CastOnUnit(args.Source);
 			}
 		}		
 	}
 
 	static void OnAfterAttack(IUnit* source, IUnit* target)
 	{
-		auto afterQ = false;
-
-		if (target->IsHero())
-		{
-			if (Q->IsReady() && (target->GetBuffCount("VayneSilveredDebuff") == PassiveStacks->GetInteger() - 1 || GEntityList->Player()->HasBuff("VayneInquisition")))
-			{				
+		if (target->IsHero() && !target->IsDead())
+		{			
+			if (AutoQ->Enabled() && Q->IsReady() &&
+				(target->GetBuffCount("VayneSilveredDebuff") == PassiveStacks->GetInteger() - 1
+					|| GEntityList->Player()->HasBuff("VayneInquisition")
+					|| GEntityList->Player()->GetSpellBook()->GetLevel(kSlotW) == 0))
+			{
 				auto dashPos = PosQ(true);
 				if (dashPos != Vec3(0, 0, 0))
 				{
 					Q->CastOnPosition(dashPos);
-					afterQ = true;
-				}				
+
+					canAttack = true;
+					BaseTarget = target;
+				}
 			}			
-		}
+		}		
 
 		if (target->IsJungleCreep())
 		{
-			if (Q->IsReady() && JungleQ->Enabled() && target->GetBuffCount("VayneSilveredDebuff") == jPassiveStacks->GetInteger() - 1)
+			if (Q->IsReady() && JungleQ->Enabled() && (target->GetBuffCount("VayneSilveredDebuff") == jPassiveStacks->GetInteger() - 1 || GEntityList->Player()->GetSpellBook()->GetLevel(kSlotW) == 0))
 			{
 				if (GEntityList->Player()->ManaPercent() < JungleMana->GetInteger()) return;
 
@@ -669,32 +718,35 @@ public:
 				if (!GPosition(dash)) return;
 
 				Q->CastOnPosition(dash);
-				afterQ = true;
+				
+				canAttack = true;
+				BaseTarget = target;
 			}		
-		}
-
-		if (afterQ && GEntityList->Player()->HasBuff("vaynetumblebonus") && GetDistance(GEntityList->Player(), target) <= GEntityList->Player()->AttackRange())
-		{
-			GGame->IssueOrder(GEntityList->Player(), kAutoAttack, target);
-			afterQ = false;
-		}
+		}		
 	}
 
 	static void OnProcessSpell(CastedSpell const& Args)
 	{
 		if (Args.Caster_ == GEntityList->Player())
 		{
-			if (GSpellData->GetSlot(Args.Data_) == kSlotE && Rposition != Vec3(0,0,0))
+			if (GSpellData->GetSlot(Args.Data_) == kSlotQ)
 			{
-				if (FoundFlash && Flash->IsReady())
+				if (QCancelAnimation->Enabled())
 				{
-					Flash->CastOnPosition(Rposition);
-					Rposition = Vec3(0, 0, 0);
+					GGame->Taunt(kLaugh);					
+				}
+			}
+
+			if (GSpellData->GetSlot(Args.Data_) == kSlotE)
+			{
+				if (QCancelAnimation->Enabled())
+				{
+					GGame->Taunt(kLaugh);
 				}
 			}
 		}
 
-		if (Args.Caster_->IsEnemy(GEntityList->Player()) && Args.Target_ == GEntityList->Player() && Args.Caster_->IsMelee() && Args.AutoAttack_)
+		if (Args.Caster_->IsEnemy(GEntityList->Player()) && Args.Caster_->IsHero() && Args.Target_ == GEntityList->Player() && Args.Caster_->IsMelee() && Args.AutoAttack_)
 		{
 			if (!CheckTarget(Args.Caster_)) return;
 			
@@ -704,8 +756,7 @@ public:
 				Q->CastOnPosition(pPos.Extend(Args.Caster_->GetPosition(), -Q->Range()));
 			}
 
-
-			if (EGapCloser->Enabled() && E->IsReady())
+			if (EGapCloser->Enabled() && E->IsReady() && AntiMeleeMode->GetInteger() == 1)
 			{
 				auto pPos = GEntityList->Player()->ServerPosition();
 				auto distance = GetDistance(GEntityList->Player(), Args.Caster_);

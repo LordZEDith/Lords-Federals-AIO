@@ -279,31 +279,31 @@ public:
 
 	static void OnGapcloser(GapCloserSpell const& args)
 	{
-		if (!GEntityList->Player()->IsEnemy(args.Sender)) return;
+		if (!GEntityList->Player()->IsEnemy(args.Source)) return;
 
-		if (E->IsReady() && GEntityList->Player()->IsValidTarget(args.Sender, E->Range()) && EGapCloser->Enabled())
+		if (E->IsReady() && GEntityList->Player()->IsValidTarget(args.Source, E->Range()) && EGapCloser->Enabled())
 		{
 			E->CastOnPlayer();
-			GTargetSelector->SetOverrideFocusedTarget(args.Sender);
-			GOrbwalking->SetOverrideTarget(args.Sender);
+			GTargetSelector->SetOverrideFocusedTarget(args.Source);
+			GOrbwalking->SetOverrideTarget(args.Source);
 		}
 	}
 
 	static void OnInterruptible(InterruptibleSpell const& Args)
 
 	{
-		if (!GEntityList->Player()->IsEnemy(Args.Target)) return;
+		if (!GEntityList->Player()->IsEnemy(Args.Source)) return;
 
-		if (E->IsReady() && GEntityList->Player()->IsValidTarget(Args.Target, E->Range()) && EInterrupter->Enabled())
+		if (E->IsReady() && GEntityList->Player()->IsValidTarget(Args.Source, E->Range()) && EInterrupter->Enabled())
 		{
 			E->CastOnPlayer();
-			GTargetSelector->SetOverrideFocusedTarget(Args.Target);
-			GOrbwalking->SetOverrideTarget(Args.Target);
+			GTargetSelector->SetOverrideFocusedTarget(Args.Source);
+			GOrbwalking->SetOverrideTarget(Args.Source);
 		}
 
-		if (!E->IsReady() && R->IsReady() && GEntityList->Player()->IsValidTarget(Args.Target, R->Range()) && RInterrupter->Enabled())
+		if (!E->IsReady() && R->IsReady() && GEntityList->Player()->IsValidTarget(Args.Source, R->Range()) && RInterrupter->Enabled())
 		{
-			R->CastOnTarget(Args.Target, kHitChanceHigh);
+			R->CastOnTarget(Args.Source, kHitChanceHigh);
 		}
 	}
 

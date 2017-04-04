@@ -139,12 +139,12 @@ public:
 
 	void GapCloser(GapCloserSpell const& Args)
 	{
-		if (Args.Sender != GEntityList->Player()
-			&& Args.Sender->GetTeam() != GEntityList->Player()->GetTeam()
-			&& GEntityList->Player()->IsValidTarget(Args.Sender, Q->Range())
+		if (Args.Source != GEntityList->Player()
+			&& Args.Source->GetTeam() != GEntityList->Player()->GetTeam()
+			&& GEntityList->Player()->IsValidTarget(Args.Source, Q->Range())
 			&& QGapCloser->Enabled() && E->IsReady())
 		{
-			Q->CastOnUnit(Args.Sender);
+			Q->CastOnUnit(Args.Source);
 		}
 	}
 	void Drawingss()

@@ -175,8 +175,8 @@ public:
 
 /*	void GapCloser(GapCloserSpell const& Args)
 	{
-		if (Args.Sender != GEntityList->Player()
-			&& Args.Sender->IsEnemy(GEntityList->Player())
+		if (args.Source != GEntityList->Player()
+			&& args.Source->IsEnemy(GEntityList->Player())
 			&& GEntityList->Player()->IsValidTarget(Args.Sender, E->Range() + Args.Sender->BoundingRadius())
 			&& EGapCloser->Enabled() && E->IsReady())
 		{

@@ -4239,11 +4239,11 @@ public:
 
 		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
-			Vayne().Combo();
+
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 		{
-			Vayne().Harass();
+
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 		{
@@ -4293,7 +4293,7 @@ public:
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-		//Vayne().OnProcessSpell(Args);		
+		Vayne().OnProcessSpell(Args);		
 	}
 
 	void OnExitVisible(IUnit* Source) override

@@ -544,13 +544,13 @@ public:
 	{
 		if (WGapCloser->Enabled() && W2->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < W2->Range())
 		{
-			if (args.Sender != nullptr && args.Sender->IsValidTarget(GEntityList->Player(), W2->Range()) && !args.Sender->IsInvulnerable() && !args.Sender->IsDead())
+			if (args.Source != nullptr && args.Source->IsValidTarget(GEntityList->Player(), W2->Range()) && !args.Source->IsInvulnerable() && !args.Source->IsDead())
 			{
 				auto Distance = GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition);
 
 				Vec3 position;
 				auto delay = 0.25f + Distance / 1600;
-				GPrediction->GetFutureUnitPosition(args.Sender, delay, true, position);
+				GPrediction->GetFutureUnitPosition(args.Source, delay, true, position);
 
 				if (Distance < W2->Range() && W2->CastOnPosition(position))
 				{
@@ -561,13 +561,13 @@ public:
 	}
 	static void OnInterruptible(InterruptibleSpell const& Args)
 	{
-		if (WInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < W2->Range() && W2->IsReady())
+		if (WInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Source) < W2->Range() && W2->IsReady())
 		{
-			W2->CastOnTarget(Args.Target, kHitChanceHigh);
+			W2->CastOnTarget(Args.Source, kHitChanceHigh);
 		}
-		if (RInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < R->Range() && R->IsReady())
+		if (RInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Source) < R->Range() && R->IsReady())
 		{
-			R->CastOnTarget(Args.Target, kHitChanceHigh);
+			R->CastOnTarget(Args.Source, kHitChanceHigh);
 		}
 	}
 	void Drawing()

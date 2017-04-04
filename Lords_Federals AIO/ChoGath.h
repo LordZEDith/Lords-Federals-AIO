@@ -151,19 +151,19 @@ public:
 
 	void OnInterruptible(InterruptibleSpell const& Args)
 	{
-		if (W->IsReady() && Args.Target != nullptr && GEntityList->Player()->IsValidTarget(Args.Target, W->Range()) && Interrupt->Enabled())
+		if (W->IsReady() && Args.Source != nullptr && GEntityList->Player()->IsValidTarget(Args.Source, W->Range()) && Interrupt->Enabled())
 		{
-			W->CastOnPosition(Args.Target->GetPosition());
+			W->CastOnPosition(Args.Source->GetPosition());
 		}
-		if (Q->IsReady() && Args.Target != nullptr && GEntityList->Player()->IsValidTarget(Args.Target, Q->Range()) && Interrupt->Enabled())
+		if (Q->IsReady() && Args.Source != nullptr && GEntityList->Player()->IsValidTarget(Args.Source, Q->Range()) && Interrupt->Enabled())
 		{
-			Q->CastOnTarget(Args.Target, kHitChanceHigh);
+			Q->CastOnTarget(Args.Source, kHitChanceHigh);
 		}
 	}
 
 	void OnGapCloser(GapCloserSpell const& Args)
 	{
-		if (Q->IsReady() && Args.Sender != nullptr && GEntityList->Player()->IsValidTarget(Args.Sender, Q->Range()))
+		if (Q->IsReady() && Args.Source != nullptr && GEntityList->Player()->IsValidTarget(Args.Source, Q->Range()))
 		{
 			Q->CastOnPosition(Args.EndPosition);
 		}

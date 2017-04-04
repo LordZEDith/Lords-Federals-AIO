@@ -606,15 +606,15 @@ public:
 		if (EGapCloser->Enabled() && E->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < E->Range() && !Q->IsCharging())
 
 		{
-			E->CastOnTarget(args.Sender, PredicChange());
+			E->CastOnTarget(args.Source, PredicChange());
 		}
 	}
 
 	static void OnInterruptible(InterruptibleSpell const& Args)
 	{
-		if (EInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Target) < E->Range() && !Q->IsCharging())
+		if (EInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Source) < E->Range() && !Q->IsCharging())
 		{
-			E->CastOnTarget(Args.Target, PredicChange());
+			E->CastOnTarget(Args.Source, PredicChange());
 		}
 	}
 
