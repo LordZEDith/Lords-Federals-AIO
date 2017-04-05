@@ -3,7 +3,6 @@
 #include "BaseMenu.h"
 #include "Common.h"
 
-
 class Vayne
 {
 public:
@@ -209,12 +208,13 @@ public:
 
 			if (enemy.Any())
 			{
-				GOrbwalking->SetOverrideTarget(enemy.MaxOrDefault<float>([](IUnit* i) {return i->GetBuffCount("VayneSilveredDebuff"); }));
+				auto fTarget = enemy.MaxOrDefault<int>([](IUnit* i) {return i->GetBuffCount("VayneSilveredDebuff"); });
+				GOrbwalking->SetOverrideTarget(fTarget);
 			}
 
 			else if (minions.Any() && GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 			{
-				//GOrbwalking->SetOverrideTarget(minions.MaxOrDefault<float>([](IUnit* i) {return i->GetBuffCount("VayneSilveredDebuff"); }));
+				//GOrbwalking->SetOverrideTarget(minions.MaxOrDefault<int>([](IUnit* i) {return i->GetBuffCount("VayneSilveredDebuff"); }));
 			}
 
 			else
