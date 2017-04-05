@@ -14,9 +14,10 @@ public:
 
 		QSettings = MainMenu->AddMenu("Tumble Settings");
 		{
-			ComboQH = QSettings->AddSelection("Q Modes", 0, std::vector<std::string>({ "Q To Cursor", "Q Side", "Safe Q", "Teste" }));
-			AutoQ = QSettings->CheckBox("Auto Use Q", true);			
-			ComboQH = QSettings->CheckBox("Auto Q when R active", true);
+			QCancelAnimation = QSettings->CheckBox("Q Cancel Animation", true);
+			AutoQ = QSettings->CheckBox("Auto Use Q", true);
+			ComboQH = QSettings->AddSelection("Q Modes", 0, std::vector<std::string>({ "Mouse Q", "Side Q", "Safe Q", "Beta Q" }));			
+			ComboQA = QSettings->CheckBox("Auto Q when R active", true);
 			PassiveStacks = QSettings->AddInteger("Q at X stack", 1, 2, 2);
 			QAfterAA = QSettings->CheckBox("Q only after AA", false);			
 			EnemyCheck = QSettings->AddInteger("Block Q in x enemies", 1, 5, 3);
@@ -24,13 +25,13 @@ public:
 			TurretCheck = QSettings->CheckBox("Block Q under turret", false);
 			AAcheck = QSettings->CheckBox("Q only in AA range", false);
 			QAntiMelee = QSettings->CheckBox("Auto Q Anti Melee", true);
-			QCancelAnimation = QSettings->CheckBox("Q Cancel Animation", false);
+			
 		}
 
 		ESettings = MainMenu->AddMenu("Condemn Settings");
 		{
 			AutoE = ESettings->AddSelection("Condemn Mode", 0, std::vector<std::string>({ "Combo & Harass", "Automatic", "Off" }));
-			ComboE = ESettings->AddSelection("Modo", 2, std::vector<std::string>({ "Modo 1", "Mode 2", "Mode 3" }));
+			ComboE = ESettings->AddSelection("Condemn Method", 2, std::vector<std::string>({ "Method 1", "Method 2", "Method 3" }));
 			RangeE = ESettings->AddFloat("Condemn Max Range", 400, 760, 550);
 			PushDistance = ESettings->AddInteger("Push Distance", 300, 470, 420);
 			RWall = ESettings->AddSelection("Flash E Mode", 1, std::vector<std::string>({ "Automatic", "PressKey + LowHP", "Press Key", "OFF" }));
@@ -60,6 +61,7 @@ public:
 
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{			
+			zzRot = fedMiscSettings->AddKey(" [Beta] ZZrot Condemn", 0x49);
 			EOrder = fedMiscSettings->CheckBox("Focus W stacks Target", true);
 			EGapCloser = fedMiscSettings->CheckBox("E GapCloser | Anti Meele", false);
 			AntiMeleeMode = fedMiscSettings->AddSelection("Anti Meele Mode", 0, std::vector<std::string>({ "After Hit Me", "Near Me" }));
@@ -144,7 +146,34 @@ public:
 			}
 		}		
 	}
-
+	 static void RotE()
+	{
+		zzRots = GPluginSDK->CreateItemForId(3512, 400);
+		zzRots->SetRange(400);
+		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 400);
+		if (E->IsReady() && zzRots->IsTargetInRange(target) && zzRots->IsReady() && target != nullptr)
+		{
+			if (zzRots->CastOnPosition(target->ServerPosition()))
+			{
+				E2->CastOnUnit(target);
+			}
+		}
+	}
+	 static void zzRotRun()
+	 {
+		 if (GetAsyncKeyState(zzRot->GetInteger())) //ADD to ONGAMEUPDATE
+		 {
+			 zzRots = GPluginSDK->CreateItemForId(3512, 400);
+			 auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 400);
+			 if (E->IsReady() && zzRots->IsTargetInRange(target) && zzRots->IsReady() && target != nullptr)
+			 {
+				 if (zzRots->CastOnPosition(target->ServerPosition()))
+				 {
+					 E2->CastOnUnit(target);
+				 }
+			 }
+		 }
+	 }
 	static void FocusTargetW()
 	{
 		if (EOrder->Enabled())
@@ -510,7 +539,7 @@ public:
 		
 		if (Q->IsReady())
 		{
-			if (ComboQH->Enabled() &&
+			if (ComboQA->Enabled() &&
 				GOrbwalking->GetOrbwalkingMode() != kModeNone &&
 				GEntityList->Player()->HasBuff("VayneInquisition") && CountEnemy(GEntityList->Player()->GetPosition(), 1500) > 0 && 
 				CountEnemy(GEntityList->Player()->GetPosition(), 670) != 1)

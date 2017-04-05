@@ -4255,6 +4255,7 @@ public:
 		AutoSmite().AutomaticSmite();
 		AutoSmite().KeyPressSmite();
 		Toxic().SpamEmote();
+		Vayne().zzRotRun();
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
