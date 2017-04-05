@@ -216,10 +216,12 @@ public:
 		for (auto minion : GEntityList->GetAllMinions(false, false, true))
 		{		
 
+			if (!CheckTarget(minion)) return;
+
 			if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range() - 50))
 			{
 
-				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+				if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
 				{
 					Vec3 posQ;
 					int hitQ;
@@ -247,7 +249,7 @@ public:
 
 			else if (JungleE->Enabled() && E->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range() - 50))
 			{
-				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
+				if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
 				{
 					if (JungleBig->Enabled())
 					{

@@ -372,52 +372,35 @@ public:
 	{
 		if (JungleMana->GetInteger() < GEntityList->Player()->ManaPercent())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, false, true))
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()); });
+
+			if (Minion.Any())
+			{
+				jMonster = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
+			}
+
+			if (CheckTarget(jMonster))
 			{
 				if (JungleQ->Enabled() && Q->IsReady() && !FoundMinions(Q->Range()) && FoundMinionsNeutral(Q->Range()))
 				{
 
-					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+					if (GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
 					{
-						if (strstr(minion->GetObjectName(), "Dragon") || strstr(minion->GetObjectName(), "Baron") ||
-							strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "RiftHerald"))
-						{
-							if (GEntityList->Player()->IsValidTarget(minion, 400))
-							{
-								Q->CastOnUnit(minion);
-							}
-						}
-						else
-						{
-							if (strstr(minion->GetObjectName(), "Red") || strstr(minion->GetObjectName(), "Blue") ||
-								strstr(minion->GetObjectName(), "SRU_Murkwolf2") || strstr(minion->GetObjectName(), "Razorbeak3") ||
-								strstr(minion->GetObjectName(), "Razorbeak3") || strstr(minion->GetObjectName(), "SRU_Krug11") ||
-								strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "Gromp") ||
-								strstr(minion->GetObjectName(), "SRU_Krug5") || strstr(minion->GetObjectName(), "Razorbeak9"))
-							{
-								Q->CastOnUnit(minion);								
-							}
-						}
+						Q->CastOnUnit(jMonster);
+							
 					}
 				}
 
 				if (JungleE->Enabled() && E->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(E->Range()))
 				{
-					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
+					if (GEntityList->Player()->IsValidTarget(jMonster, E->Range()))
 					{
 						Vec3 posE;
 						int hitE;
 
-						if (strstr(minion->GetObjectName(), "Dragon") || strstr(minion->GetObjectName(), "Baron") ||
-							strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "RiftHerald"))
-						{
-							GPrediction->FindBestCastPosition(500, E->Radius(), false, true, false, posE, hitE);
-						}
-						else
-						{
-							GPrediction->FindBestCastPosition(E->Range(), E->Radius(), false, true, false, posE, hitE);
-						}
-
+						GPrediction->FindBestCastPosition(E->Range(), E->Radius(), false, true, false, posE, hitE);
+						
 						if (hitE > 1)
 						{
 							if (!ESkillToggle() && EMissile == nullptr)
@@ -427,19 +410,19 @@ public:
 							else if (ESkillToggle() && EMissile != nullptr && CountMinionsNeutral(EMissile->GetPosition(), E->Radius()) >= 1)
 							{
 								E->CastOnPlayer();
-								GGame->IssueOrder(GEntityList->Player(), kAttackUnit, minion);
+								GGame->IssueOrder(GEntityList->Player(), kAttackUnit, jMonster);
 							}
 						}
 						else
 						{
 							if (!ESkillToggle() && EMissile == nullptr)
 							{
-								E->CastOnUnit(minion);
+								E->CastOnUnit(jMonster);
 							}
 							else if (ESkillToggle() && EMissile != nullptr && CountMinionsNeutral(EMissile->GetPosition(), E->Radius()) >= 1)
 							{
 								E->CastOnPlayer();
-								GGame->IssueOrder(GEntityList->Player(), kAttackUnit, minion);
+								GGame->IssueOrder(GEntityList->Player(), kAttackUnit, jMonster);
 							}
 						}
 					}
@@ -459,7 +442,9 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (LaneClearE->Enabled() && E->IsReady() && minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
+				if (!CheckTarget(minion)) return;
+
+				if (LaneClearE->Enabled() && E->IsReady() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
 				{
 					Vec3 posQ;
 					int hitQ;
@@ -477,7 +462,7 @@ public:
 					}
 				}
 
-				if (LaneClearQ->Enabled() && Q->IsReady() && minion != nullptr && !minion->IsDead() && !FoundMinionsNeutral(Q->Range() + 100) && minion->IsValidTarget(GEntityList->Player(), Q->Range()))
+				if (LaneClearQ->Enabled() && Q->IsReady() && !FoundMinionsNeutral(Q->Range() + 100) && minion->IsValidTarget(GEntityList->Player(), Q->Range()))
 				{
 					Q->CastOnUnit(minion);
 				}

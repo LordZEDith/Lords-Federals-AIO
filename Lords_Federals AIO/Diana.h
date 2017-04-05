@@ -67,6 +67,8 @@ public:
 		if(UltEnemies->Enabled() && R->IsReady())
 		for (auto minion : GEntityList->GetAllMinions(false, false, true))
 		{
+			if (!CheckTarget(minion)) return;
+			
 			auto minionName = minion->GetObjectName();
 			if (std::strstr(minionName, "baron") != nullptr || std::strstr(minionName, "dragon") != nullptr || std::strstr(minionName, "herald") != nullptr)
 			{

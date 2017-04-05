@@ -290,12 +290,13 @@ public:
 
 			for (auto minion : GEntityList->GetAllMinions(false, false, true))
 			{
-
+				if (!CheckTarget(minion)) return;
+				
 				if (EliseHuman())
 				{
 					if (JungleR->Enabled() && R->IsReady())
 					{
-						if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
+						if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
 						{
 							if ((!Q->IsReady() || !JungleQ->Enabled()) && (!W->IsReady() || !JungleW->Enabled()))
 							{
@@ -309,7 +310,7 @@ public:
 
 					if (JungleE->Enabled() && E->IsReady())
 					{
-						if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
+						if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
 						{
 							if (strstr(minion->GetObjectName(), "Dragon") || strstr(minion->GetObjectName(), "Baron") ||
 								strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "RiftHerald"))
@@ -335,7 +336,7 @@ public:
 
 					if (JungleW->Enabled() && W->IsReady())
 					{
-						if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, W->Range()))
+						if (GEntityList->Player()->IsValidTarget(minion, W->Range()))
 						{
 							W->CastOnUnit(minion);
 						}
@@ -343,7 +344,7 @@ public:
 
 					if (JungleQ->Enabled() && Q->IsReady())
 					{
-						if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+						if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
 						{
 							Q->CastOnUnit(minion);
 						}
@@ -354,7 +355,7 @@ public:
 				{
 					if (JungleR->Enabled() && R->IsReady())
 					{
-						if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
+						if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
 						{
 							if (!Q2->IsReady() && !W2->IsReady() && !GEntityList->Player()->HasBuff("EliseSpiderW"))
 							{
@@ -368,7 +369,7 @@ public:
 
 					if (JungleEspider->Enabled() && E2->IsReady() && Q2->IsReady())
 					{
-						if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E2->Range() + Q2->Range()))
+						if (GEntityList->Player()->IsValidTarget(minion, E2->Range() + Q2->Range()))
 						{
 							if (GetDistance(GEntityList->Player(), minion) < E2->Range() && GetDistance(GEntityList->Player(), minion) > Q2->Range())
 							{
@@ -386,7 +387,7 @@ public:
 
 					if (JungleQspider->Enabled() && Q2->IsReady())
 					{
-						if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q2->Range()))
+						if (GEntityList->Player()->IsValidTarget(minion, Q2->Range()))
 						{
 							Q2->CastOnUnit(minion);
 						}

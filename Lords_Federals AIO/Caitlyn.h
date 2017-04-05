@@ -304,56 +304,38 @@ public:
 	{
 		if (JungleMana->GetInteger() < GEntityList->Player()->ManaPercent())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, false, true))
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
+
+			if (Minion.Any())
 			{
 
 				if (JungleE->Enabled() && E->IsReady() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
 				{
+					auto eMinion = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
 
-					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()) && minion->IsJungleCreep())
+					if (eMinion->IsValidTarget(GEntityList->Player(), E->Range()))
 					{
-						if (strstr(minion->GetObjectName(), "Dragon") || strstr(minion->GetObjectName(), "Baron") ||
-							strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "RiftHerald"))
-						{
-							if (GEntityList->Player()->IsValidTarget(minion, 400))
-							{
-								E->CastOnUnit(minion);
-							}
-						}
-						else
-						{
-							E->CastOnUnit(minion);
-						}
+						E->CastOnTarget(eMinion);
 					}
 				}
 
-				else if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
+				else if (JungleQ->Enabled() && Q->IsReady() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
 				{
-					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()) && minion->IsJungleCreep())
+					Vec3 posQ;
+					int hitQ;
+
+					GPrediction->FindBestCastPosition(Q->Range() - 50, Q->Radius(), true, true, false, posQ, hitQ);
+
+					if (hitQ > 1)
 					{
-						Vec3 posQ;
-						int hitQ;
-
-						if (strstr(minion->GetObjectName(), "Dragon") || strstr(minion->GetObjectName(), "Baron") ||
-							strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "RiftHerald"))
-						{
-							GPrediction->FindBestCastPosition(500, Q->Radius(), true, true, false, posQ, hitQ);
-						}
-						else
-						{
-							GPrediction->FindBestCastPosition(Q->Range() - 50, Q->Radius(), true, true, false, posQ, hitQ);
-						}
-
-						if (hitQ > 1)
-						{
-							Q->CastOnPosition(posQ);
-						}
-						else
-						{
-							Q->CastOnUnit(minion);
-						}
+						Q->CastOnPosition(posQ);
 					}
-				}								
+					else
+					{
+						Q->CastOnUnit(Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); }));
+					}
+				}
 			}
 		}
 	}

@@ -328,45 +328,32 @@ public:
 	{
 		if (JungleMana->GetInteger() < GEntityList->Player()->ManaPercent())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, false, true))
-			{
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()); });
 
+			if (Minion.Any())
+			{
+				jMonster = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
+			}
+
+			if (CheckTarget(jMonster))
+			{
 				if (JungleE->Enabled() && E->IsReady() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
 				{
-
-					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
+					if (GEntityList->Player()->IsValidTarget(jMonster, E->Range()))
 					{
-						if (strstr(minion->GetObjectName(), "Dragon") || strstr(minion->GetObjectName(), "Baron") ||
-							strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "RiftHerald"))
-						{
-							if (GEntityList->Player()->IsValidTarget(minion, 400))
-							{
-								E->CastOnUnit(minion);
-							}
-						}
-						else
-						{
-							E->CastOnUnit(minion);
-						}
+						E->CastOnUnit(jMonster);
 					}
 				}
 
 				else if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
 				{
-					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+					if (GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
 					{
 						Vec3 posQ;
 						int hitQ;
 
-						if (strstr(minion->GetObjectName(), "Dragon") || strstr(minion->GetObjectName(), "Baron") ||
-							strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "RiftHerald"))
-						{
-							GPrediction->FindBestCastPosition(Q->Range() - 500, Q->Radius(), true, true, false, posQ, hitQ);
-						}
-						else
-						{
-							GPrediction->FindBestCastPosition(Q->Range() - 50, Q->Radius(), true, true, false, posQ, hitQ);
-						}
+						GPrediction->FindBestCastPosition(Q->Range() - 50, Q->Radius(), true, true, false, posQ, hitQ);						
 
 						if (hitQ > 1)
 						{
@@ -374,14 +361,14 @@ public:
 						}
 						else
 						{
-							Q->CastOnUnit(minion);
+							Q->CastOnUnit(jMonster);
 						}
 					}
 				}
 
 				if (JungleW->Enabled() && W->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(W->Range()))
 				{
-					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, W->Range()))
+					if (GEntityList->Player()->IsValidTarget(jMonster, W->Range()))
 					{
 						W->CastOnPlayer();
 					}

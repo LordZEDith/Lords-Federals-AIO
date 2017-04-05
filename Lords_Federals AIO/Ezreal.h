@@ -308,8 +308,8 @@ public:
 		if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() > JungleMana->GetInteger())
 		{
 			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
-				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsJungleCreep(); });
-
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
+			
 			if (Minion.Any())
 			{
 				Q->CastOnUnit(Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); }));
@@ -325,13 +325,12 @@ public:
 			{
 				if (minion != nullptr && !minion->IsDead() && minion->IsVisible() && GEntityList->Player()->IsValidTarget(minion, Q->Range()) && minion->IsCreep())
 				{
-					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), true);
+					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), true);					
 					
 					if (LaneClearQLast->Enabled())
 					{
 						if (damage > minion->GetHealth())
 						{
-
 							if (RangeQ->Enabled() && GetDistance(GEntityList->Player(), minion) > 400)
 							{
 								GOrbwalking->ResetAA();

@@ -594,6 +594,8 @@ public:
 				{
 					for (auto minion : GEntityList->GetAllMinions(false, true, false))
 					{
+						if (!CheckTarget(minion)) return;
+
 						if ((PassiveStacksNum == 0 || ExpireE(minion)) && minion->IsCreep() &&  minion->IsValidTarget(GEntityList->Player(), E2->Range()) && E->CastOnPlayer())
 						{
 							LastSpellTick = GGame->TickCount();
@@ -643,6 +645,8 @@ public:
 					{
 						for (auto minion : GEntityList->GetAllMinions(false, true, false))
 						{
+							if (!CheckTarget(minion)) return;
+
 							if (GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 100 || PassiveStacksNum == 0)
 							{
 								if (GEntityList->Player()->IsValidTarget(minion, Q->Range()) && !minion->IsDead() && !minion->IsInvulnerable() && minion->IsVisible() && minion->IsCreep())
@@ -661,6 +665,8 @@ public:
 
 						for (auto minion : GEntityList->GetAllMinions(false, true, false))
 						{
+							if (!CheckTarget(minion)) return;
+
 							if (TargetHaveQ(minion) && (ExpireQ(minion) || GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false) > minion->GetHealth() ||
 								GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 200 || PassiveStacksNum == 0))
 							{
@@ -689,7 +695,7 @@ public:
 			jMonster = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
 		}
 
-		if (jMonster != nullptr && !jMonster->IsDead() && !jMonster->IsInvulnerable() && jMonster->IsVisible())
+		if (CheckTarget(jMonster))
 		{
 			if (JungleE->Enabled())
 			{

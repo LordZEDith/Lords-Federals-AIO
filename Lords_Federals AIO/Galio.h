@@ -292,20 +292,19 @@ public:
 			jMonster = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
 		}
 
-		if (jMonster != nullptr && !jMonster->IsDead() && !jMonster->IsInvulnerable() && jMonster->IsVisible())
-		{
-			if (JungleE->Enabled() && E->IsReady())
-			{
-				if (GEntityList->Player()->IsValidTarget(jMonster, E->Range()))
-				{
-					E->CastOnUnit(jMonster);
-				}
-			}
+		if (!CheckTarget(jMonster)) return;
 
-			if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
+		if (JungleE->Enabled() && E->IsReady())
+		{
+			if (GEntityList->Player()->IsValidTarget(jMonster, E->Range()))
 			{
-				Q->CastOnUnit(jMonster);
+				E->CastOnUnit(jMonster);
 			}
+		}
+
+		if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
+		{
+			Q->CastOnUnit(jMonster);
 		}
 	}
 

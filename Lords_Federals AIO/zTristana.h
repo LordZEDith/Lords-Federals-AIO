@@ -206,9 +206,11 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
 			{
+				if (!CheckTarget(minion)) return;
+
 				if (LaneClearE->Enabled() && E->IsReady() && CountMinions(minion->GetPosition(), E->Radius()) >= MinionsE->GetInteger())
 				{
-					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
+					if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
 					{
 						E->CastOnUnit(minion);
 					}
@@ -216,7 +218,7 @@ public:
 
 				if (LaneClearQ->Enabled() && Q->IsReady() && CountMinions(minion->GetPosition(), E->Range()) >= MinionsQ->GetInteger())
 				{
-					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
+					if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
 					{
 						Q->CastOnPlayer();
 					}
@@ -231,9 +233,11 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, false, true))
 			{
+				if (!CheckTarget(minion)) return;
+
 				if (JungleE->Enabled() && E->IsReady() && !FoundMinions(E->Range()) && FoundMinionsNeutral(E->Range()))
 				{
-					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
+					if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
 					{
 						E->CastOnUnit(minion);
 					}
@@ -241,7 +245,7 @@ public:
 
 				if (JungleQ->Enabled() && Q->IsReady() && !FoundMinions(E->Range()) && FoundMinionsNeutral(E->Range()))
 				{
-					if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()) && minion->HasBuff("tristanaechargesound"))
+					if (GEntityList->Player()->IsValidTarget(minion, E->Range()) && minion->HasBuff("tristanaechargesound"))
 					{
 						Q->CastOnPlayer();
 					}

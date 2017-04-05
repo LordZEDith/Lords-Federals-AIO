@@ -251,10 +251,11 @@ public:
 	{
 		if (GEntityList->Player()->GetMana() > QMANA + RMANA)
 		{
-			auto mobs = GEntityList->GetAllMinions(false, false, true);
-			if (!mobs.empty())
+			for (auto minion : GEntityList->GetAllMinions(false, false, true))
 			{
-				auto mob = mobs[0];
+				if (!CheckTarget(minion)) return;
+
+				auto mob = minion;
 				if (W->IsReady() && jungleW->Enabled() && GetDistance(GEntityList->Player(), mob) <= W->Range())
 				{
 					W->CastOnPosition(mob->ServerPosition());

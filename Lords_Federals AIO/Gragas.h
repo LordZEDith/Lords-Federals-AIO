@@ -196,7 +196,7 @@ public:
 
 		for (auto minion : GEntityList->GetAllMinions(false, false, true))
 		{
-			if (minion == nullptr || minion->IsDead()) return;
+			if (!CheckTarget(minion)) return;
 
 			if (JungleQ->Enabled() && Q->IsReady() && BarrilQ == Vec3(0, 0, 0) && GragasQone())
 			{
@@ -293,7 +293,7 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, false, true))
 			{
-				if (minion == nullptr || minion->IsDead()) return;
+				if (!CheckTarget(minion)) return;
 
 				if (GGame->TickCount() - LastQTick > 2000 || GetDistanceVectors(BarrilQ, minion->GetPosition()) <= 300 && getQdamage(minion) > minion->GetHealth())
 				{

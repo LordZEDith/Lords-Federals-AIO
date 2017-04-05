@@ -317,6 +317,8 @@ public:
 			jMonster = Minion.MaxOrDefault<float>([](IUnit* i) {return i->GetMaxHealth(); });
 		}
 
+		if (!CheckTarget(jMonster)) return;
+
 		if (jMonster != nullptr)
 		{
 			if (JungleE->Enabled() && E->IsReady())

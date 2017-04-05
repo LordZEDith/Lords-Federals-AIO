@@ -604,7 +604,7 @@ public:
 		if (GEntityList->Player()->ManaPercent() < JungleMana->GetInteger()) return;
 
 		SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
-			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()); });
+			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()) && !strstr(m->GetObjectName(), "WardCorpse") && m->IsJungleCreep(); });
 
 		if (Minion.Any())
 		{
@@ -793,7 +793,8 @@ public:
 
 	static void OnBeforeAttack(IUnit* target)
 	{
-		if (target != nullptr && target->IsHero() && RBlock->Enabled() && !IsUnderTurret(GEntityList->Player()) && CountEnemy(GEntityList->Player()->GetPosition(), 800) >= 1)
+		if (target != nullptr && target->IsHero() && RBlock->Enabled() && !IsUnderTurret(GEntityList->Player()) && CountEnemy(GEntityList->Player()->GetPosition(), 800) >= 1 &&
+			GEntityList->Player()->HasBuff("VayneInquistion"))
 		{
 			auto duration = Rdelay->GetInteger();
 			auto buff = GEntityList->Player()->GetBuffDataByName("vaynetumblefade");

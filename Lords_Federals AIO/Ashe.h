@@ -174,7 +174,6 @@ public:
 
 		if (CheckTarget(t))
 		{
-
 			if (t->IsValidTarget() && t != nullptr && !t->IsDead() && !t->IsInvulnerable())
 			{
 				if (ComboW->Enabled() && W->IsReady() && GOrbwalking->GetOrbwalkingMode() == kModeCombo && GEntityList->Player()->GetMana() > R->ManaCost() + W->ManaCost())
@@ -210,7 +209,7 @@ public:
 			{
 				for (auto Minion : GEntityList->GetAllMinions(false, true, false))
 				{
-					if (Minion != nullptr && !Minion->IsDead() && GEntityList->Player()->IsValidTarget(Minion, W->Range()) && Minion->IsCreep())
+					if (Minion != nullptr && !Minion->IsDead() && Minion->IsVisible() && GEntityList->Player()->IsValidTarget(Minion, W->Range()) && Minion->IsCreep())
 					{
 						if (GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger() &&
 							CountMinions(Minion->GetPosition(), 400) >= MinionsW->GetInteger() &&
@@ -225,7 +224,7 @@ public:
 			if (JungleW->Enabled() && W->IsReady() && !FoundMinions(W->Range() - 300))
 			{				
 				SArray<IUnit*> jMinion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
-					!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), W->Range()); });
+					!m->IsDead() && m->IsVisible() && !strstr(m->GetObjectName(), "WardCorpse") && m->IsValidTarget(GEntityList->Player(), W->Range()); });
 
 				if (jMinion.Any())
 				{
@@ -351,6 +350,5 @@ public:
 		{
 			R->CastOnTarget(Args.Source, PredicChange());
 		}
-	}
-	
+	}	
 };

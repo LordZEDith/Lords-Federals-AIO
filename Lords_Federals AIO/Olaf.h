@@ -367,8 +367,17 @@ public:
 
 	static void JungleClear()
 	{
-		for (auto minion : GEntityList->GetAllMinions(false, false, true))
+		SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()); });
+
+		if (Minion.Any())
 		{
+			jMonster = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
+		}
+
+		if (CheckTarget(jMonster))
+		{
+			
 			if (gotoAxeJ->Enabled() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range() - 50))
 			{
 				GotoAxe(lastQpos);
@@ -377,20 +386,13 @@ public:
 			if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range() - 50))
 			{
 
-				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+				if (GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
 				{
 					Vec3 posQ;
 					int hitQ;
 
-					if (strstr(minion->GetObjectName(), "Dragon") || strstr(minion->GetObjectName(), "Baron") ||
-						strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "RiftHerald"))
-					{
-						GPrediction->FindBestCastPosition(Q->Range() - 500, Q->Radius(), true, true, false, posQ, hitQ);
-					}
-					else
-					{
-						GPrediction->FindBestCastPosition(Q->Range() - 50, Q->Radius(), true, true, false, posQ, hitQ);
-					}
+					GPrediction->FindBestCastPosition(Q->Range() - 50, Q->Radius(), true, true, false, posQ, hitQ);
+					
 
 					if (hitQ > 1)
 					{
@@ -398,25 +400,25 @@ public:
 					}
 					else
 					{
-						Q->CastOnUnit(minion);
+						Q->CastOnUnit(jMonster);
 					}
 				}
 			}
 
 			else if (JungleE->Enabled() && E->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range() - 50))
 			{
-				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
+				if (GEntityList->Player()->IsValidTarget(jMonster, E->Range()))
 				{
 					// Save E to combo with Smite
-					if (strstr(minion->GetObjectName(), "Dragon") && minion->GetHealth() < 2000 ||
-						strstr(minion->GetObjectName(), "Baron") && minion->GetHealth() < 2000 ||
-						strstr(minion->GetObjectName(), "RiftHerald") && minion->GetHealth() < 2000)
+					if (strstr(jMonster->GetObjectName(), "Dragon") && jMonster->GetHealth() < 2000 ||
+						strstr(jMonster->GetObjectName(), "Baron") && jMonster->GetHealth() < 2000 ||
+						strstr(jMonster->GetObjectName(), "RiftHerald") && jMonster->GetHealth() < 2000)
 					{
 						return;
 					}
 					else
 					{
-						E->CastOnUnit(minion);
+						E->CastOnUnit(jMonster);
 					}
 				}
 			}
@@ -461,7 +463,9 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (minion != nullptr && minion->IsEnemy(GEntityList->Player()) && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
+				if (!CheckTarget(minion)) return;
+
+				if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
 				{
 
 					if (LaneClearELast->Enabled())

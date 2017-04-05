@@ -232,7 +232,7 @@ public:
 	{
 		if (!CheckTarget(target)) return false;
 
-		if (CountEnemy(target->GetPosition(), 400) == 1 && CountMinions(target->GetPosition(), 400) == 0)
+		if (CountEnemy(target->GetPosition(), 400) == 1 && CountMinions(target->GetPosition(), 400) == 0 && !IsUnderTurret(target))
 		{
 			return true;
 		}
@@ -498,7 +498,9 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+				if (!CheckTarget(minion)) return;
+
+				if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
 				{
 					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false);
 
@@ -519,7 +521,7 @@ public:
 
 		for (auto minion : GEntityList->GetAllMinions(false, false, true))
 		{
-			if (minion == nullptr || minion->IsDead()) return;
+			if (!CheckTarget(minion)) return;
 
 			if (JungleQ->Enabled() && Q->IsReady())
 			{
@@ -594,7 +596,7 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (minion == nullptr || minion->IsDead()) return;
+				if (!CheckTarget(minion)) return;
 
 				if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
 				{

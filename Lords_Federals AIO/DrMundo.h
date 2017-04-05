@@ -136,7 +136,9 @@ public:
 		{
 			for (auto hero : GEntityList->GetAllHeros(false, true))
 			{
-				if (hero != nullptr && hero->IsValidTarget(GEntityList->Player(), Q->Range()) && !hero->IsInvulnerable() && !hero->IsDead())
+				if (!CheckTarget(hero)) return;
+
+				if (hero->IsValidTarget(GEntityList->Player(), Q->Range()))
 				{
 					auto damage = GHealthPrediction->GetKSDamage(hero, kSlotQ, Q->GetDelay(), true);
 
@@ -152,7 +154,10 @@ public:
 		if (AutoHarass->Enabled() && HarassQ->Enabled() && Q->IsReady() && HealthHarass->GetInteger() < GEntityList->Player()->HealthPercent())
 		{
 			auto qTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-			if (qTarget != nullptr && qTarget->IsValidTarget()
+
+			if (!CheckTarget(qTarget)) return;
+
+			if (qTarget->IsValidTarget()
 				&& GetDistance(GEntityList->Player(), qTarget) < Q->Range())
 			{
 				Q->CastOnTarget(qTarget, PredicChange());				
@@ -190,7 +195,10 @@ public:
 		if (ComboQ->Enabled() && Q->IsReady() && GEntityList->Player()->HealthPercent() > HealthQ->GetInteger())
 		{
 			auto qTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-			if (qTarget != nullptr && qTarget->IsValidTarget()
+
+			if (!CheckTarget(qTarget)) return;
+
+			if (qTarget->IsValidTarget()
 				&& GetDistance(GEntityList->Player(), qTarget) < Q->Range())
 			{
 				Q->CastOnTarget(qTarget, PredicChange());				
@@ -212,7 +220,8 @@ public:
 		if (HarassQ->Enabled() && Q->IsReady() && GEntityList->Player()->HealthPercent() > HealthHarass->GetInteger())
 		{
 			auto qTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-			if (qTarget != nullptr && qTarget->IsValidTarget()
+			if (!CheckTarget(qTarget)) return;
+			if (qTarget->IsValidTarget()
 				&& GetDistance(GEntityList->Player(), qTarget) < Q->Range())
 			{
 				Q->CastOnTarget(qTarget, PredicChange());				
@@ -226,7 +235,9 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (minion != nullptr && minion->IsEnemy(GEntityList->Player()) && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+				if (!CheckTarget(minion)) return;
+
+				if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
 				{
 					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), true);
 
@@ -255,12 +266,11 @@ public:
 		{
 			for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
 			{
+				if (!CheckTarget(jMinion)) return;
+
 				if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->IsValidTarget(jMinion, Q->Range()) && GEntityList->Player()->HealthPercent() >= JungleHealth->GetInteger())
 				{
-					if (jMinion != nullptr && !jMinion->IsDead())
-					{
-						Q->CastOnUnit(jMinion);
-					}
+					Q->CastOnTarget(jMinion);					
 				}
 			}
 		}
@@ -279,7 +289,9 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (minion != nullptr && minion->IsEnemy(GEntityList->Player()) && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+				if (!CheckTarget(minion)) return;
+
+				if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
 				{
 					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), true);
 
@@ -342,12 +354,11 @@ public:
 		case kModeLaneClear:
 			for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
 			{
-				if (jMinion != nullptr && !jMinion->IsDead())
+				if (!CheckTarget(jMinion)) return;
+				
+				if (JungleE->Enabled() && E->IsReady() && GEntityList->Player()->IsValidTarget(jMinion, W->Range()))
 				{
-					if (JungleE->Enabled() && E->IsReady() && GEntityList->Player()->IsValidTarget(jMinion, W->Range()))
-					{
-						E->CastOnPlayer();
-					}
+					E->CastOnPlayer();
 				}
 			}
 			break;

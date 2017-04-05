@@ -232,7 +232,9 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range() - 50))
+				if (!CheckTarget(minion)) return;
+
+				if (GEntityList->Player()->IsValidTarget(minion, Q->Range() - 50))
 				{
 					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false);
 

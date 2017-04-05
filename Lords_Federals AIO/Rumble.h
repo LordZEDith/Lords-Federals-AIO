@@ -416,7 +416,9 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
+				if (!CheckTarget(minion)) return;
+
+				if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
 				{
 					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotE, E->GetDelay(), false);
 
@@ -436,7 +438,7 @@ public:
 
 		for (auto minion : GEntityList->GetAllMinions(false, false, true))
 		{
-			if (minion == nullptr || minion->IsDead()) return;
+			if (!CheckTarget(minion)) return;
 
 			if (JungleQ->Enabled() && Q->IsReady())
 			{
@@ -472,7 +474,7 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (minion == nullptr || minion->IsDead()) return;
+				if (!CheckTarget(minion)) return;
 
 				if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
 				{
