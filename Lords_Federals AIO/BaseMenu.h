@@ -133,6 +133,7 @@ IMenuOption* axeEnemy;
 IMenuOption* axePro;
 
 IMenuOption* ComboQ;
+IMenuOption* ComboQA;
 IMenuOption* AutoQ;
 IMenuOption* FarmQ;
 IMenuOption* HarassQ;
@@ -380,6 +381,7 @@ IMenuOption* AntiSpells;
 IMenuOption* useProto;
 IMenuOption* useZhonyas;
 IMenuOption* ZhonyasHP;
+IMenuOption* zzRot;
 
 IMenuOption* QD;
 IMenuOption* WD;
@@ -448,6 +450,7 @@ IInventoryItem* Ward14;
 IInventoryItem* Ward15;
 IInventoryItem* Ward16;
 IInventoryItem* myWards;
+IInventoryItem* zzRots;
 
 Vec2 HeroCoordsVec2;
 Vec3 lastQpos;
