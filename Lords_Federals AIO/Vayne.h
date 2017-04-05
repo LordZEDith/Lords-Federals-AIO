@@ -130,7 +130,8 @@ public:
 		}
 
 		Ward1 = GPluginSDK->CreateItemForId(3340, 600);
-		Ward2 = GPluginSDK->CreateItemForId(3363, 900);		
+		Ward2 = GPluginSDK->CreateItemForId(3363, 900);
+		zzRots = GPluginSDK->CreateItemForId(3512, 400);
 	}
 
 	static double Wdmg(IUnit* target)
@@ -163,32 +164,21 @@ public:
 			}
 		}		
 	}
-	
-	static void RotE()
-	{
-		zzRots = GPluginSDK->CreateItemForId(3512, 400);
-		zzRots->SetRange(400);
-		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 400);
-		if (E->IsReady() && zzRots->IsTargetInRange(target) && zzRots->IsReady() && target != nullptr)
-		{
-			if (zzRots->CastOnPosition(target->ServerPosition()))
-			{
-				E2->CastOnUnit(target);
-			}
-		}
-	}
 
 	static void zzRotRun()
 	{
 		if (GetAsyncKeyState(zzRot->GetInteger()))
-		{
-			zzRots = GPluginSDK->CreateItemForId(3512, 400);
+		{			
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 400);
-			if (E->IsReady() && zzRots->IsTargetInRange(target) && zzRots->IsReady() && target != nullptr)
+
+			if (CheckTarget(target))
 			{
-				if (zzRots->CastOnPosition(target->ServerPosition()))
+				if (E->IsReady() && target->IsValidTarget(GEntityList->Player(), 400) && zzRots->IsReady() && zzRots->IsOwned())
 				{
-					E2->CastOnUnit(target);
+					if (zzRots->CastOnPosition(target->ServerPosition()))
+					{
+						E->CastOnUnit(target);
+					}
 				}
 			}
 		}
