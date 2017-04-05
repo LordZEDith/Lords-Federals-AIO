@@ -33,6 +33,7 @@ IMenu* Misc;
 IMenu* QMenu;
 IMenu* WMenu;
 IMenu* EMenu;
+IMenu* EMenuGap;
 IMenu* RMenu;
 IMenu* Miscs;
 IMenu* Drawings;
@@ -369,6 +370,12 @@ IMenuOption* minAutoShield;
 IMenuOption* AutoPotion;
 IMenuOption* TrinketBush;
 IMenuOption* TrinketBushdelay;
+IMenuOption* AntiRengar;
+IMenuOption* AntiKhazix;
+IMenuOption* AntiAlistar;
+IMenuOption* AntiFlash;
+IMenuOption* AntiKindred;
+IMenuOption* AntiSpells;
 
 IMenuOption* useProto;
 IMenuOption* useZhonyas;
@@ -585,6 +592,7 @@ std::string InsecTextQ2 = "";
 std::string InsecType = "";
 
 int InsecTime;
+int CheckTime;
 
 IUnit* otherT = nullptr;
 IUnit* otherTM = nullptr;

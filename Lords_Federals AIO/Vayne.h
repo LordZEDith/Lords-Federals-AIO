@@ -14,7 +14,7 @@ public:
 
 		QSettings = MainMenu->AddMenu("Tumble Settings");
 		{
-			ComboQH = QSettings->AddSelection("Q Modes", 0, std::vector<std::string>({ "Q To Cursor", "Q Side", "Safe Q", "Teste" }));
+			ComboQH = QSettings->AddSelection("Q Modes", 2, std::vector<std::string>({ "Q To Cursor", "Q Side", "Safe Q", "Teste", "Gosu" }));
 			AutoQ = QSettings->CheckBox("Auto Use Q", true);			
 			ComboQH = QSettings->CheckBox("Auto Q when R active", true);
 			PassiveStacks = QSettings->AddInteger("Q at X stack", 1, 2, 2);
@@ -34,9 +34,39 @@ public:
 			RangeE = ESettings->AddFloat("Condemn Max Range", 400, 760, 550);
 			PushDistance = ESettings->AddInteger("Push Distance", 300, 470, 420);
 			RWall = ESettings->AddSelection("Flash E Mode", 1, std::vector<std::string>({ "Automatic", "PressKey + LowHP", "Press Key", "OFF" }));
-			HealthE = ESettings->AddInteger("Flash E Low HP% (1x1)", 1, 60, 15);
+			HealthE = ESettings->AddInteger("Flash E Low HP% (1x1)", 1, 50, 15);
 			SemiManualKey = ESettings->AddKey("Flash E Key", 71);
 			KillstealE = ESettings->CheckBox("Smart E KS", false);
+		}
+
+		EMenu = ESettings->AddMenu("Condemn Extras");
+		{
+			EInterrupter = EMenu->CheckBox("Use Condemn Interrupter", true);
+			AntiSpells = EMenu->CheckBox("Interrupt Danger Spells", true);			
+			AntiRengar = EMenu->CheckBox("Interrupt Rengar Jump", true);
+			AntiKhazix = EMenu->CheckBox("Interrupt Khazix R", true);
+			AntiFlash = EMenu->CheckBox("Condemn on Enemy Flashes", true);
+			AntiKindred = EMenu->CheckBox("Inside Kindred R", true);
+		}
+
+		EMenuGap = ESettings->AddMenu("Melee & Gapcloser");
+		{
+			EGapCloser = EMenuGap->CheckBox("E GapCloser | Anti Meele", false);
+			AntiMeleeMode = EMenuGap->AddSelection("Anti Meele Mode", 0, std::vector<std::string>({ "After Hit Me", "Near Me" }));
+			for (auto enemy : GEntityList->GetAllHeros(false, true))
+			{
+				std::string szMenuName = "Anti Gapcloser - " + std::string(enemy->ChampionName());
+				GapCloserList[enemy->GetNetworkId()] = EMenuGap->CheckBox(szMenuName.c_str(), true);
+			}
+
+			for (auto enemy : GEntityList->GetAllHeros(false, true))
+			{
+				if (enemy->IsMelee())
+				{
+					std::string szMenuName = "Anti Melee - " + std::string(enemy->ChampionName());
+					ChampionAntiMelee[enemy->GetNetworkId()] = EMenuGap->CheckBox(szMenuName.c_str(), true);
+				}
+			}
 		}
 
 		RSettings = MainMenu->AddMenu("Ultimate Settings");
@@ -62,23 +92,7 @@ public:
 		{			
 			EOrder = fedMiscSettings->CheckBox("Focus W stacks Target", true);
 			TrinketBush = fedMiscSettings->AddSelection("Trinket Bush Mode", 2, std::vector<std::string>({ "Off", "Only After Condemn", "Last Target Enter" }));
-			TrinketBushdelay = fedMiscSettings->AddInteger("Trinket Delay (ms)", 0, 600, 180);
-			EGapCloser = fedMiscSettings->CheckBox("E GapCloser | Anti Meele", false);
-			AntiMeleeMode = fedMiscSettings->AddSelection("Anti Meele Mode", 0, std::vector<std::string>({ "After Hit Me", "Near Me" }));
-			for (auto enemy : GEntityList->GetAllHeros(false, true))
-			{
-				std::string szMenuName = "Anti Gapcloser - " + std::string(enemy->ChampionName());
-				GapCloserList[enemy->GetNetworkId()] = fedMiscSettings->CheckBox(szMenuName.c_str(), true);
-			}
-
-			for (auto enemy : GEntityList->GetAllHeros(false, true))
-			{
-				if (enemy->IsMelee())
-				{
-					std::string szMenuName = "Anti Melee - " + std::string(enemy->ChampionName());
-					ChampionAntiMelee[enemy->GetNetworkId()] = fedMiscSettings->CheckBox(szMenuName.c_str(), true);
-				}
-			}
+			TrinketBushdelay = fedMiscSettings->AddInteger("Trinket Delay (ms)", 0, 600, 180);			
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
@@ -307,7 +321,7 @@ public:
 				}
 			}
 		}
-		else
+		else if (Mode == 3)
 		{
 			auto direction = GEntityList->Player()->Direction().To2D().Perpendicular();
 			for (auto i = 0.f; i < 360.f; i += 45)
@@ -320,7 +334,27 @@ public:
 					bestpoint = Get3DPoint(rotatedPosition);
 				}
 			}
-		}		
+		}
+		else
+		{			
+			// lord Gosu
+			auto after = GEntityList->Player()->GetPosition() + (GGame->CursorPosition() - GEntityList->Player()->GetPosition()).VectorNormalize() * 300;
+			auto disafter = pow((after - target->GetPosition()).Length(), 2);
+
+			if ((disafter < 630 * 630) && disafter > 150 * 150)
+			{
+				return GGame->CursorPosition();
+			}
+			if (pow((target->GetPosition() - GEntityList->Player()->GetPosition()).Length(), 2) > 630 * 630 && disafter < 630 * 630)
+			{
+				return GGame->CursorPosition();
+			}
+		}
+
+		if (bestpoint == Vec3(0, 0, 0))
+		{
+			return Vec3(0, 0, 0);
+		}
 
 		auto GoodPos = GPosition(bestpoint);
 
@@ -467,7 +501,7 @@ public:
 		UseUltimate();
 		putWardAfterStun();
 
-		if (InsecTime < GGame->TickCount())
+		if (CheckTime < GGame->TickCount())
 		{
 			checkVisible = false;
 			putWard = false;			
@@ -540,7 +574,6 @@ public:
 
 				if (CheckTarget(qtarget))
 				{
-
 					if (GetDistance(GEntityList->Player(), qtarget) > GEntityList->Player()->AttackRange() &&
 						GetDistanceVectors(qtarget->GetPosition(), GGame->CursorPosition()) < GetDistance(GEntityList->Player(), qtarget) && !qtarget->IsFacing(GEntityList->Player()))
 					{
@@ -759,14 +792,14 @@ public:
 				if (TrinketBush->GetInteger() == 1 && !checkVisible && GNavMesh->IsPointGrass(WardPos))
 				{
 					checkVisible = true;
-					InsecTime = GGame->TickCount() + 3000;
+					CheckTime = GGame->TickCount() + 3000;
 				}
 			}
 		}
 
 		if (strstr(Args.Name_, "TrinketTotemLvl1"))
 		{
-			if (InsecTime > GGame->TickCount())
+			if (CheckTime > GGame->TickCount())
 			{
 				checkVisible = false;
 				putWard = false;
@@ -806,7 +839,7 @@ public:
 		{
 			putWard = true;
 			checkVisible = false;
-			InsecTime = GGame->TickCount() + 2000;
+			CheckTime = GGame->TickCount() + 2000;
 			timeTrinket = GGame->TickCount() + TrinketBushdelay->GetInteger();
 		}
 		else if (TrinketBush->GetInteger() == 2)
@@ -815,7 +848,7 @@ public:
 			{
 				WardPos = Source->GetPosition();
 				putWard = true;				
-				InsecTime = GGame->TickCount() + 2000;
+				CheckTime = GGame->TickCount() + 2000;
 				timeTrinket = GGame->TickCount() + TrinketBushdelay->GetInteger();
 			}
 		}
@@ -888,6 +921,9 @@ public:
 
 	static void OnCreateObject(IUnit* Source)
 	{
+		SArray<IUnit*> Rengar = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* Aliados) {return Aliados != nullptr &&
+			!Aliados->IsDead() && GetDistance(GEntityList->Player(), Aliados) < E->Range() &&
+			(strstr(Aliados->ChampionName(), "Rengar") || strstr(Aliados->ChampionName(), "Khazix")); });	
 
 	}
 

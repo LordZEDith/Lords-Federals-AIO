@@ -13,14 +13,19 @@ public:
 
 		RSettings = MainMenu->AddMenu("R Settings");
 		{
-			ComboR = RSettings->CheckBox("Use R", true);
+			ComboR = RSettings->AddSelection("When receive Attack..", 3, std::vector<std::string>({ "Off", "Enemys", "Towers and Jungle Mobs", "Both" }));			 
+			RHP = RSettings->CheckBox("R MySelf", true);
+			HealthR = RSettings->AddInteger("MySelf Min Hp%", 1, 100, 20);			
+			REnemies = RSettings->AddInteger("Max Enemies in Range R", 1, 5, 4);			
+			UltPercent = RSettings->AddInteger("Min HP% To R Allys", 1, 100, 15);
 			RAllys = RSettings->AddInteger("Min Allys in Range R", 1, 5, 1);
-			REnemies = RSettings->AddInteger("Max Enemies in Range R", 1, 5, 4);
-			UltPercent = RSettings->AddInteger("Min HP% To R", 1, 100, 15);
 			for (auto ally : GEntityList->GetAllHeros(true, false))
 			{
-				std::string szMenuName = "Use R on - " + std::string(ally->ChampionName());
-				ChampionUse[ally->GetNetworkId()] = RSettings->CheckBox(szMenuName.c_str(), true);
+				if (ally != GEntityList->Player())
+				{
+					std::string szMenuName = "Use R on - " + std::string(ally->ChampionName());
+					ChampionUse[ally->GetNetworkId()] = RSettings->CheckBox(szMenuName.c_str(), true);
+				}
 			}
 		}
 
@@ -29,8 +34,10 @@ public:
 			ComboQH = QSettings->AddSelection("Q Modes", 0, std::vector<std::string>({ "Q To Cursor", "Q Side", "Safe Q" }));
 			EnemyCheck = QSettings->AddInteger("Block Q in x enemies", 1, 5, 3);
 			WallCheck = QSettings->CheckBox("Block Q in wall", true);
-			TurretCheck = QSettings->CheckBox("Block Q under turret", true);
-			AAcheck = QSettings->CheckBox("Q only in AA range", true);
+			TurretCheck = QSettings->CheckBox("Block Q under turret", false);
+			AAcheck = QSettings->CheckBox("Q only in AA range", false);
+			QAntiMelee = QSettings->CheckBox("Auto Q Anti Melee", true);
+			QCancelAnimation = QSettings->CheckBox("Q Cancel Animation", false);
 		}
 
 		ESettings = MainMenu->AddMenu("E Settings");
@@ -126,7 +133,7 @@ public:
 			}
 		}
 
-		if (TurretCheck->Enabled())
+		if (TurretCheck->Enabled() && !IsUnderTurret(GEntityList->Player()))
 		{
 			if (IsUnderTurretPos(Pos))
 			{
@@ -274,13 +281,21 @@ public:
 	{
 		if (Q->IsReady() && GEntityList->Player()->GetMana() > R->ManaCost() + Q->ManaCost() && ComboQ->Enabled())
 		{
-			if (GOrbwalking->GetLastTarget() != nullptr) return;
+			auto qtarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, GEntityList->Player()->AttackRange() + 300);
 
-			auto qPos = PosQ();
-
-			if (qPos != Vec3(0, 0, 0) && CountEnemy(qPos, 550) > 0)
+			if (CheckTarget(qtarget))
 			{
-				Q->CastOnPosition(qPos);
+				if (GetDistance(GEntityList->Player(), qtarget) > GEntityList->Player()->AttackRange() &&
+					GetDistanceVectors(qtarget->GetPosition(), GGame->CursorPosition()) < GetDistance(GEntityList->Player(), qtarget) && !qtarget->IsFacing(GEntityList->Player()))
+				{
+					auto pPos = GEntityList->Player()->GetPosition();
+					auto dash = pPos.Extend(qtarget->GetPosition(), Q->Range());
+
+					if (GPosition(dash))
+					{
+						Q->CastOnPosition(dash);
+					}
+				}				
 			}
 		}
 
@@ -449,30 +464,72 @@ public:
 
 	static void OnProcessSpell(CastedSpell const& Args)
 	{
-		if (GEntityList->Player()->IsDead() || !ComboR->Enabled() || !R->IsReady()) return;
-		if (!Args.Caster_->IsHero()) return;
+		if (Args.Caster_ == GEntityList->Player())
+		{
+			if (GSpellData->GetSlot(Args.Data_) == kSlotQ)
+			{
+				if (QCancelAnimation->Enabled())
+				{
+					GGame->Taunt(kLaugh);
+				}
+			}
+		}
+
+		if (Args.Caster_->IsEnemy(GEntityList->Player()) && Args.Caster_->IsHero() && Args.Target_ == GEntityList->Player() && Args.Caster_->IsMelee() && Args.AutoAttack_)
+		{
+			if (!CheckTarget(Args.Caster_)) return;
+
+			if (QAntiMelee->Enabled() && Q->IsReady())
+			{
+				auto pPos = GEntityList->Player()->GetPosition();
+				Q->CastOnPosition(pPos.Extend(Args.Caster_->GetPosition(), -Q->Range()));
+			}
+		}
 		
+		if (GEntityList->Player()->IsDead() || ComboR->GetInteger() == 0 || !R->IsReady()) return;
+				
 		auto enemy = Args.Caster_;
 		auto ally = Args.Target_;		
 
-		if (enemy == nullptr || !enemy->IsValidTarget() || !enemy->IsEnemy(GEntityList->Player()) || ally == nullptr || !ally->IsValidTarget() || ally->IsEnemy(GEntityList->Player()))
+		if (enemy == nullptr || !enemy->IsValidTarget() || !enemy->IsVisible()) return;
+		if (ally == nullptr || !ally->IsValidTarget() || !ally->IsVisible()) return;
+		
+		if (!enemy->IsEnemy(GEntityList->Player())
+			|| ally->IsEnemy(GEntityList->Player()) 
+			|| GetDistance(GEntityList->Player(), ally) > R->Range())
 		{
 			return;
 		}
 
-		if (ChampionUse[ally->GetNetworkId()]->Enabled() && GetDistance(GEntityList->Player(), ally) <= R->Range())
+		if (ally->IsHero() && ((ComboR->GetInteger() == 1 || ComboR->GetInteger() == 3) && enemy->IsHero() || (ComboR->GetInteger() == 2 || ComboR->GetInteger() == 3) && (enemy->IsTurret() || enemy->IsJungleCreep())))
 		{
 			auto predictedHealth = ally->GetHealth() - Args.Damage_;
 			auto hpp = predictedHealth / ally->GetMaxHealth() * 100;
-			
-			if (predictedHealth < 0 || hpp < UltPercent->GetInteger())
-			{				
-				if (CountAlly(ally->GetPosition(), 500)+1 >= RAllys->GetInteger() &&
-					CountEnemy(ally->GetPosition(), 500) <= REnemies->GetInteger())
-				{					
-					R->CastOnPlayer();
+
+			if (ally != GEntityList->Player())
+			{
+				if (predictedHealth < 0 || hpp < UltPercent->GetInteger())
+				{
+					if (CountAlly(ally->GetPosition(), 500) + 1 >= RAllys->GetInteger() &&
+						CountEnemy(ally->GetPosition(), 500) <= REnemies->GetInteger())
+					{						
+						if (ChampionUse[ally->GetNetworkId()]->Enabled())
+						{
+							R->CastOnPlayer();
+						}
+					}
 				}
-			}						
+			}
+			else
+			{
+				if (RHP->Enabled() && (predictedHealth < 0 || hpp < HealthR->GetInteger()))
+				{
+					if (CountEnemy(ally->GetPosition(), 500) <= REnemies->GetInteger())
+					{
+						R->CastOnPlayer();						
+					}
+				}
+			}
 		}		
 	}
 };
