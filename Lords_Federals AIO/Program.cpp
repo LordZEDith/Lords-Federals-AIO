@@ -4298,7 +4298,7 @@ public:
 
 	void OnExitVisible(IUnit* Source) override
 	{
-
+		Vayne().OnExitVisible(Source);
 	}
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override

@@ -61,6 +61,8 @@ public:
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{			
 			EOrder = fedMiscSettings->CheckBox("Focus W stacks Target", true);
+			TrinketBush = fedMiscSettings->AddSelection("Trinket Bush Mode", 2, std::vector<std::string>({ "Off", "Only After Condemn", "Last Target Enter" }));
+			TrinketBushdelay = fedMiscSettings->AddInteger("Trinket Delay (ms)", 0, 600, 180);
 			EGapCloser = fedMiscSettings->CheckBox("E GapCloser | Anti Meele", false);
 			AntiMeleeMode = fedMiscSettings->AddSelection("Anti Meele Mode", 0, std::vector<std::string>({ "After Hit Me", "Near Me" }));
 			for (auto enemy : GEntityList->GetAllHeros(false, true))
@@ -112,6 +114,9 @@ public:
 		{
 			FoundFlash = false;
 		}
+
+		Ward1 = GPluginSDK->CreateItemForId(3340, 600);
+		Ward2 = GPluginSDK->CreateItemForId(3363, 900);		
 	}
 
 	static double Wdmg(IUnit* target)
@@ -379,6 +384,7 @@ public:
 					return false;
 				}
 				
+				WardPos = PositionTarget;
 				return true;
 			}
 		}
@@ -458,7 +464,14 @@ public:
 	static void Automatic()
 	{
 		FocusTargetW();
-		UseUltimate();		
+		UseUltimate();
+		putWardAfterStun();
+
+		if (InsecTime < GGame->TickCount())
+		{
+			checkVisible = false;
+			putWard = false;			
+		}
 		
 		// AutoAttack after Q
 		if (canAttack && GEntityList->Player()->HasBuff("vaynetumblebonus") && GetDistance(GEntityList->Player(), BaseTarget) <= GEntityList->Player()->AttackRange())
@@ -473,14 +486,12 @@ public:
 		{
 			for (auto Hero : GEntityList->GetAllHeros(false, true))
 			{
-				if (!CheckTarget(Hero) || !CheckShielded(Hero)) return;
-
-				//GUtility->LogConsole("Dano %f, Enemy Vida %f", (Wdmg(Hero) + GDamage->GetSpellDamage(GEntityList->Player(), Hero, kSlotE)), Hero->GetHealth());
-
-				if (E->IsReady() && Wdmg(Hero) + GDamage->GetSpellDamage(GEntityList->Player(), Hero, kSlotE) > Hero->GetHealth() + (Hero->HPRegenRate() * 2) + 10 && Hero->GetBuffCount("VayneSilveredDebuff") == 2)
+				if (CheckTarget(Hero) && CheckShielded(Hero))
 				{
-					E->CastOnUnit(Hero);
-					//GUtility->LogConsole("Kiiiiiiiiiiiiiiil");
+					if (E->IsReady() && Wdmg(Hero) + GDamage->GetSpellDamage(GEntityList->Player(), Hero, kSlotE) > Hero->GetHealth() + (Hero->HPRegenRate() * 2) + 10 && Hero->GetBuffCount("VayneSilveredDebuff") == 2)
+					{
+						E->CastOnUnit(Hero);						
+					}
 				}
 			}
 		}
@@ -527,17 +538,20 @@ public:
 			{
 				auto qtarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, GEntityList->Player()->AttackRange() + 250);
 
-				if (!CheckTarget(qtarget)) return;
-
-				if (GetDistance(GEntityList->Player(), qtarget) > GEntityList->Player()->AttackRange() &&
-					GetDistanceVectors(qtarget->GetPosition(), GGame->CursorPosition()) < GetDistance(GEntityList->Player(), qtarget) && !qtarget->IsFacing(GEntityList->Player()))
+				if (CheckTarget(qtarget))
 				{
-					auto pPos = GEntityList->Player()->GetPosition();
-					auto dash = pPos.Extend(qtarget->GetPosition(), Q->Range());
 
-					if (!GPosition(dash)) return;
+					if (GetDistance(GEntityList->Player(), qtarget) > GEntityList->Player()->AttackRange() &&
+						GetDistanceVectors(qtarget->GetPosition(), GGame->CursorPosition()) < GetDistance(GEntityList->Player(), qtarget) && !qtarget->IsFacing(GEntityList->Player()))
+					{
+						auto pPos = GEntityList->Player()->GetPosition();
+						auto dash = pPos.Extend(qtarget->GetPosition(), Q->Range());
 
-					Q->CastOnPosition(dash);
+						if (GPosition(dash))
+						{
+							Q->CastOnPosition(dash);
+						}
+					}
 				}
 			}
 		}
@@ -550,31 +564,34 @@ public:
 				? GTargetSelector->GetFocusedTarget()
 				: GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, RangeE->GetFloat());
 
-			if (!CheckTarget(target) || !target->IsValidTarget(GEntityList->Player(), RangeE->GetFloat())) return;
+			if (CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), RangeE->GetFloat()))
+			{
 
-			if (ComboE->GetInteger() == 0)
-			{
-				if (CheckWallsVayne(GEntityList->Player(), target, PushDistance->GetInteger()))
+				if (ComboE->GetInteger() == 0)
 				{
-					E->CastOnUnit(target);
+					if (CheckWallsVayne(GEntityList->Player(), target, PushDistance->GetInteger()))
+					{
+						E->CastOnUnit(target);
+						EMissile = target;
+					}
 				}
-			}
-			else if (ComboE->GetInteger() == 1)
-			{
-				if (IsCondemable1(target, GEntityList->Player()->GetPosition(), PushDistance->GetInteger(), false))
+				else if (ComboE->GetInteger() == 1)
 				{
-					E->CastOnUnit(target);
+					if (IsCondemable1(target, GEntityList->Player()->GetPosition(), PushDistance->GetInteger(), false))
+					{
+						E->CastOnUnit(target);
+					}
 				}
-			}
-			else
-			{
-				if (IsCondemable2(target, GEntityList->Player()->GetPosition(), PushDistance->GetInteger(), false))
+				else
 				{
-					E->CastOnUnit(target);
+					if (IsCondemable2(target, GEntityList->Player()->GetPosition(), PushDistance->GetInteger(), false))
+					{
+						E->CastOnUnit(target);
+					}
 				}
 			}
 		}
-	}
+	}	
 
 	static void UseUltimate()
 	{
@@ -733,18 +750,28 @@ public:
 			{
 				if (QCancelAnimation->Enabled())
 				{
-					GGame->Taunt(kLaugh);					
+					GGame->Taunt(kLaugh);
 				}
 			}
 
 			if (GSpellData->GetSlot(Args.Data_) == kSlotE)
 			{
-				if (QCancelAnimation->Enabled())
+				if (TrinketBush->GetInteger() == 1 && !checkVisible && GNavMesh->IsPointGrass(WardPos))
 				{
-					GGame->Taunt(kLaugh);
+					checkVisible = true;
+					InsecTime = GGame->TickCount() + 3000;
 				}
 			}
 		}
+
+		if (strstr(Args.Name_, "TrinketTotemLvl1"))
+		{
+			if (InsecTime > GGame->TickCount())
+			{
+				checkVisible = false;
+				putWard = false;
+			}			
+		}		
 
 		if (Args.Caster_->IsEnemy(GEntityList->Player()) && Args.Caster_->IsHero() && Args.Target_ == GEntityList->Player() && Args.Caster_->IsMelee() && Args.AutoAttack_)
 		{
@@ -771,6 +798,92 @@ public:
 				}
 			}
 		}
+	}
+
+	static void OnExitVisible(IUnit* Source)
+	{
+		if (TrinketBush->GetInteger() == 1 && checkVisible && EMissile != nullptr && EMissile == Source)
+		{
+			putWard = true;
+			checkVisible = false;
+			InsecTime = GGame->TickCount() + 2000;
+			timeTrinket = GGame->TickCount() + TrinketBushdelay->GetInteger();
+		}
+		else if (TrinketBush->GetInteger() == 2)
+		{
+			if (Source->IsHero() && GOrbwalking->GetLastTarget() == Source && GetDistance(GEntityList->Player(), Source) < 700)
+			{
+				WardPos = Source->GetPosition();
+				putWard = true;				
+				InsecTime = GGame->TickCount() + 2000;
+				timeTrinket = GGame->TickCount() + TrinketBushdelay->GetInteger();
+			}
+		}
+	}
+
+	static void putWardAfterStun()
+	{
+		if (TrinketBush->GetInteger() != 0 && putWard && checkWardsTemp() &&
+			timeTrinket < GGame->TickCount())
+		{
+			auto pPos = GEntityList->Player()->GetPosition();
+			auto distance = GetDistanceVectors(pPos, WardPos);
+			auto check = 200 / 20;
+
+			if (TrinketBush->GetInteger() == 1)
+			{
+				for (auto i = 1; i < 20; i++)
+				{
+					JumpPos = pPos.Extend(WardPos, (distance - 200) + (check * i));
+
+					if (GNavMesh->IsPointGrass(JumpPos))
+					{
+						if (Ward1->IsReady() && Ward1->IsOwned())
+						{
+							Ward1->CastOnPosition(JumpPos);
+						}
+						else if (Ward2->IsReady() && Ward2->IsOwned())
+						{
+							Ward2->CastOnPosition(JumpPos);
+						}
+					}
+				}
+			}
+			else
+			{
+				for (auto i = 1; i < 20; i++)
+				{
+					JumpPos = pPos.Extend(WardPos, (distance + 150) + (check * i));
+
+					if (GNavMesh->IsPointGrass(JumpPos))
+					{
+						if (Ward1->IsReady() && Ward1->IsOwned())
+						{
+							Ward1->CastOnPosition(JumpPos);
+						}
+						else if (Ward2->IsReady() && Ward2->IsOwned())
+						{
+							Ward2->CastOnPosition(JumpPos);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	static bool checkWardsTemp()
+	{
+		if (Ward1->IsReady() && Ward1->IsOwned())
+		{
+			return true;
+		}
+
+		if (Ward2->IsReady() && Ward2->IsOwned())
+		{
+			return true;
+		}		
+
+		return false;
 	}
 
 	static void OnCreateObject(IUnit* Source)

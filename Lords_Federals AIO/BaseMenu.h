@@ -367,6 +367,8 @@ IMenuOption* AntiGrab;
 IMenuOption* AutoShielded;
 IMenuOption* minAutoShield;
 IMenuOption* AutoPotion;
+IMenuOption* TrinketBush;
+IMenuOption* TrinketBushdelay;
 
 IMenuOption* useProto;
 IMenuOption* useZhonyas;
@@ -499,6 +501,8 @@ bool testflash;
 bool Jumping;
 bool EvolvedQ, EvolvedW, EvolvedE, EvolvedR;
 bool justQ;
+bool checkVisible;
+bool putWard;
 
 short keystate;
 short keystate2;
@@ -512,6 +516,7 @@ float RCastSpell = 0;
 Vec3 Rposition;
 const char* LastSpellName;
 int LastSpellTime = 0;
+int timeTrinket = 0;
 
 enum HitChance; 
 
