@@ -192,43 +192,47 @@ public:
 	{
 		if (JungleMana->GetInteger() < GEntityList->Player()->ManaPercent())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, false, true))
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
+
+			if (Minion.Any())
 			{
-				if (!CheckTarget(minion)) return;
-
-				if (JungleE->Enabled() && E->IsReady() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
+				for (auto minion : Minion.ToVector())
 				{
-					if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+					if (JungleE->Enabled() && E->IsReady() && !FoundMinions(E->Range()))
 					{
-						E->CastOnUnit(minion);						
-					}
-				}
-
-				else if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
-				{
-					if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
-					{
-						Vec3 posQ;
-						int hitQ;
-
-						GPrediction->FindBestCastPosition(Q->Range() - 50, Q->Radius(), true, true, false, posQ, hitQ);						
-
-						if (hitQ > 1)
+						if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
 						{
-							Q->CastOnPosition(posQ);
-						}
-						else
-						{
-							Q->CastOnUnit(minion);
+							E->CastOnUnit(minion);
 						}
 					}
-				}
 
-				if (JungleW->Enabled() && W->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(W->Range()))
-				{
-					if (GEntityList->Player()->IsValidTarget(minion, W->Range()))
+					else if (JungleQ->Enabled() && Q->IsReady() && !FoundMinions(E->Range()))
 					{
-						W->CastOnUnit(minion);
+						if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+						{
+							Vec3 posQ;
+							int hitQ;
+
+							GPrediction->FindBestCastPosition(Q->Range() - 50, Q->Radius(), true, true, false, posQ, hitQ);
+
+							if (hitQ > 1)
+							{
+								Q->CastOnPosition(posQ);
+							}
+							else
+							{
+								Q->CastOnUnit(minion);
+							}
+						}
+					}
+
+					if (JungleW->Enabled() && W->IsReady() && !FoundMinions(E->Range()))
+					{
+						if (GEntityList->Player()->IsValidTarget(minion, W->Range()))
+						{
+							W->CastOnUnit(minion);
+						}
 					}
 				}
 			}
@@ -243,25 +247,53 @@ public:
 			{
 				if (LaneClearQ->Enabled() && Q->IsReady() && !FoundMinionsNeutral(E->Range() + 100) && GetMinionsInRange(GEntityList->Player()->GetPosition(), Q->Range()) >= MinionsQ->GetInteger())
 				{
-					Vec3 pos;
-					int count;
-					Q->FindBestCastPosition(true, true, pos, count);
-
-					if (count >= MinionsQ->GetInteger() && Q->CastOnPosition(pos))
+					if (MinionsQ->GetInteger() >= 3)
 					{
-						return;
+						Vec3 pos;
+						int count;
+						Q->FindBestCastPosition(true, true, pos, count);
+
+						if (count >= 3 && Q->CastOnPosition(pos))
+						{
+							return;
+						}
+					}
+					else
+					{
+						Vec3 pos;
+						int count;
+						Q->FindBestCastPosition(true, true, pos, count);
+
+						if (count >= MinionsQ->GetInteger() && Q->CastOnPosition(pos))
+						{
+							return;
+						}
 					}
 				}
 
 				if (LaneClearE->Enabled() && E->IsReady() && !FoundMinionsNeutral(E->Range() + 100) && GetMinionsInRange(GEntityList->Player()->GetPosition(), E->Range()) >= MinionsE->GetInteger())
 				{
-					Vec3 pos;
-					int count;
-					E->FindBestCastPosition(true, true, pos, count);
-
-					if (count >= MinionsE->GetInteger() && E->CastOnPosition(pos))
+					if (MinionsE->GetInteger() >= 3)
 					{
-						return;
+						Vec3 pos;
+						int count;
+						E->FindBestCastPosition(true, true, pos, count);
+
+						if (count >= 3 && E->CastOnPosition(pos))
+						{
+							return;
+						}
+					}
+					else
+					{
+						Vec3 pos;
+						int count;
+						E->FindBestCastPosition(true, true, pos, count);
+
+						if (count >= MinionsE->GetInteger() && E->CastOnPosition(pos))
+						{
+							return;
+						}
 					}
 				}
 			}
