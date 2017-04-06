@@ -51,13 +51,7 @@ public:
 
 			GGame->Say(mode == 0 ? "/masterybadge" : "/l");				
 		}
-	}
-
-	static int Random(int min, int max)
-	{
-		auto r = rand() / RAND_MAX;
-		return min + r * (max - min);
-	}
+	}	
 
 	static void SpamEmote()
 	{

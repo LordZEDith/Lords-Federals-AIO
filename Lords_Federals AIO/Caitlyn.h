@@ -44,6 +44,7 @@ public:
 			RMax = ComboSettings->AddInteger("Max Range to R", 1000, 3000, 1500);
 			inUnderTower = ComboSettings->CheckBox("Dont R under turret", true);
 			SemiManualKey = ComboSettings->AddKey("Dash to Mouse", 90);
+			StartComboKey = ComboSettings->AddKey("Combo E + Trap + Q", 71);
 		}
 
 		HarassSettings = MainMenu->AddMenu("Harass Settings");
@@ -80,6 +81,7 @@ public:
 		{					
 			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
 			CCedQ = fedMiscSettings->CheckBox("Auto Q on CC", true);
+			TrinketBush = fedMiscSettings->CheckBox("Reveler Bush", true);
 			//AntiDash = fedMiscSettings->CheckBox("Anti Dash", true);
 			EGapCloser = fedMiscSettings->CheckBox("E GapCloser | Anti Meele", true);
 			for (auto enemy : GEntityList->GetAllHeros(false, true))
@@ -118,7 +120,10 @@ public:
 		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall | kCollidesWithHeroes));
 		E->SetSkillshot(0.25f, 90.f, 1600.f, 750.f);
 		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall | kCollidesWithHeroes));
-		R->SetSkillshot(0.25f, 0.f, 1000.f, 3000.f);		
+		R->SetSkillshot(0.25f, 0.f, 1000.f, 3000.f);
+
+		Ward1 = GPluginSDK->CreateItemForId(3340, 600);
+		Ward2 = GPluginSDK->CreateItemForId(3363, 900);
 	}	
 
 	static void Drawing()
@@ -172,7 +177,13 @@ public:
 	static void Automatic()
 	{
 		WAntiMelee();
-		//TrapRevelerBush();		
+		TrapRevelerBush();
+		ComboWithKey();
+
+		if (CheckTime < GGame->TickCount())
+		{			
+			putWard = false;
+		}
 		
 		if (AutoHarass->Enabled())
 		{
@@ -277,9 +288,7 @@ public:
 					GPluginSDK->DelayFunctionCall(10, []() { CastQ(); });	
 				}
 			}			
-		}
-
-		
+		}		
 	}
 
 	static void Harass()
@@ -434,22 +443,48 @@ public:
 
 	static void TrapRevelerBush()
 	{
-		if (WBush->Enabled() && W->IsReady())
+		if (putWard && TrinketBush->Enabled() && (checkWardsTemp() || W->IsReady()))
 		{
-			for (auto hero : GEntityList->GetAllHeros(false, true))
+			auto pPos = GEntityList->Player()->GetPosition();
+			auto distance = GetDistanceVectors(pPos, WardPos);
+			auto check = 200 / 20;
+
+			for (auto i = 1; i < 20; i++)
 			{
-				if (!CheckTarget(hero) || GetDistance(GEntityList->Player(), hero) > 1000) return;
+				JumpPos = pPos.Extend(WardPos, (distance - 200) + (check * i));
 
-				Vec3 position;
-				auto delay = W->GetDelay() + GetDistance(GEntityList->Player(), hero) / W->Speed();
-				GPrediction->GetFutureUnitPosition(hero, delay, true, position);
-
-				if (GNavMesh->IsPointGrass(position) && !hero->IsVisible())
+				if (GNavMesh->IsPointGrass(JumpPos))
 				{
-					W->CastOnPosition(hero->GetPosition());					
+					if (Ward1->IsReady() && Ward1->IsOwned())
+					{
+						Ward1->CastOnPosition(JumpPos);
+					}
+					else if (Ward2->IsReady() && Ward2->IsOwned())
+					{
+						Ward2->CastOnPosition(JumpPos);
+					}
+					else if (W->IsReady())
+					{
+						W->CastOnPosition(JumpPos);
+					}
 				}
 			}
 		}
+	}
+
+	static bool checkWardsTemp()
+	{
+		if (Ward1->IsReady() && Ward1->IsOwned())
+		{
+			return true;
+		}
+
+		if (Ward2->IsReady() && Ward2->IsOwned())
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	static void AutoTrap()
@@ -532,25 +567,41 @@ public:
 
 	static void OnProcessSpell(CastedSpell const& Args)
 	{
-		if (strstr(Args.Name_, "CaitlynEntrapment") && WForce->Enabled())
+		if (Args.Caster_ == GEntityList->Player())
 		{
-			WSpellStatus = true;
-		}
+			if (strstr(Args.Name_, "TrinketTotemLvl1"))
+			{
+				if (CheckTime > GGame->TickCount())
+				{					
+					putWard = false;
+				}
+			}
 
-		if (WForce->Enabled() && strstr(Args.Name_, "CaitlynYordleTrap"))
-		{			
-						
-		}
+			if (strstr(Args.Name_, "CaitlynEntrapment") && WForce->Enabled())
+			{
+				WSpellStatus = true;
+			}
 
-		if (GSpellData->GetSlot(Args.Data_) == kSlotW)
-		{
-			LastWTick = GGame->TickCount();
-		}
+			if (WForce->Enabled() && strstr(Args.Name_, "CaitlynYordleTrap"))
+			{
 
-		if (GSpellData->GetSlot(Args.Data_) == kSlotQ)
-		{
-			LastQTick = GGame->TickCount();
-		}		
+			}
+
+			if (GSpellData->GetSlot(Args.Data_) == kSlotW)
+			{
+				if (CheckTime > GGame->TickCount())
+				{
+					putWard = false;
+				}
+
+				LastWTick = GGame->TickCount();
+			}
+
+			if (GSpellData->GetSlot(Args.Data_) == kSlotQ)
+			{
+				LastQTick = GGame->TickCount();
+			}
+		}
 	}
 
 	static void OnDash(UnitDash* Source)
@@ -609,5 +660,51 @@ public:
 				}
 			}
 		}
-	}	
+	}
+
+	static void OnExitVisible(IUnit* Source)
+	{
+		if (TrinketBush->Enabled() && Source->IsHero() && GetDistance(GEntityList->Player(), Source) < 700)
+		{		
+			WardPos = Source->GetPosition();
+			putWard = true;
+			CheckTime = GGame->TickCount() + 2000;
+			//timeTrinket = GGame->TickCount() + TrinketBushdelay->GetInteger();			
+		}		
+	}
+
+	static void ComboWithKey()
+	{
+		if (IsKeyDown(StartComboKey))
+		{
+			GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
+			
+			if (GEntityList->Player()->GetMana() > Q->ManaCost() + E->ManaCost() + W->ManaCost())
+			{
+				auto qtarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+				auto etarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range());
+
+				if (!CheckTarget(qtarget) || !CheckTarget(etarget)) return;
+
+				if (etarget->IsValidTarget(GEntityList->Player(), E->Range()) && Q->IsReady() && E->IsReady() && W->IsReady())
+				{
+					E->CastOnTarget(etarget, PredicChange());
+				}
+
+				else if (!E->IsReady())
+				{
+					if (WSpellStatus && W->IsReady() && qtarget->IsValidTarget(GEntityList->Player(), W->Range()))
+					{
+						W->CastOnPosition(qtarget->GetPosition());
+						WSpellStatus = false;
+					}
+
+					if (Q->IsReady() && qtarget->IsValidTarget(GEntityList->Player(), Q->Range()))
+					{
+						GPluginSDK->DelayFunctionCall(10, []() { CastQ(); });
+					}
+				}
+			}
+		}
+	}
 };

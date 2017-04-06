@@ -2,6 +2,7 @@
 #include "PluginSDK.h"
 #include "BaseMenu.h"
 #include "Common.h"
+#include  "Polygons.h"
 
 class Vayne
 {
@@ -29,7 +30,7 @@ public:
 		ESettings = MainMenu->AddMenu("Condemn Settings");
 		{
 			AutoE = ESettings->AddSelection("Condemn Mode", 0, std::vector<std::string>({ "Combo & Harass", "Automatic", "Off" }));
-			ComboE = ESettings->AddSelection("Condemn Method", 2, std::vector<std::string>({ "Method 1", "Method 2", "Method 3" }));
+			ComboE = ESettings->AddSelection("Condemn Method", 2, std::vector<std::string>({ "Mode 1", "Mode 2", "Mode 3" }));
 			RangeE = ESettings->AddFloat("Condemn Max Range", 400, 760, 550);
 			PushDistance = ESettings->AddInteger("Push Distance", 300, 470, 420);
 			RWall = ESettings->AddSelection("Flash E Mode", 1, std::vector<std::string>({ "Automatic", "PressKey + LowHP", "Press Key", "OFF" }));
@@ -38,12 +39,11 @@ public:
 			KillstealE = ESettings->CheckBox("Smart E KS", false);
 		}
 
-		EMenu = ESettings->AddMenu("Condemn Extras");
+		EMenu = ESettings->AddMenu("Condemn Interrupters");
 		{
 			EInterrupter = EMenu->CheckBox("Use Condemn Interrupter", true);
 			AntiSpells = EMenu->CheckBox("Interrupt Danger Spells", true);			
-			AntiRengar = EMenu->CheckBox("Interrupt Rengar Jump", true);
-			AntiKhazix = EMenu->CheckBox("Interrupt Khazix R", true);
+			AntiRengar = EMenu->CheckBox("Interrupt Rengar", true);			
 			AntiFlash = EMenu->CheckBox("Condemn on Enemy Flashes", true);
 			AntiKindred = EMenu->CheckBox("Inside Kindred R", true);
 		}
@@ -89,17 +89,19 @@ public:
 
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{			
-			zzRot = fedMiscSettings->AddKey("[Beta] ZZrot Condemn", 0x49);
+			zzRot = fedMiscSettings->AddKey("Super Beta ZZrot Condemn", 0x49);
 			EOrder = fedMiscSettings->CheckBox("Focus W stacks Target", true);
 			TrinketBush = fedMiscSettings->AddSelection("Trinket Bush Mode", 2, std::vector<std::string>({ "Off", "Only After Condemn", "Last Target Enter" }));
-			TrinketBushdelay = fedMiscSettings->AddInteger("Trinket Delay (ms)", 0, 600, 180);			
+			TrinketBushdelay = fedMiscSettings->AddInteger("Trinket Delay (ms)", 0, 600, 180);
+			BuyBlueTrinket = fedMiscSettings->CheckBox("Buy Blue Trinket", false);
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
 		{
 			DrawReady = DrawingSettings->CheckBox("Draw Only Ready Spells", true);
 			DrawQ = DrawingSettings->CheckBox("Draw Q", false);			
-			DrawE = DrawingSettings->CheckBox("Draw E", true);			
+			DrawE = DrawingSettings->CheckBox("Draw E", true);
+			DrawAxe = DrawingSettings->CheckBox("Draw Condemn Rectangles", false);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
 		}		
 	}
@@ -139,6 +141,57 @@ public:
 		return target->GetMaxHealth() * (4.5 + GEntityList->Player()->GetSpellBook()->GetLevel(kSlotW) * 1.5) * 0.01;
 	}
 
+	static void BuyTrinket()
+	{
+		if (BuyBlueTrinket->Enabled() && GEntityList->Player()->GetLevel() >= 9 && Ward1->IsOwned() &&
+			(GEntityList->Player()->IsDead() || GUtility->IsPositionInFountain(GEntityList->Player()->GetPosition(), true, false)))
+		{
+			GPluginSDK->DelayFunctionCall(Random(500, 1000), []() { GGame->BuyItem(3363);});			
+		}
+	}
+
+	static void DrawCondemn()
+	{
+		if (E->IsReady() && DrawAxe->Enabled())
+		{
+			auto Hero = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range() + 130);
+
+			if (Hero != nullptr && Hero->IsVisible())
+			{
+				auto targetPosition = Hero->GetPosition();
+				auto finalPosition = targetPosition.Extend(GEntityList->Player()->GetPosition(), -PushDistance->GetInteger());
+				auto finalPosition_ex = targetPosition.Extend(GEntityList->Player()->GetPosition(), -PushDistance->GetInteger() + Hero->BoundingRadius());
+
+				auto condemnRectangle = Geometry::Rectangle(targetPosition.To2D(), finalPosition.To2D(), Hero->BoundingRadius());
+				auto condemnRectangle_ex = Geometry::Rectangle(targetPosition.To2D(), finalPosition_ex.To2D(), Hero->BoundingRadius());
+
+				auto distance = GetDistance(GEntityList->Player(), Hero);
+				auto check = PushDistance->GetInteger() / 40;
+
+				for (auto i = 1; i < 40; i++)
+				{
+					Vec3 position;
+					Vec3 pPos = GEntityList->Player()->GetPosition();
+
+					GPrediction->GetFutureUnitPosition(Hero, 0.2f, true, position);
+
+					Vec3 PositionTarget = pPos.Extend(position, distance + (check * i));
+
+					if (GNavMesh->IsPointWall(PositionTarget))
+					{
+						//condemnRectangle.Draw(Vec4(0, 255, 0, 255), 3);
+						condemnRectangle_ex.Draw(Vec4(0, 255, 0, 255), 3);
+					}
+					else
+					{
+						//condemnRectangle.Draw(Vec4(255, 0, 0, 255), 3);
+						condemnRectangle_ex.Draw(Vec4(255, 255, 255, 255), 3);
+					}
+				}
+			}
+		}
+	}
+
 	static void EAntiMelee()
 	{		
 		if (EGapCloser->Enabled() && E->IsReady() && AntiMeleeMode->GetInteger() == 0)
@@ -165,10 +218,22 @@ public:
 		}		
 	}
 
+	static void CheckKindredR()
+	{
+		SArray<IUnit*> enemy = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* m) {return m != nullptr &&
+			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()) &&
+			m->HasBuff("KindredRNoDeathBuff") && m->HealthPercent() <= 10; });
+
+		if (AntiKindred->Enabled() && E->IsReady() && enemy.Any())
+		{
+			E->CastOnUnit(enemy.FirstOrDefault());
+		}
+	}
+
 	static void zzRotRun()
 	{
 		if (GetAsyncKeyState(zzRot->GetInteger()))
-		{			
+		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 400);
 
 			if (CheckTarget(target))
@@ -287,7 +352,7 @@ public:
 		}
 		else if (Mode == 1)
 		{
-			auto orbT = GOrbwalking->GetLastTarget();
+			auto orbT = target;
 
 			if (orbT != nullptr && orbT->IsHero())
 			{
@@ -474,6 +539,7 @@ public:
 					if (target->GetHealth() + 10 <= GDamage->GetAutoAttackDamage(GEntityList->Player(), target, true) * 2)
 						return false;
 
+					WardPos = extendedPosition;
 					return true;
 				}
 			}
@@ -509,6 +575,7 @@ public:
 					if (target->GetHealth() + 10 <= GDamage->GetAutoAttackDamage(GEntityList->Player(), target, true) * 2)
 						return false;
 
+					WardPos = finalPosition;
 					return true;
 				}
 			}
@@ -521,6 +588,12 @@ public:
 		FocusTargetW();
 		UseUltimate();
 		putWardAfterStun();
+		CheckKindredR();
+
+		if (IsKeyDown(SemiManualKey) || IsKeyDown(zzRot))
+		{
+			GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
+		}
 
 		if (CheckTime < GGame->TickCount())
 		{
@@ -572,7 +645,7 @@ public:
 					FlashCondemn();
 				}
 			}
-		}
+		}		
 		
 		if (Q->IsReady())
 		{
@@ -581,10 +654,15 @@ public:
 				GEntityList->Player()->HasBuff("VayneInquisition") && CountEnemy(GEntityList->Player()->GetPosition(), 1500) > 0 && 
 				CountEnemy(GEntityList->Player()->GetPosition(), 670) != 1)
 			{
-				auto dashPos = PosQ();
-				if (dashPos != Vec3(0, 0, 0))
+				auto qtarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 1500);
+
+				if (CheckTarget(qtarget))
 				{
-					Q->CastOnPosition(dashPos);
+					auto dashPos = PosQ(false, qtarget);
+					if (dashPos != Vec3(0, 0, 0))
+					{
+						Q->CastOnPosition(dashPos);						
+					}
 				}
 			}
 
@@ -634,6 +712,7 @@ public:
 					if (IsCondemable1(target, GEntityList->Player()->GetPosition(), PushDistance->GetInteger(), false))
 					{
 						E->CastOnUnit(target);
+						EMissile = target;
 					}
 				}
 				else
@@ -641,6 +720,7 @@ public:
 					if (IsCondemable2(target, GEntityList->Player()->GetPosition(), PushDistance->GetInteger(), false))
 					{
 						E->CastOnUnit(target);
+						EMissile = target;
 					}
 				}
 			}
@@ -741,7 +821,7 @@ public:
 			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), RangeE->GetFloat()); }
 		}
 
-		//GRender->DrawOutlinedCircle(PosQ(), Vec4(255, 255, 255, 255), 30);
+		DrawCondemn();
 	}
 
 	static void OnGapcloser(GapCloserSpell const& args)
@@ -757,6 +837,17 @@ public:
 		}		
 	}
 
+	static void OnInterrupt(InterruptibleSpell const& args)
+	{
+		if (!CheckTarget(args.Source)) return;
+
+		if (args.Source->IsEnemy(GEntityList->Player()) && EInterrupter->Enabled() && AntiSpells->Enabled() && E->IsReady() && args.DangerLevel >= kMediumDanger &&
+			args.Source->IsValidTarget(GEntityList->Player(), E->Range()))
+		{
+			E->CastOnUnit(args.Source);
+		}
+	}
+
 	static void OnAfterAttack(IUnit* source, IUnit* target)
 	{
 		if (target->IsHero() && !target->IsDead())
@@ -766,7 +857,7 @@ public:
 					|| GEntityList->Player()->HasBuff("VayneInquisition")
 					|| GEntityList->Player()->GetSpellBook()->GetLevel(kSlotW) == 0))
 			{
-				auto dashPos = PosQ(true);
+				auto dashPos = PosQ(true, target);
 				if (dashPos != Vec3(0, 0, 0))
 				{
 					Q->CastOnPosition(dashPos);
@@ -825,7 +916,13 @@ public:
 				checkVisible = false;
 				putWard = false;
 			}			
-		}		
+		}
+
+		if (E->IsReady() && AntiFlash->Enabled() && Args.Caster_->IsEnemy(GEntityList->Player()) && strstr(Args.Name_, "SummonerFlash") && CheckTarget(Args.Caster_) && 
+			GetDistanceVectors(Args.EndPosition_, GEntityList->Player()->GetPosition()) < 400)
+		{
+			E->CastOnUnit(Args.Caster_);
+		}
 
 		if (Args.Caster_->IsEnemy(GEntityList->Player()) && Args.Caster_->IsHero() && Args.Target_ == GEntityList->Player() && Args.Caster_->IsMelee() && Args.AutoAttack_)
 		{
@@ -942,10 +1039,20 @@ public:
 
 	static void OnCreateObject(IUnit* Source)
 	{
-		SArray<IUnit*> Rengar = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* Aliados) {return Aliados != nullptr &&
-			!Aliados->IsDead() && GetDistance(GEntityList->Player(), Aliados) < E->Range() &&
-			(strstr(Aliados->ChampionName(), "Rengar") || strstr(Aliados->ChampionName(), "Khazix")); });	
+		if (CheckTarget(Source))
+		{
+			if (AntiRengar->Enabled() && strstr(Source->GetObjectName(), "Rengar_LeapSound.troy") &&
+				Source->IsEnemy(GEntityList->Player()) && GetDistance(GEntityList->Player(), Source) < E->Range() && E->IsReady())
+			{
+				E->CastOnUnit(Source);
+			}
 
+			if (AntiKhazix->Enabled() && strstr(Source->GetObjectName(), "Khazix_Base_E_Tar.troy") &&
+				Source->IsEnemy(GEntityList->Player()) && GetDistance(GEntityList->Player(), Source) <= 300 && E->IsReady())
+			{
+				E->CastOnUnit(Source);
+			}			
+		}		
 	}
 
 	static void OnDeleteObject(IUnit* Source)

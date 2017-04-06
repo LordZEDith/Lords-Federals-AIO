@@ -918,3 +918,9 @@ float DegreeToRadian(double angle)
 {
 	return float(M_PI * angle / 180.0);
 }
+
+static int Random(int min, int max)
+{
+	auto r = rand() / RAND_MAX;
+	return min + r * (max - min);
+}

@@ -377,6 +377,7 @@ IMenuOption* AntiAlistar;
 IMenuOption* AntiFlash;
 IMenuOption* AntiKindred;
 IMenuOption* AntiSpells;
+IMenuOption* BuyBlueTrinket;
 
 IMenuOption* useProto;
 IMenuOption* useZhonyas;
