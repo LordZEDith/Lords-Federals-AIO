@@ -686,7 +686,7 @@ public:
 
 				if (!CheckTarget(qtarget) || !CheckTarget(etarget)) return;
 
-				if (etarget->IsValidTarget(GEntityList->Player(), E->Range()) && Q->IsReady() && E->IsReady() && W->IsReady())
+				if (etarget->IsValidTarget(GEntityList->Player(), E->Range()) && Q->IsReady() && E->IsReady())
 				{
 					E->CastOnTarget(etarget, PredicChange());
 				}

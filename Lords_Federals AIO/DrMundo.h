@@ -79,7 +79,7 @@ public:
 	static void LoadSpells()
 	{
 		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, (kCollidesWithMinions, kCollidesWithHeroes, kCollidesWithYasuoWall));
-		Q->SetSkillshot(0.25f, 60.f, 2000.f, 1000.f);
+		Q->SetSkillshot(0.25f, 65.f, 1850.f, 1000.f);
 		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, kCollidesWithNothing);
 		W->SetOverrideRange(325.f);
 		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, kCollidesWithNothing);
@@ -233,28 +233,31 @@ public:
 	{
 		if (LastHitQ->Enabled() && Q->IsReady() && GEntityList->Player()->HealthPercent() >= HealthLastHit->GetInteger())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, true, false))
-			{
-				if (!CheckTarget(minion)) return;
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
 
-				if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+			if (Minion.Any())
+			{
+				for (auto minion : Minion.ToVector())
 				{
-					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), true);
+					auto delay = Q->GetDelay() + GetDistance(GEntityList->Player(), minion) / Q->Speed();
+					//auto damage = GDamage->GetSpellDamage(GEntityList->Player(), minion, kSlotQ);
+					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, delay, false);
 
 					if (damage > minion->GetHealth())
 					{
 						if (RangeQ->Enabled() && GetDistance(GEntityList->Player(), minion) > 400)
 						{
-							Q->CastOnUnit(minion);
+							Q->CastOnTarget(minion);
 						}
 						else if (!RangeQ->Enabled())
 						{
 							GOrbwalking->ResetAA();
-							Q->CastOnUnit(minion);
+							Q->CastOnTarget(minion);
 						}
 					}
 				}
-			}
+			}			
 		}
 	}
 
@@ -262,20 +265,20 @@ public:
 	{
 		if (FoundMinions(Q->Range()) || !FoundMinionsNeutral(Q->Range())) return;
 
-		if (JungleQ->Enabled() && Q->IsReady())
-		{
-			for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
-			{
-				if (!CheckTarget(jMinion)) return;
+		if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->HealthPercent() >= JungleHealth->GetInteger())
+		{			
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
 
-				if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->IsValidTarget(jMinion, Q->Range()) && GEntityList->Player()->HealthPercent() >= JungleHealth->GetInteger())
-				{
-					Q->CastOnTarget(jMinion);					
-				}
-			}
+			if (Minion.Any())
+			{
+				Q->CastOnTarget(Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); }));
+			}			
 		}
 
-		if (JungleW->Enabled() && W->IsReady() && !IsBurning() && GEntityList->Player()->HealthPercent() >= JungleHealthW->GetInteger())
+		if (JungleW->Enabled() && W->IsReady() && !IsBurning() && 
+			GEntityList->Player()->HealthPercent() >= JungleHealthW->GetInteger() && 
+			CountMinionsNeutral(GEntityList->Player()->GetPosition(), W->Range() + 50))
 		{
 			W->CastOnPlayer();
 		}
@@ -287,17 +290,28 @@ public:
 
 		if (LaneClearQ->Enabled() && Q->IsReady() && GEntityList->Player()->HealthPercent() > HealthLaneClear->GetInteger())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, true, false))
-			{
-				if (!CheckTarget(minion)) return;
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
 
-				if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+			if (Minion.Any())
+			{
+				for (auto minion : Minion.ToVector())
 				{
-					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), true);
+					auto delay = Q->GetDelay() + GetDistance(GEntityList->Player(), minion) / Q->Speed();
+					//auto damage = GDamage->GetSpellDamage(GEntityList->Player(), minion, kSlotQ);
+					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, delay, false);
 
 					if (damage > minion->GetHealth())
 					{
-						Q->CastOnUnit(minion);
+						if (GetDistance(GEntityList->Player(), minion) > 400)
+						{
+							Q->CastOnTarget(minion);
+						}
+						else
+						{
+							GOrbwalking->ResetAA();
+							Q->CastOnTarget(minion);
+						}
 					}
 				}
 			}
@@ -306,21 +320,6 @@ public:
 		if (LaneClearW->Enabled() && W->IsReady() && !IsBurning() && CountMinions(GEntityList->Player()->GetPosition(), W->Range() + 100) >= MinionsW->GetInteger() && GEntityList->Player()->HealthPercent() >= HealthLaneClearW->GetInteger())
 		{
 			W->CastOnPlayer();
-		}
-	}
-
-	static void AutoStopW()
-	{
-		if (W->IsReady() && IsBurning())
-		{
-			if (GEntityList->Player()->HealthPercent() < HealthLaneClearW->GetInteger())
-			{
-				W->CastOnPlayer();
-			}
-			else if (!FoundMinions(600) )
-			{
-				W->CastOnPlayer();
-			}
 		}
 	}	
 

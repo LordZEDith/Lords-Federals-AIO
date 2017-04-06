@@ -4232,6 +4232,8 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
+		Vayne().BuyTrinket();
+		
 		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
@@ -4276,7 +4278,7 @@ public:
 
 	void OnCreateObject(IUnit* Source) override
 	{
-
+		//Vayne().OnCreateObject(Source);
 	}
 
 	void OnDeleteObject(IUnit* Source) override
@@ -4285,7 +4287,7 @@ public:
 	}
 	void OnInterruptible(InterruptibleSpell const& Args) override
 	{
-
+		Vayne().OnInterrupt(Args);
 	}
 
 	void OnDash(UnitDash* Args) override
