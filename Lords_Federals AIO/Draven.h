@@ -99,9 +99,13 @@ public:
 				{
 					GRender->DrawOutlinedCircle(obj->GetPosition(), Vec4(0, 255, 0, 255), 150);
 
-					if (GetDistanceVectors(GEntityList->Player()->GetPosition(), GMissileData->GetEndPosition(obj)) > 150)
+					if (GetDistanceVectors(GGame->CursorPosition(), GMissileData->GetEndPosition(obj)) > gotoAxeMaxDist->GetInteger() || IsUnderTurretPos(GMissileData->GetEndPosition(obj)))
 					{
-						GRender->DrawOutlinedCircle(GMissileData->GetEndPosition(obj), Vec4(255, 255, 0, 255), 150);
+						GRender->DrawOutlinedCircle(GMissileData->GetEndPosition(obj), Vec4(255, 0, 0, 255), 150);
+					}
+					else if (GetDistanceVectors(GEntityList->Player()->GetPosition(), GMissileData->GetEndPosition(obj)) > 150)
+					{
+						GRender->DrawOutlinedCircle(GMissileData->GetEndPosition(obj), Vec4(255, 69, 0, 255), 150);
 					}
 					else if (GetDistanceVectors(GEntityList->Player()->GetPosition(), GMissileData->GetEndPosition(obj)) <= 150)
 					{
