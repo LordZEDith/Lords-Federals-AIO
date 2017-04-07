@@ -223,28 +223,27 @@ public:
 
 		if (axeTower->Enabled() && modokey == kModeCombo && IsUnderTurretPos(target->GetPosition()))
 		{
-			GOrbwalking->SetOverridePosition(GGame->CursorPosition());
+			GOrbwalking->SetOverridePosition(Vec3(0,0,0));
 		}
 
 		else if (axeTower2->Enabled() && modokey == kModeLaneClear  && IsUnderTurretPos(target->GetPosition()))
 		{
-			GOrbwalking->SetOverridePosition(GGame->CursorPosition());
+			GOrbwalking->SetOverridePosition(Vec3(0,0,0));
 		}
 
 		else if (axeEnemy->Enabled() && CountEnemy(target->GetPosition(), 550) > 2)
 		{
-			GOrbwalking->SetOverridePosition(GGame->CursorPosition());
+			GOrbwalking->SetOverridePosition(Vec3(0,0,0));
 		}
 		else
 		{
-
-			if (GetDistanceVectors(GGame->CursorPosition(), target->GetPosition()) < maxDist)
+			if (GetDistanceVectors(GGame->CursorPosition(), target->GetPosition()) < maxDist && QMissile != nullptr)
 			{
 				GOrbwalking->SetOverridePosition(target->GetPosition());
 			}
 			else
 			{
-				GOrbwalking->SetOverridePosition(GGame->CursorPosition());
+				GOrbwalking->SetOverridePosition(Vec3(0,0,0));
 			}
 		}		
 	}
@@ -316,7 +315,7 @@ public:
 
 		if (axeListTeste.size() == 0)
 		{
-			GOrbwalking->SetOverridePosition(GGame->CursorPosition());
+			GOrbwalking->SetOverridePosition(Vec3(0,0,0));
 			return;
 		}
 
@@ -456,6 +455,7 @@ public:
 		if (strstr(Source->GetObjectName(), "Draven_Base_Q_reticle_self.troy"))
 		{
 			axeListTeste.push_back(Source);
+			QMissile = Source;
 		}
 	}
 
@@ -464,6 +464,7 @@ public:
 		if (strstr(Source->GetObjectName(), "Draven_Base_Q_reticle_self.troy"))
 		{
 			axeListTeste.remove(Source);
+			QMissile = nullptr;
 		}
 	}
 
