@@ -75,7 +75,7 @@ public:
 
 	static void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kCircleCast, false, false, (kCollidesWithYasuoWall));
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kCircleCast, true, false, (kCollidesWithYasuoWall));
 		Q->SetSkillshot(0.5f, 250.f, 1200.f, 825.f);
 
 		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, false, kCollidesWithNothing);
@@ -285,26 +285,24 @@ public:
 		if (FoundMinions(Q->Range()) || !FoundMinionsNeutral(Q->Range())) return;
 
 		SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
-			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()); });
+			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
 
 		if (Minion.Any())
 		{
 			jMonster = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
-		}
 
-		if (!CheckTarget(jMonster)) return;
-
-		if (JungleE->Enabled() && E->IsReady())
-		{
-			if (GEntityList->Player()->IsValidTarget(jMonster, E->Range()))
+			if (JungleE->Enabled() && E->IsReady())
 			{
-				E->CastOnUnit(jMonster);
+				if (GEntityList->Player()->IsValidTarget(jMonster, E->Range()))
+				{
+					E->CastOnUnit(jMonster);
+				}
 			}
-		}
 
-		if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
-		{
-			Q->CastOnUnit(jMonster);
+			if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
+			{
+				Q->CastOnUnit(jMonster);
+			}
 		}
 	}
 

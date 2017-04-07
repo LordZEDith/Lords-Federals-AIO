@@ -547,9 +547,12 @@ public:
 	{
 		if (LastHitQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= LastHitMana->GetInteger())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, true, false))
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
+
+			if (Minion.Any())
 			{
-				if (minion != nullptr && !minion->IsDead() && GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+				for (auto minion : Minion.ToVector())
 				{
 					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false);
 
@@ -592,13 +595,18 @@ public:
 				}
 				else
 				{
-					for (auto minion : GEntityList->GetAllMinions(false, true, false))
-					{
-						if (!CheckTarget(minion)) return;
+					SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+						!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E2->Range()) && m->IsCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
 
-						if ((PassiveStacksNum == 0 || ExpireE(minion)) && minion->IsCreep() &&  minion->IsValidTarget(GEntityList->Player(), E2->Range()) && E->CastOnPlayer())
+					if (Minion.Any())
+					{
+						for (auto minion : Minion.ToVector())
 						{
-							LastSpellTick = GGame->TickCount();
+
+							if ((PassiveStacksNum == 0 || ExpireE(minion)) && minion->IsCreep() && E->CastOnPlayer())
+							{
+								LastSpellTick = GGame->TickCount();
+							}
 						}
 					}
 				}
@@ -637,43 +645,39 @@ public:
 				}
 			}
 
-			if (Q->IsReady() && GGame->TickCount() - LastWTick > 500)
+			if (Q->IsReady() && GGame->TickCount() - LastWTick > 500 && (LaneClearQ->Enabled() || LaneClearQ2->Enabled()))
 			{
-				if (LeeQone() && LaneClearQ->Enabled())
-				{
-					if (PassiveStacksNum < 2 && !IsDashingW())
-					{
-						for (auto minion : GEntityList->GetAllMinions(false, true, false))
-						{
-							if (!CheckTarget(minion)) return;
+				SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+					!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), 1300) && m->IsCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
 
-							if (GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 100 || PassiveStacksNum == 0)
+				if (Minion.Any())
+				{
+					for (auto minion : Minion.ToVector())
+					{
+						if (LeeQone() && LaneClearQ->Enabled())
+						{
+							if (PassiveStacksNum < 2 && !IsDashingW() && minion->IsValidTarget(GEntityList->Player(), Q->Range()))
 							{
-								if (GEntityList->Player()->IsValidTarget(minion, Q->Range()) && !minion->IsDead() && !minion->IsInvulnerable() && minion->IsVisible() && minion->IsCreep())
+								if (GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 100 || PassiveStacksNum == 0)
 								{
-									Q->CastOnUnit(minion);
+									Q->CastOnTarget(minion);
 									LastSpellTick = GGame->TickCount();
 								}
 							}
 						}
-					}
-				}
-				else
-				{
-					if (LaneClearQ2->Enabled())
-					{
 
-						for (auto minion : GEntityList->GetAllMinions(false, true, false))
+						else
 						{
-							if (!CheckTarget(minion)) return;
-
-							if (TargetHaveQ(minion) && (ExpireQ(minion) || GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false) > minion->GetHealth() ||
-								GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 200 || PassiveStacksNum == 0))
+							if (LaneClearQ2->Enabled())
 							{
-								if (!IsDashingW())
+								if (TargetHaveQ(minion) && (ExpireQ(minion) || GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false) > minion->GetHealth() ||
+									GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 200 || PassiveStacksNum == 0))
 								{
-									Q->CastOnPlayer();
-									LastSpellTick = GGame->TickCount();
+									if (!IsDashingW())
+									{
+										Q->CastOnPlayer();
+										LastSpellTick = GGame->TickCount();
+									}
 								}
 							}
 						}

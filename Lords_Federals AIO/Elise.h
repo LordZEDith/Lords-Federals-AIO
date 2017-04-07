@@ -66,7 +66,7 @@ public:
 		Q->SetOverrideRange(625.f);
 		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 		W->SetSkillshot(0.25f, 100.f, 1000.f, 950.f);
-		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
+		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
 		E->SetSkillshot(0.25f, 55.f, 1600.f, 1075.f);
 		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, kCollidesWithNothing);
 
@@ -288,108 +288,112 @@ public:
 		if (JungleMana->GetInteger() < GEntityList->Player()->ManaPercent())
 		{
 
-			for (auto minion : GEntityList->GetAllMinions(false, false, true))
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
+
+			if (Minion.Any())
 			{
-				if (!CheckTarget(minion)) return;
-				
-				if (EliseHuman())
+				for (auto minion : Minion.ToVector())
 				{
-					if (JungleR->Enabled() && R->IsReady())
+					if (EliseHuman())
 					{
-						if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+						if (JungleR->Enabled() && R->IsReady())
 						{
-							if ((!Q->IsReady() || !JungleQ->Enabled()) && (!W->IsReady() || !JungleW->Enabled()))
+							if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
 							{
-								if (((_spideQcd == 0) && (_spideWcd <= 1.8f)) || (_humaQcd >= 1.2f))
+								if ((!Q->IsReady() || !JungleQ->Enabled()) && (!W->IsReady() || !JungleW->Enabled()))
 								{
-									R->CastOnPlayer();
+									if (((_spideQcd == 0) && (_spideWcd <= 1.8f)) || (_humaQcd >= 1.2f))
+									{
+										R->CastOnPlayer();
+									}
 								}
 							}
 						}
-					}
 
-					if (JungleE->Enabled() && E->IsReady())
-					{
-						if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+						if (JungleE->Enabled() && E->IsReady())
 						{
-							if (strstr(minion->GetObjectName(), "Dragon") || strstr(minion->GetObjectName(), "Baron") ||
-								strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "RiftHerald"))
+							if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
 							{
-								if (GEntityList->Player()->IsValidTarget(minion, 400))
+								if (strstr(minion->GetObjectName(), "Dragon") || strstr(minion->GetObjectName(), "Baron") ||
+									strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "RiftHerald"))
 								{
-									E->CastOnUnit(minion);
+									if (GEntityList->Player()->IsValidTarget(minion, 400))
+									{
+										E->CastOnUnit(minion);
+									}
 								}
-							}
-							else
-							{
-								if (strstr(minion->GetObjectName(), "Red") || strstr(minion->GetObjectName(), "Blue") ||
-									strstr(minion->GetObjectName(), "SRU_Murkwolf2") || strstr(minion->GetObjectName(), "Razorbeak3") ||
-									strstr(minion->GetObjectName(), "Razorbeak3") || strstr(minion->GetObjectName(), "SRU_Krug11") ||
-									strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "Gromp") ||
-									strstr(minion->GetObjectName(), "SRU_Krug5") || strstr(minion->GetObjectName(), "Razorbeak9"))
+								else
 								{
-									E->CastOnUnit(minion);
+									if (strstr(minion->GetObjectName(), "Red") || strstr(minion->GetObjectName(), "Blue") ||
+										strstr(minion->GetObjectName(), "SRU_Murkwolf2") || strstr(minion->GetObjectName(), "Razorbeak3") ||
+										strstr(minion->GetObjectName(), "Razorbeak3") || strstr(minion->GetObjectName(), "SRU_Krug11") ||
+										strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "Gromp") ||
+										strstr(minion->GetObjectName(), "SRU_Krug5") || strstr(minion->GetObjectName(), "Razorbeak9"))
+									{
+										E->CastOnUnit(minion);
+									}
 								}
+							}
+						}
+
+						if (JungleW->Enabled() && W->IsReady())
+						{
+							if (GEntityList->Player()->IsValidTarget(minion, W->Range()))
+							{
+								W->CastOnUnit(minion);
+							}
+						}
+
+						if (JungleQ->Enabled() && Q->IsReady())
+						{
+							if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+							{
+								Q->CastOnUnit(minion);
 							}
 						}
 					}
 
-					if (JungleW->Enabled() && W->IsReady())
+					if (EliseSpider())
 					{
-						if (GEntityList->Player()->IsValidTarget(minion, W->Range()))
+						if (JungleR->Enabled() && R->IsReady())
 						{
-							W->CastOnUnit(minion);
-						}
-					}
-
-					if (JungleQ->Enabled() && Q->IsReady())
-					{
-						if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
-						{
-							Q->CastOnUnit(minion);
-						}
-					}
-				}
-
-				if (EliseSpider())
-				{
-					if (JungleR->Enabled() && R->IsReady())
-					{
-						if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
-						{
-							if (!Q2->IsReady() && !W2->IsReady() && !GEntityList->Player()->HasBuff("EliseSpiderW"))
+							if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
 							{
-								if ((_humaQcd <= 0.f) || ((_humaWcd <= 0.f) && (_humaEcd <= 0.f)))
-								{									
-										R->CastOnPlayer();									
-								}
-							}
-						}
-					}
-
-					if (JungleEspider->Enabled() && E2->IsReady() && Q2->IsReady())
-					{
-						if (GEntityList->Player()->IsValidTarget(minion, E2->Range() + Q2->Range()))
-						{
-							if (GetDistance(GEntityList->Player(), minion) < E2->Range() && GetDistance(GEntityList->Player(), minion) > Q2->Range())
-							{
-								if (strstr(minion->GetObjectName(), "Red") || strstr(minion->GetObjectName(), "Blue") ||
-									strstr(minion->GetObjectName(), "SRU_Murkwolf2") || strstr(minion->GetObjectName(), "Razorbeak3") ||
-									strstr(minion->GetObjectName(), "Razorbeak3") || strstr(minion->GetObjectName(), "SRU_Krug11") ||
-									strstr(minion->GetObjectName(), "Gromp") ||
-									strstr(minion->GetObjectName(), "SRU_Krug5") || strstr(minion->GetObjectName(), "Razorbeak9"))
+								if (!Q2->IsReady() && !W2->IsReady() && !GEntityList->Player()->HasBuff("EliseSpiderW"))
 								{
-									E2->CastOnUnit(minion);
+									if ((_humaQcd <= 0.f) || ((_humaWcd <= 0.f) && (_humaEcd <= 0.f)))
+									{
+										R->CastOnPlayer();
+									}
 								}
 							}
 						}
-					}
 
-					if (JungleQspider->Enabled() && Q2->IsReady())
-					{
-						if (GEntityList->Player()->IsValidTarget(minion, Q2->Range()))
+						if (JungleEspider->Enabled() && E2->IsReady() && Q2->IsReady())
 						{
-							Q2->CastOnUnit(minion);
+							if (GEntityList->Player()->IsValidTarget(minion, E2->Range() + Q2->Range()))
+							{
+								if (GetDistance(GEntityList->Player(), minion) < E2->Range() && GetDistance(GEntityList->Player(), minion) > Q2->Range())
+								{
+									if (strstr(minion->GetObjectName(), "Red") || strstr(minion->GetObjectName(), "Blue") ||
+										strstr(minion->GetObjectName(), "SRU_Murkwolf2") || strstr(minion->GetObjectName(), "Razorbeak3") ||
+										strstr(minion->GetObjectName(), "Razorbeak3") || strstr(minion->GetObjectName(), "SRU_Krug11") ||
+										strstr(minion->GetObjectName(), "Gromp") ||
+										strstr(minion->GetObjectName(), "SRU_Krug5") || strstr(minion->GetObjectName(), "Razorbeak9"))
+									{
+										E2->CastOnUnit(minion);
+									}
+								}
+							}
+						}
+
+						if (JungleQspider->Enabled() && Q2->IsReady())
+						{
+							if (GEntityList->Player()->IsValidTarget(minion, Q2->Range()))
+							{
+								Q2->CastOnUnit(minion);
+							}
 						}
 					}
 				}

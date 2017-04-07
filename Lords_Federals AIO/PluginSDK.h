@@ -2121,6 +2121,27 @@ public:
 	/// <param name="Slot">The slot.</param>
 	/// <returns>Ammo.</returns>
 	virtual int GetAmmo(int Slot) = 0;
+
+	/// <summary>
+	/// Gets the maximum ammo that can be held.
+	/// </summary>
+	/// <param name="Slot">The slot.</param>
+	/// <returns>Max ammo.</returns>
+	virtual int GetMaxAmmo(int Slot) = 0;
+
+	/// <summary>
+	/// Gets the ammo used each cast.
+	/// </summary>
+	/// <param name="Slot">The slot.</param>
+	/// <returns>Ammo used.</returns>
+	virtual int GetAmmoUsed(int Slot) = 0;
+
+	/// <summary>
+	/// Gets the ammo recharge time.
+	/// </summary>
+	/// <param name="Slot">The slot.</param>
+	/// <returns>Ammo recharge time.</returns>
+	virtual float GetAmmoRechargeTime(int Slot) = 0;
 };
 
 /// <summary>

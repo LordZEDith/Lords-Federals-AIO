@@ -119,10 +119,10 @@ public:
 
 		if (FoundSmite && Smite->IsReady() && SmiteActive->Enabled())
 		{
-			/*if (SmiteAmmo->Enabled() && (GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot1) == 1 || GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot2) == 1))
+			if (SmiteAmmo->Enabled() && (GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot1) <= 1 || GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot2) <= 1))
 			{
 				return;
-			}	*/		
+			}			
 
 			if (KillstealSmite->Enabled())
 			{

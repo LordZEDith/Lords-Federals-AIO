@@ -204,23 +204,28 @@ public:
 
 		if (LaneClearMana->GetInteger() < GEntityList->Player()->ManaPercent())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, true, false))
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()) && m->IsCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
+
+			if (Minion.Any())
 			{
-				if (!CheckTarget(minion)) return;
-
-				if (LaneClearE->Enabled() && E->IsReady() && CountMinions(minion->GetPosition(), E->Radius()) >= MinionsE->GetInteger())
+				for (auto minion : Minion.ToVector())
 				{
-					if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+
+					if (LaneClearE->Enabled() && E->IsReady() && CountMinions(minion->GetPosition(), E->Radius()) >= MinionsE->GetInteger())
 					{
-						E->CastOnUnit(minion);
+						if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+						{
+							E->CastOnUnit(minion);
+						}
 					}
-				}
 
-				if (LaneClearQ->Enabled() && Q->IsReady() && CountMinions(minion->GetPosition(), E->Range()) >= MinionsQ->GetInteger())
-				{
-					if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+					if (LaneClearQ->Enabled() && Q->IsReady() && CountMinions(minion->GetPosition(), E->Range()) >= MinionsQ->GetInteger())
 					{
-						Q->CastOnPlayer();
+						if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+						{
+							Q->CastOnPlayer();
+						}
 					}
 				}
 			}
@@ -231,23 +236,28 @@ public:
 	{
 		if (JungleMana->GetInteger() < GEntityList->Player()->ManaPercent())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, false, true))
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
+
+			if (Minion.Any())
 			{
-				if (!CheckTarget(minion)) return;
-
-				if (JungleE->Enabled() && E->IsReady() && !FoundMinions(E->Range()) && FoundMinionsNeutral(E->Range()))
+				for (auto minion : Minion.ToVector())
 				{
-					if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+
+					if (JungleE->Enabled() && E->IsReady() && !FoundMinions(E->Range()))
 					{
-						E->CastOnUnit(minion);
+						if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+						{
+							E->CastOnUnit(minion);
+						}
 					}
-				}
 
-				if (JungleQ->Enabled() && Q->IsReady() && !FoundMinions(E->Range()) && FoundMinionsNeutral(E->Range()))
-				{
-					if (GEntityList->Player()->IsValidTarget(minion, E->Range()) && minion->HasBuff("tristanaechargesound"))
+					if (JungleQ->Enabled() && Q->IsReady() && !FoundMinions(E->Range()))
 					{
-						Q->CastOnPlayer();
+						if (GEntityList->Player()->IsValidTarget(minion, E->Range()) && minion->HasBuff("tristanaechargesound"))
+						{
+							Q->CastOnPlayer();
+						}
 					}
 				}
 			}
@@ -324,15 +334,12 @@ public:
 				}				
 			}
 			
-			for (auto minion : GEntityList->GetAllMinions(false, true, true))
-			{
-				if (!CheckTarget(minion)) return;
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())) && m->IsCreep() && !strstr(m->GetObjectName(), "WardCorpse") && m->HasBuff("tristanaechargesound"); });
 
-				if (GetDistance(GEntityList->Player(), minion) <= GOrbwalking->GetAutoAttackRange(GEntityList->Player()) && minion->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())) &&
-					minion->HasBuff("tristanaechargesound"))
-				{	
-					GTargetSelector->SetOverrideFocusedTarget(minion);
-				}
+			if (Minion.Any())
+			{
+				GTargetSelector->SetOverrideFocusedTarget(Minion.FirstOrDefault());
 			}
 		}
 		

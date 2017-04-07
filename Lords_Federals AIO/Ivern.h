@@ -142,21 +142,22 @@ public:
 
 		for (auto target : GEntityList->GetAllHeros(false, true))
 		{
-			if (!CheckTarget(target)) return;
-
-			if (target->HasBuff("ChronoShift") || !CheckShielded(target)) return;
-
-			if (target->IsValidTarget(GEntityList->Player(), Q->Range()) && KillstealQ->Enabled() && Q->IsReady() && 
-				GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth() &&
-				!GEntityList->Player()->HasBuff("ivernqallyjump"))
+			if (CheckTarget(target))
 			{
-				Q->CastOnTarget(target, PredicChange());
-			}
+				if (target->HasBuff("ChronoShift") || !CheckShielded(target)) return;
 
-			if (CCedQ->Enabled() && target->IsHero() && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50) && Q->IsReady() && !CanMove(target) &&
-				!GEntityList->Player()->HasBuff("ivernqallyjump"))
-			{
-				Q->CastOnTarget(target, PredicChange());
+				if (target->IsValidTarget(GEntityList->Player(), Q->Range()) && KillstealQ->Enabled() && Q->IsReady() &&
+					GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth() &&
+					!GEntityList->Player()->HasBuff("ivernqallyjump"))
+				{
+					Q->CastOnTarget(target, PredicChange());
+				}
+
+				if (CCedQ->Enabled() && target->IsHero() && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50) && Q->IsReady() && !CanMove(target) &&
+					!GEntityList->Player()->HasBuff("ivernqallyjump"))
+				{
+					Q->CastOnTarget(target, PredicChange());
+				}
 			}
 		}
 	}
@@ -225,31 +226,28 @@ public:
 	{
 		for (auto t : GEntityList->GetAllTurrets(false, true))
 		{
-			if (!CheckTarget(t)) return;
-
-			if (W->IsReady() && !GEntityList->Player()->IsWindingUp() &&
-				!GEntityList->Player()->HasBuff("ivernwpassive") && GEntityList->Player()->AttackRange() < 200 &&
-				CountMinionsAlly(GEntityList->Player()->GetPosition(), 500) >= 2 &&
-				!t->IsValidTarget(GEntityList->Player(), GEntityList->Player()->AttackRange()) && t->IsValidTarget(GEntityList->Player(), 325) &&
-				!GPrediction->IsPointGrass(GEntityList->Player()->GetPosition()))
+			if (CheckTarget(t))
 			{
-				if (IvernBush.Any())
+				if (W->IsReady() && !GEntityList->Player()->IsWindingUp() &&
+					!GEntityList->Player()->HasBuff("ivernwpassive") && GEntityList->Player()->AttackRange() < 200 &&
+					CountMinionsAlly(GEntityList->Player()->GetPosition(), 500) >= 2 &&
+					!t->IsValidTarget(GEntityList->Player(), GEntityList->Player()->AttackRange()) && t->IsValidTarget(GEntityList->Player(), 325) &&
+					!GPrediction->IsPointGrass(GEntityList->Player()->GetPosition()))
 				{
-					for (auto b : IvernBush.ToVector())
+					if (IvernBush.Any())
 					{
-						if (GetDistance(GEntityList->Player(), b) < 300)
+						for (auto b : IvernBush.ToVector())
 						{
-							return;
-						}
-						else
-						{
-							castW(GEntityList->Player());
+							if (GetDistance(GEntityList->Player(), b) >= 300)
+							{
+								castW(GEntityList->Player());
+							}
 						}
 					}
-				}
-				else
-				{
-					castW(GEntityList->Player());
+					else
+					{
+						castW(GEntityList->Player());
+					}
 				}
 			}
 		}
@@ -304,64 +302,57 @@ public:
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, W->Range());
 
-		if (!CheckTarget(target)) return;
-
-		GetTarget = target;
-		
-		if (ComboW->Enabled() && W->IsReady())
+		if (CheckTarget(target))
 		{
-			if (ComboWRengar->Enabled())
-			{
-				SArray<IUnit*> Rengar = SArray<IUnit*>(GEntityList->GetAllHeros(true, false)).Where([](IUnit* Aliados) {return Aliados != nullptr &&
-					!Aliados->IsDead() && Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) < W->Range() &&
-					GetDistanceVectors(GetTarget->GetPosition(), Aliados->GetPosition()) < 600 && GetDistanceVectors(GetTarget->GetPosition(), Aliados->GetPosition()) > 150 &&
-					strstr(Aliados->ChampionName(), "Rengar") && !GPrediction->IsPointGrass(Aliados->GetPosition()); });
+			GetTarget = target;
 
-				if (Rengar.Any())
+			if (ComboW->Enabled() && W->IsReady())
+			{
+				if (ComboWRengar->Enabled())
+				{
+					SArray<IUnit*> Rengar = SArray<IUnit*>(GEntityList->GetAllHeros(true, false)).Where([](IUnit* Aliados) {return Aliados != nullptr &&
+						!Aliados->IsDead() && Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) < W->Range() &&
+						GetDistanceVectors(GetTarget->GetPosition(), Aliados->GetPosition()) < 600 && GetDistanceVectors(GetTarget->GetPosition(), Aliados->GetPosition()) > 150 &&
+						strstr(Aliados->ChampionName(), "Rengar") && !GPrediction->IsPointGrass(Aliados->GetPosition()); });
+
+					if (Rengar.Any())
+					{
+						if (IvernBush.Any())
+						{
+							for (auto b : IvernBush.ToVector())
+							{
+								if (GetDistance(Rengar.FirstOrDefault(), b) >= 300)
+								{									
+									castW(Rengar.FirstOrDefault());
+								}
+							}
+						}
+						else
+						{
+							castW(Rengar.FirstOrDefault());
+						}
+					}
+				}
+
+				if ((GOrbwalking->GetOrbwalkingMode() == kModeCombo || GOrbwalking->GetOrbwalkingMode() == kModeMixed) && ComboWSelf->Enabled() && !GEntityList->Player()->IsWindingUp() &&
+					!GEntityList->Player()->HasBuff("ivernwpassive") && GEntityList->Player()->AttackRange() < 200 &&
+					((!target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->AttackRange()) && target->IsValidTarget(GEntityList->Player(), 325)) || !GEntityList->Player()->IsMoving()) &&
+					!GPrediction->IsPointGrass(GEntityList->Player()->GetPosition()))
 				{
 					if (IvernBush.Any())
 					{
 						for (auto b : IvernBush.ToVector())
 						{
-							if (GetDistance(Rengar.FirstOrDefault(), b) < 300)
-							{
-								return;
-							}
-							else
-							{
-								castW(Rengar.FirstOrDefault());
+							if (GetDistance(GEntityList->Player(), b) >= 300)
+							{								
+								castW(GEntityList->Player());
 							}
 						}
 					}
 					else
 					{
-						castW(Rengar.FirstOrDefault());
+						castW(GEntityList->Player());
 					}
-				}
-			}
-
-			if ((GOrbwalking->GetOrbwalkingMode() == kModeCombo || GOrbwalking->GetOrbwalkingMode() == kModeMixed) && ComboWSelf->Enabled() && !GEntityList->Player()->IsWindingUp() &&
-				!GEntityList->Player()->HasBuff("ivernwpassive") && GEntityList->Player()->AttackRange() < 200 &&
-				((!target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->AttackRange()) && target->IsValidTarget(GEntityList->Player(), 325)) || !GEntityList->Player()->IsMoving()) &&
-				!GPrediction->IsPointGrass(GEntityList->Player()->GetPosition()))
-			{
-				if (IvernBush.Any())
-				{
-					for (auto b : IvernBush.ToVector())
-					{
-						if (GetDistance(GEntityList->Player(), b) < 300)
-						{
-							return;
-						}
-						else
-						{
-							castW(GEntityList->Player());
-						}
-					}
-				}
-				else
-				{
-					castW(GEntityList->Player());
 				}
 			}
 		}
@@ -410,12 +401,8 @@ public:
 			{
 				for (auto b : IvernBush.ToVector())
 				{
-					if (GetDistance(GEntityList->Player(), b) < 300)
-					{
-						return;
-					}
-					else
-					{
+					if (GetDistance(GEntityList->Player(), b) >= 300)
+					{						
 						castW(GEntityList->Player());
 					}
 				}

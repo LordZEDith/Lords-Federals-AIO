@@ -230,18 +230,22 @@ public:
 	{
 		if (LastHitQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= LastHitMana->GetInteger())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, true, false))
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
+
+			if (Minion.Any())
 			{
-				if (!CheckTarget(minion)) return;
-
-				if (GEntityList->Player()->IsValidTarget(minion, Q->Range() - 50))
+				for (auto minion : Minion.ToVector())
 				{
-					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false);
-
-					if (damage > minion->GetHealth())
+					if (GEntityList->Player()->IsValidTarget(minion, Q->Range() - 50))
 					{
-						GOrbwalking->ResetAA();
-						Q->CastOnPlayer();
+						auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false);
+
+						if (damage > minion->GetHealth())
+						{
+							GOrbwalking->ResetAA();
+							Q->CastOnPlayer();
+						}
 					}
 				}
 			}

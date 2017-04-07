@@ -277,9 +277,12 @@ public:
 	{
 		if (LastHitQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= LastHitMana->GetInteger())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, true, false))
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
+
+			if (Minion.Any())
 			{
-				if (minion != nullptr && !minion->IsDead() && minion->IsVisible() && GEntityList->Player()->IsValidTarget(minion, Q->Range()) && minion->IsCreep())
+				for (auto minion : Minion.ToVector())
 				{
 					auto delay = Q->GetDelay() + GetDistance(GEntityList->Player(), minion) / Q->Speed();
 					//auto damage = GDamage->GetSpellDamage(GEntityList->Player(), minion, kSlotQ);
@@ -321,9 +324,12 @@ public:
 	{
 		if (LaneClearQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, true, false))
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
+
+			if (Minion.Any())
 			{
-				if (minion != nullptr && !minion->IsDead() && minion->IsVisible() && GEntityList->Player()->IsValidTarget(minion, Q->Range()) && minion->IsCreep())
+				for (auto minion : Minion.ToVector())
 				{
 					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), true);					
 					

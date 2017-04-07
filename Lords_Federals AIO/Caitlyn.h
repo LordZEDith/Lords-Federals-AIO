@@ -24,7 +24,7 @@ public:
 			wCCed = WSettings->CheckBox("Auto Trap on CC", true);
 			WTele = WSettings->CheckBox("Auto Trap on Teleport", true);
 			WRevive = WSettings->CheckBox("Auto Trap on Revive", true);			
-			WForce = WSettings->CheckBox("Force Trap Before E", true);
+			WForce = WSettings->CheckBox("Force Trap After E", true);
 			for (auto enemy : GEntityList->GetAllHeros(false, true))
 			{
 				std::string szMenuName = "Trap On Gapcloser - " + std::string(enemy->ChampionName());
@@ -45,6 +45,8 @@ public:
 			inUnderTower = ComboSettings->CheckBox("Dont R under turret", true);
 			SemiManualKey = ComboSettings->AddKey("Dash to Mouse", 90);
 			StartComboKey = ComboSettings->AddKey("Combo E + Trap + Q", 71);
+			TrapKey = ComboSettings->AddKey("Use Trap", 87);
+			TrapDelayDistance = ComboSettings->AddInteger("Future Prediction Trap", 300, 1500, 800);
 		}
 
 		HarassSettings = MainMenu->AddMenu("Harass Settings");
@@ -115,7 +117,7 @@ public:
 	{
 		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 		Q->SetSkillshot(0.65f, 60.f, 2200.f, 1250.f);
-		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, false, kCollidesWithNothing);
+		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, true, false, kCollidesWithNothing);
 		W->SetSkillshot(1.5f, 100.f, 3200.f, 800.f);
 		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall | kCollidesWithHeroes));
 		E->SetSkillshot(0.25f, 90.f, 1600.f, 750.f);
@@ -179,7 +181,8 @@ public:
 		WAntiMelee();
 		TrapRevelerBush();
 		ComboWithKey();
-
+		TrapWithKey();		
+		
 		if (CheckTime < GGame->TickCount())
 		{			
 			putWard = false;
@@ -246,7 +249,17 @@ public:
 
 		if (!CheckTarget(target)) return;
 
-		LordWTest(target);
+		if (!WForce->Enabled() || !E->IsReady())
+		{
+			//LordWTest(target);
+			if (W->IsReady())
+			{
+				Vec3 position;
+				GPrediction->GetFutureUnitPosition(target, (TrapDelayDistance->GetInteger() / 1000 ), true, position);
+
+				W->CastOnPosition(position);
+			}
+		}
 
 		if (!ComboE2->Enabled() && ComboE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()))
 		{
@@ -600,6 +613,11 @@ public:
 			if (GSpellData->GetSlot(Args.Data_) == kSlotQ)
 			{
 				LastQTick = GGame->TickCount();
+
+				if (temp)
+				{
+					temp = false;
+				}
 			}
 		}
 	}
@@ -685,26 +703,73 @@ public:
 				auto etarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range());
 
 				if (!CheckTarget(qtarget) || !CheckTarget(etarget)) return;
-
-				if (etarget->IsValidTarget(GEntityList->Player(), E->Range()) && Q->IsReady() && E->IsReady())
+				
+				if (etarget->IsValidTarget(GEntityList->Player(), E->Range()) && E->IsReady())
 				{
 					E->CastOnTarget(etarget, PredicChange());
+					temp = true;
 				}
 
-				else if (!E->IsReady())
+				else if (!E->IsReady() && temp)
 				{
-					if (WSpellStatus && W->IsReady() && qtarget->IsValidTarget(GEntityList->Player(), W->Range()))
+					if (Q->IsReady() && W->IsReady())
 					{
-						W->CastOnPosition(qtarget->GetPosition());
-						WSpellStatus = false;
-					}
+						if (WSpellStatus && W->IsReady() && qtarget->IsValidTarget(GEntityList->Player(), W->Range()))
+						{
+							W->CastOnPosition(qtarget->GetPosition());
+							WSpellStatus = false;
+						}
 
-					if (Q->IsReady() && qtarget->IsValidTarget(GEntityList->Player(), Q->Range()))
+						if (Q->IsReady() && qtarget->IsValidTarget(GEntityList->Player(), Q->Range()))
+						{
+							GPluginSDK->DelayFunctionCall(10, []() 
+							{ 
+								CastQ();								
+							});
+						}
+					}
+					else if (Q->IsReady() && !W->IsReady())
 					{
-						GPluginSDK->DelayFunctionCall(10, []() { CastQ(); });
+						if (qtarget->IsValidTarget(GEntityList->Player(), Q->Range()))
+						{
+							CastQ();							
+						}
 					}
 				}
 			}
+		}
+	}
+
+	static void TrapWithKey()
+	{
+		keystate3 = GetAsyncKeyState(TrapKey->GetInteger());
+
+		if (keystate3 < 0 && LastPress < GGame->TickCount())
+		{
+			if (harassKeyWasDown == false)
+			{
+				if (W->IsReady())
+				{
+					auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
+					if (CheckTarget(target))
+					{
+						//W->CastOnTarget(target, kHitChanceVeryHigh);
+						//W->CastOnUnit(target);
+
+						Vec3 position;
+						GPrediction->GetFutureUnitPosition(target, (TrapDelayDistance->GetInteger() / 1000), true, position);
+
+						W->CastOnPosition(position);
+						LastPress = GGame->TickCount() + 500;
+					}
+				}			
+
+				harassKeyWasDown = true;
+			}
+		}
+		else
+		{
+			harassKeyWasDown = false;			
 		}
 	}
 };

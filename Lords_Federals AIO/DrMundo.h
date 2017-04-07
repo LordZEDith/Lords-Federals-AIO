@@ -37,7 +37,9 @@ public:
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
 			QGapCloser = fedMiscSettings->CheckBox("Automatically Q GapCloser", true);
-			AutoW = fedMiscSettings->CheckBox("Auto handle W", true);
+			AutoW = fedMiscSettings->CheckBox("Auto Off W", true);
+			RangeW = fedMiscSettings->AddInteger("Off W: Not Targets Range", 330, 1000, 600);
+			HealthAutoW = fedMiscSettings->AddInteger("Or HP% <", 1, 40, 15);
 			AutoUlt = fedMiscSettings->CheckBox("Automatically use R", true);
 			REnemies = fedMiscSettings->CheckBox("If enemies nearby", true);
 			HealthR = fedMiscSettings->AddInteger("Minimum HP% to use R", 1, 60, 20);
@@ -167,7 +169,7 @@ public:
 
 		if (AutoW->Enabled() && IsBurning() && W->IsReady()/* && GOrbwalking->GetOrbwalkingMode() == kModeNone*/)
 		{
-			if (!FoundEnemies(GEntityList->Player(), 600) && !FoundMinions(600) && !FoundMinionsNeutral(600) || GEntityList->Player()->HealthPercent() < 20)
+			if (!FoundEnemies(GEntityList->Player(), RangeW->GetInteger()) && !FoundMinions(RangeW->GetInteger()) && !FoundMinionsNeutral(RangeW->GetInteger()) || GEntityList->Player()->HealthPercent() < HealthAutoW->GetInteger())
 			{
 				W->CastOnPlayer();
 			}

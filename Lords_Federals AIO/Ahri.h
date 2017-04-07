@@ -114,7 +114,6 @@ public:
 	static Vec3 CalculateReturnPos(IUnit* Target)
 	{
 		if (QMissile != nullptr && QMissile->IsValidObject() && Target->IsValidTarget())
-
 		{
 			auto finishPosition = MissileEndPos;
 			auto misToPlayer = GetDistanceVectors(finishPosition, GEntityList->Player()->GetPosition());
@@ -215,37 +214,36 @@ public:
 	{
 		for (auto target : GEntityList->GetAllHeros(false, true))
 		{
-			if (!CheckTarget(target)) continue;
-
-			if (!target->HasBuff("ChronoShift") && Killsteal->Enabled())
+			if (CheckTarget(target))
 			{
-				if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
+
+				if (!target->HasBuff("ChronoShift") && Killsteal->Enabled())
+				{
+					if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
+					{
+						Q->CastOnTarget(target, PredicChange());						
+					}
+
+					if (KillstealW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && GHealthPrediction->GetKSDamage(target, kSlotW, W->GetDelay(), false) > target->GetHealth())
+					{
+						W->CastOnPlayer();						
+					}
+
+					if (KillstealE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()) && GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) > target->GetHealth())
+					{
+						E->CastOnTarget(target, PredicChange());
+					}
+				}
+
+				if (AutoHarass->Enabled() && Q->IsReady() && HarassMana->GetInteger() < GEntityList->Player()->ManaPercent() && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50))
+				{
+					Q->CastOnTarget(target, PredicChange());					
+				}
+
+				if (CCedQ->Enabled() && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50) && Q->IsReady() && !CanMove(target) && GEntityList->Player()->GetMana() > Q->ManaCost())
 				{
 					Q->CastOnTarget(target, PredicChange());
-					return;
 				}
-
-				if (KillstealW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && GHealthPrediction->GetKSDamage(target, kSlotW, W->GetDelay(), false) > target->GetHealth())
-				{
-					W->CastOnPlayer();
-					return;
-				}
-
-				if (KillstealE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()) && GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) > target->GetHealth())
-				{
-					E->CastOnTarget(target, PredicChange());
-				}
-			}
-
-			if (AutoHarass->Enabled() && Q->IsReady() && HarassMana->GetInteger() < GEntityList->Player()->ManaPercent() && CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50))
-			{
-				Q->CastOnTarget(target, PredicChange());
-				return;
-			}
-
-			if (CCedQ->Enabled() && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50) && Q->IsReady() && !CanMove(target) && !target->IsDead() && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > Q->ManaCost())
-			{
-				Q->CastOnTarget(target, PredicChange());
 			}
 		}
 	}
@@ -329,76 +327,74 @@ public:
 		if (JungleMana->GetInteger() < GEntityList->Player()->ManaPercent())
 		{
 			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
-				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()); });
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
 
 			if (Minion.Any())
 			{
-				jMonster = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
-			}
+				auto jMonster = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
 
-			if (CheckTarget(jMonster))
-			{
 				if (JungleE->Enabled() && E->IsReady() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
 				{
-					if (GEntityList->Player()->IsValidTarget(jMonster, E->Range()))
-					{
-						E->CastOnUnit(jMonster);
-					}
+					E->CastOnTarget(jMonster);
 				}
 
-				else if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
+				else if (JungleQ->Enabled() && Q->IsReady() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
 				{
-					if (GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
+					Vec3 posQ;
+					int hitQ;
+
+					GPrediction->FindBestCastPosition(Q->Range(), Q->Radius(), true, true, false, posQ, hitQ);
+
+					if (hitQ > 1)
 					{
-						Vec3 posQ;
-						int hitQ;
-
-						GPrediction->FindBestCastPosition(Q->Range() - 50, Q->Radius(), true, true, false, posQ, hitQ);						
-
-						if (hitQ > 1)
-						{
-							Q->CastOnPosition(posQ);
-						}
-						else
-						{
-							Q->CastOnUnit(jMonster);
-						}
+						Q->CastOnPosition(posQ);
 					}
-				}
-
-				if (JungleW->Enabled() && W->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(W->Range()))
-				{
-					if (GEntityList->Player()->IsValidTarget(jMonster, W->Range()))
+					else
 					{
-						W->CastOnPlayer();
+						if (jMonster->IsValidTarget(GEntityList->Player(), Q->Range()))
+						{
+							Q->CastOnUnit(Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); }));
+						}
 					}
 				}
 			}
+
+			if (JungleW->Enabled() && W->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(W->Range()))
+			{
+				W->CastOnPlayer();
+			}
 		}
-	}
+	}	
 
 	static void LaneClear()
 	{
 		if (GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, true, false))
+			if (LaneClearQ->Enabled() && Q->IsReady() && !FoundMinionsNeutral(E->Range() + 100) && GetMinionsInRange(GEntityList->Player()->GetPosition(), Q->Range()) >= MinionsQ->GetInteger())
 			{
-				if (LaneClearQ->Enabled() && Q->IsReady() && !FoundMinionsNeutral(E->Range() + 100) && GetMinionsInRange(GEntityList->Player()->GetPosition(), Q->Range()) >= MinionsQ->GetInteger())
-				{
-					Vec3 pos;
-					int count;
-					Q->FindBestCastPosition(true, true, pos, count);
+				Vec3 pos;
+				int count;
+				Q->FindBestCastPosition(true, true, pos, count);
 
+				if (MinionsQ->GetInteger() >= 3)
+				{
+					if (count >= 3 && Q->CastOnPosition(pos))
+					{
+						return;
+					}
+				}
+				else
+				{
 					if (count >= MinionsQ->GetInteger() && Q->CastOnPosition(pos))
 					{
 						return;
 					}
 				}
+			}
 
-				if (LaneClearW->Enabled() && W->IsReady() && GetMinionsInRange(GEntityList->Player()->GetPosition(), W->Range() - 100) >= MinionsW->GetInteger() && !FoundMinionsNeutral(E->Range() + 100))
-				{
-					W->CastOnPlayer();
-				}
+			if (LaneClearW->Enabled() && W->IsReady() && GetMinionsInRange(GEntityList->Player()->GetPosition(), W->Range() - 50) >= MinionsW->GetInteger() && !FoundMinionsNeutral(E->Range() + 100))
+			{
+				W->CastOnPlayer();
 			}
 		}
 	}

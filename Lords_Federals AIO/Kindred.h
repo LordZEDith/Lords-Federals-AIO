@@ -325,20 +325,46 @@ public:
 		if (GEntityList->Player()->ManaPercent() < JungleMana->GetInteger()) return;		
 
 		SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
-			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()); });
+			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), W->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
 
 		if (Minion.Any())
 		{
-			jMonster = Minion.MaxOrDefault<float>([](IUnit* i) {return i->GetMaxHealth(); });
-		}
-
-		if (!CheckTarget(jMonster)) return;
-
-		if (jMonster != nullptr)
-		{
-			if (JungleE->Enabled() && E->IsReady())
+			for (auto jMonster : Minion.ToVector())
 			{
-				if (GEntityList->Player()->IsValidTarget(jMonster, E->Range()))
+
+				if (JungleE->Enabled() && E->IsReady())
+				{
+					if (GEntityList->Player()->IsValidTarget(jMonster, E->Range()))
+					{
+						if (JungleEBig->Enabled())
+						{
+							if (strstr(jMonster->GetObjectName(), "Dragon") ||
+								strstr(jMonster->GetObjectName(), "Baron") ||
+								strstr(jMonster->GetObjectName(), "Red") ||
+								strstr(jMonster->GetObjectName(), "Blue") ||
+								strstr(jMonster->GetObjectName(), "RiftHerald") ||
+								strstr(jMonster->GetObjectName(), "Gromp") ||
+								strstr(jMonster->GetObjectName(), "Crab") ||
+								strstr(jMonster->GetObjectName(), "Razorbeak3") ||
+								strstr(jMonster->GetObjectName(), "SRU_Krug") ||
+								strstr(jMonster->GetObjectName(), "SRU_Murkwolf2"))
+							{
+								E->CastOnUnit(jMonster);
+							}
+						}
+						else
+						{
+							E->CastOnUnit(jMonster);
+						}
+					}
+				}
+
+				if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->IsValidTarget(jMonster, 600))
+				{
+					Q->CastOnPosition(GGame->CursorPosition());
+				}
+
+				if (JungleW->Enabled() && W->IsReady() && GEntityList->Player()->IsValidTarget(jMonster, W->Range()))
 				{
 					if (JungleEBig->Enabled())
 					{
@@ -353,43 +379,14 @@ public:
 							strstr(jMonster->GetObjectName(), "SRU_Krug") ||
 							strstr(jMonster->GetObjectName(), "SRU_Murkwolf2"))
 						{
-							E->CastOnUnit(jMonster);
+							W->CastOnPlayer();
 						}
 					}
 					else
 					{
-						E->CastOnUnit(jMonster);
-					}
-				}
-			}
-
-			if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->IsValidTarget(jMonster, 600))
-			{
-				Q->CastOnPosition(GGame->CursorPosition());
-			}
-
-			if (JungleW->Enabled() && W->IsReady() && GEntityList->Player()->IsValidTarget(jMonster, W->Range()))
-			{
-				if (JungleEBig->Enabled())
-				{
-					if (strstr(jMonster->GetObjectName(), "Dragon") ||
-						strstr(jMonster->GetObjectName(), "Baron") ||
-						strstr(jMonster->GetObjectName(), "Red") ||
-						strstr(jMonster->GetObjectName(), "Blue") ||
-						strstr(jMonster->GetObjectName(), "RiftHerald") ||
-						strstr(jMonster->GetObjectName(), "Gromp") ||
-						strstr(jMonster->GetObjectName(), "Crab") ||
-						strstr(jMonster->GetObjectName(), "Razorbeak3") ||
-						strstr(jMonster->GetObjectName(), "SRU_Krug") ||
-						strstr(jMonster->GetObjectName(), "SRU_Murkwolf2"))
-					{
 						W->CastOnPlayer();
 					}
 				}
-				else
-				{
-					W->CastOnPlayer();
-				}				
 			}
 		}
 	}

@@ -65,7 +65,7 @@ public:
 		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, (kCollidesWithNothing));
 		W->SetSkillshot(1.25, 0, 1000, FLT_MAX);		
 
-		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, (kCollidesWithHeroes, kCollidesWithMinions));
+		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, true, false, (kCollidesWithHeroes, kCollidesWithMinions));
 		E->SetSkillshot(0, 200, 1200, 600);		
 
 		R = GPluginSDK->CreateSpell2(kSlotR, kCircleCast, true, true, (kCollidesWithYasuoWall));
@@ -194,68 +194,72 @@ public:
 		if (GEntityList->Player()->ManaPercent() < JungleMana->GetInteger()) return;
 		if (FoundMinions(Q->Range()) || !FoundMinionsNeutral(Q->Range())) return;
 
-		for (auto minion : GEntityList->GetAllMinions(false, false, true))
+		SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
+
+		if (Minion.Any())
 		{
-			if (!CheckTarget(minion)) return;
-
-			if (JungleQ->Enabled() && Q->IsReady() && BarrilQ == Vec3(0, 0, 0) && GragasQone())
+			for (auto minion : Minion.ToVector())
 			{
-				if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+				if (JungleQ->Enabled() && Q->IsReady() && BarrilQ == Vec3(0, 0, 0) && GragasQone())
 				{
-					Vec3 posQ;
-					int hitQ;
-					
-					if (strstr(minion->GetObjectName(), "Crab"))
+					if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
 					{
-						GPrediction->FindBestCastPosition(500, Q->Radius(), false, true, false, posQ, hitQ);
-					}
-					else
-					{
-						GPrediction->FindBestCastPosition(Q->Range(), Q->Radius(), false, true, false, posQ, hitQ);
-					}
+						Vec3 posQ;
+						int hitQ;
 
-					if (hitQ > 1)
-					{
-						Q->CastOnPosition(posQ);
-					}
-					else
-					{
-						Q->CastOnUnit(minion);
+						if (strstr(minion->GetObjectName(), "Crab"))
+						{
+							GPrediction->FindBestCastPosition(500, Q->Radius(), false, true, false, posQ, hitQ);
+						}
+						else
+						{
+							GPrediction->FindBestCastPosition(Q->Range(), Q->Radius(), false, true, false, posQ, hitQ);
+						}
+
+						if (hitQ > 1)
+						{
+							Q->CastOnPosition(posQ);
+						}
+						else
+						{
+							Q->CastOnUnit(minion);
+						}
 					}
 				}
-			}			
 
-			if (JungleW->Enabled() && W->IsReady())
-			{
-				if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+				if (JungleW->Enabled() && W->IsReady())
 				{
-					W->CastOnPlayer();
+					if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+					{
+						W->CastOnPlayer();
+					}
 				}
-			}
 
-			if (JungleE->Enabled() && E->IsReady())
-			{
-				if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+				if (JungleE->Enabled() && E->IsReady())
 				{
-					Vec3 posE;
-					int hitE;
+					if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+					{
+						Vec3 posE;
+						int hitE;
 
-					if (strstr(minion->GetObjectName(), "Crab"))
-					{
-						GPrediction->FindBestCastPosition(500, E->Radius(), false, true, false, posE, hitE);
-					}
-					else
-					{
-						GPrediction->FindBestCastPosition(E->Range() , E->Radius(), false, true, false, posE, hitE);
-					}
+						if (strstr(minion->GetObjectName(), "Crab"))
+						{
+							GPrediction->FindBestCastPosition(500, E->Radius(), false, true, false, posE, hitE);
+						}
+						else
+						{
+							GPrediction->FindBestCastPosition(E->Range(), E->Radius(), false, true, false, posE, hitE);
+						}
 
-					if (hitE > 1)
-					{
-						E->CastOnPosition(posE);
-					}
-					else
-					{
-						E->CastOnUnit(minion);
+						if (hitE > 1)
+						{
+							E->CastOnPosition(posE);
+						}
+						else
+						{
+							E->CastOnUnit(minion);
+						}
 					}
 				}
 			}

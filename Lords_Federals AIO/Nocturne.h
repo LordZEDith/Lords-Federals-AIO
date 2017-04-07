@@ -56,7 +56,7 @@ public:
 
 	static void LoadSpells()
 	{		
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, kCollidesWithYasuoWall);
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, kCollidesWithYasuoWall);
 		Q->SetSkillshot(0.25f, 60.f, 1400.f, 1125.f);
 		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, kCollidesWithNothing);
 		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, kCollidesWithNothing);
@@ -98,8 +98,7 @@ public:
 		auto comboDmg = comboDmg2 + Combo3;		
 
 		if (!ComboRKill->Enabled())
-		{		
-			
+		{			
 			if ((GetDistance(GEntityList->Player(), TargetR) < R->Range() && GetDistance(GEntityList->Player(), TargetR) > 900 &&
 				CountAlly(TargetR->GetPosition(), 2000) >= CountEnemy(TargetR->GetPosition(), 2000)) ||
 				(comboDmg > TargetR->GetHealth() && GEntityList->Player()->HealthPercent() < 50 && TargetR->HealthPercent() < 40 && CountAlly(TargetR->GetPosition(), 1000) == 1 &&
@@ -213,67 +212,61 @@ public:
 
 	static void JungleClear()
 	{
-		for (auto minion : GEntityList->GetAllMinions(false, false, true))
-		{		
+		SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
 
-			if (!CheckTarget(minion)) return;
-
-			if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range() - 50))
+		if (Minion.Any())
+		{
+			for (auto minion : Minion.ToVector())
 			{
-
-				if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+				if (JungleQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range() - 50))
 				{
-					Vec3 posQ;
-					int hitQ;
+					if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+					{
+						Vec3 posQ;
+						int hitQ;
 
-					if (strstr(minion->GetObjectName(), "Dragon") || strstr(minion->GetObjectName(), "Baron") ||
-						strstr(minion->GetObjectName(), "Crab") || strstr(minion->GetObjectName(), "RiftHerald"))
-					{
-						GPrediction->FindBestCastPosition(Q->Range() - 500, Q->Radius(), true, true, false, posQ, hitQ);
-					}
-					else
-					{
-						GPrediction->FindBestCastPosition(Q->Range() - 50, Q->Radius(), true, true, false, posQ, hitQ);
-					}
+						GPrediction->FindBestCastPosition(Q->Range() - 50, Q->Radius(), true, true, false, posQ, hitQ);						
 
-					if (hitQ > 1)
-					{
-						Q->CastOnPosition(posQ);
-					}
-					else
-					{
-						Q->CastOnUnit(minion);
+						if (hitQ > 1)
+						{
+							Q->CastOnPosition(posQ);
+						}
+						else
+						{
+							Q->CastOnUnit(Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); }));
+						}
 					}
 				}
-			}
 
-			else if (JungleE->Enabled() && E->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range() - 50))
-			{
-				if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+				else if (JungleE->Enabled() && E->IsReady() && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range() - 50))
 				{
-					if (JungleBig->Enabled())
+					if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
 					{
-						if (strstr(minion->GetObjectName(), "Dragon") ||
-							strstr(minion->GetObjectName(), "Baron") ||
-							strstr(minion->GetObjectName(), "Gromp") ||
-							strstr(minion->GetObjectName(), "Crab") ||
-							strstr(minion->GetObjectName(), "Razorbeak3") ||
-							strstr(minion->GetObjectName(), "SRU_Krug11") ||
-							strstr(minion->GetObjectName(), "SRU_Murkwolf2") ||
-							strstr(minion->GetObjectName(), "Red") ||
-							strstr(minion->GetObjectName(), "Blue") ||
-							strstr(minion->GetObjectName(), "RiftHerald"))
+						if (JungleBig->Enabled())
+						{
+							if (strstr(minion->GetObjectName(), "Dragon") ||
+								strstr(minion->GetObjectName(), "Baron") ||
+								strstr(minion->GetObjectName(), "Gromp") ||
+								strstr(minion->GetObjectName(), "Crab") ||
+								strstr(minion->GetObjectName(), "Razorbeak3") ||
+								strstr(minion->GetObjectName(), "SRU_Krug11") ||
+								strstr(minion->GetObjectName(), "SRU_Murkwolf2") ||
+								strstr(minion->GetObjectName(), "Red") ||
+								strstr(minion->GetObjectName(), "Blue") ||
+								strstr(minion->GetObjectName(), "RiftHerald"))
+							{
+								E->CastOnUnit(minion);
+							}
+							else
+							{
+								return;
+							}
+						}
+						else
 						{
 							E->CastOnUnit(minion);
 						}
-						else 
-						{
-							return;
-						}
-					}
-					else
-					{
-						E->CastOnUnit(minion);
 					}
 				}
 			}
@@ -288,23 +281,22 @@ public:
 			int count;
 			Q->FindBestCastPosition(true, true, pos, count);
 
-			if (count >= 3 && Q->CastOnPosition(pos))
+			if (MinionsQ->GetInteger() >= 3)
 			{
-				return;
-			}			
-		}	
-
-		if (LaneClearQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= LaneClearMana->GetInteger() && !FoundMinionsNeutral(E->Range() + 100))
-		{
-			Vec3 pos;
-			int count;
-			Q->FindBestCastPosition(true, true, pos, count);
-
-			if (count >= MinionsQ->GetInteger() && Q->CastOnPosition(pos))
-			{
-				return;
+				if (count >= 3 && Q->CastOnPosition(pos))
+				{
+					return;
+				}
 			}
-		}
+			else
+			{
+				if (count >= MinionsQ->GetInteger() && Q->CastOnPosition(pos))
+				{
+					return;
+				}
+
+			}
+		}		
 	}
 
 	static void Drawing()
