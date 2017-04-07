@@ -26,7 +26,9 @@ public:
 		AxeSettings = MainMenu->AddMenu("Axe Settings");
 		{
 			gotoAxeC = AxeSettings->CheckBox("Catch axe", true);
-			gotoAxeMaxDist = AxeSettings->AddFloat("Max dist to catch axe", 200, 1500, 500);
+			axeMode = AxeSettings->AddSelection("Catch axe Mode: ", 0, std::vector<std::string>({ "Mode 1", "Mode 2" }));
+			axeSoften = AxeSettings->CheckBox("Beta Soften Orbwalk", false);
+			gotoAxeMaxDist = AxeSettings->AddFloat("Max dist to catch axe", 200, 1500, 800);
 			axeKill = AxeSettings->CheckBox("No Catch Axe if can kill 2 AA", true);
 			axeTower = AxeSettings->CheckBox("No Catch Axe Under Turret Combo", true);
 			axeTower2 = AxeSettings->CheckBox("No Catch Axe Under Turret Farm", true);
@@ -91,17 +93,19 @@ public:
 
 		if (DrawAxe->Enabled()) {
 
-			for (auto obj : axeListTeste)
+			for (auto obj : DravenAxes.ToVector())
 			{
-				if (obj->GetPosition().x > 0 && obj->GetPosition().y > 0)
+				if (obj->GetPosition() != Vec3(0,0,0))
 				{
-					if (GetDistance(GEntityList->Player(), obj) > 120)
+					GRender->DrawOutlinedCircle(obj->GetPosition(), Vec4(0, 255, 0, 255), 150);
+
+					if (GetDistanceVectors(GEntityList->Player()->GetPosition(), GMissileData->GetEndPosition(obj)) > 150)
 					{
-						GRender->DrawOutlinedCircle(obj->GetPosition(), Vec4(255, 255, 0, 255), 150);
+						GRender->DrawOutlinedCircle(GMissileData->GetEndPosition(obj), Vec4(255, 255, 0, 255), 150);
 					}
-					else if (GetDistance(GEntityList->Player(), obj) < 150)
+					else if (GetDistanceVectors(GEntityList->Player()->GetPosition(), GMissileData->GetEndPosition(obj)) <= 150)
 					{
-						GRender->DrawOutlinedCircle(obj->GetPosition(), Vec4(0, 255, 0, 255), 150);
+						GRender->DrawOutlinedCircle(GMissileData->GetEndPosition(obj), Vec4(0, 255, 0, 255), 150);						
 					}
 				}
 			}
@@ -206,47 +210,7 @@ public:
 				}
 			}
 		}
-	}
-
-	static void CatchAxe(IUnit* target)
-	{
-		auto maxDist = gotoAxeMaxDist->GetFloat();
-		auto modokey = GOrbwalking->GetOrbwalkingMode();
-
-		/*if (GetDistance(GEntityList->Player(), target) < 30)
-		{
-		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
-		return;
-		}*/
-
-		//GUtility->LogConsole("Distancia Axe - %f")
-
-		if (axeTower->Enabled() && modokey == kModeCombo && IsUnderTurretPos(target->GetPosition()))
-		{
-			GOrbwalking->SetOverridePosition(Vec3(0,0,0));
-		}
-
-		else if (axeTower2->Enabled() && modokey == kModeLaneClear  && IsUnderTurretPos(target->GetPosition()))
-		{
-			GOrbwalking->SetOverridePosition(Vec3(0,0,0));
-		}
-
-		else if (axeEnemy->Enabled() && CountEnemy(target->GetPosition(), 550) > 2)
-		{
-			GOrbwalking->SetOverridePosition(Vec3(0,0,0));
-		}
-		else
-		{
-			if (GetDistanceVectors(GGame->CursorPosition(), target->GetPosition()) < maxDist && QMissile != nullptr)
-			{
-				GOrbwalking->SetOverridePosition(target->GetPosition());
-			}
-			else
-			{
-				GOrbwalking->SetOverridePosition(Vec3(0,0,0));
-			}
-		}		
-	}
+	}	
 
 	static void LogicW()
 	{
@@ -306,6 +270,53 @@ public:
 		}
 	}
 
+	static void CatchAxe(IUnit* target)
+	{
+		auto maxDist = gotoAxeMaxDist->GetFloat();
+		auto modokey = GOrbwalking->GetOrbwalkingMode();
+
+		if (axeSoften->Enabled() && GetDistanceVectors(GEntityList->Player()->GetPosition(), target->GetPosition()) < 250)
+		{
+			GOrbwalking->SetOverridePosition(GGame->CursorPosition());
+
+			return;
+		}		
+
+		if (axeTower->Enabled() && modokey == kModeCombo && IsUnderTurretPos(target->GetPosition()))
+		{
+			GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
+			return;
+		}
+
+		if (axeTower2->Enabled() && modokey == kModeLaneClear  && IsUnderTurretPos(target->GetPosition()))
+		{
+			GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
+			return;
+		}
+
+		if (axeEnemy->Enabled() && CountEnemy(target->GetPosition(), 550) > 2)
+		{
+			GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
+			return;
+		}
+
+		if (GetDistanceVectors(GGame->CursorPosition(), target->GetPosition()) <= maxDist && QMissile != nullptr)
+		{
+			if (axeMode->GetInteger() == 0)
+			{
+				GOrbwalking->SetOverridePosition(Extend(GMissileData->GetEndPosition(target), GGame->CursorPosition(), 100));
+			}
+			else
+			{
+				GOrbwalking->SetOverridePosition(GMissileData->GetEndPosition(target));
+			}
+		}
+		else
+		{
+			GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
+		}
+	}
+
 	static void AxeLogicFarm()
 	{
 		if (!gotoAxeC->Enabled())
@@ -313,29 +324,41 @@ public:
 			return;
 		}
 
-		if (axeListTeste.size() == 0)
+		if (DravenAxes.Count() == 0)
 		{
-			GOrbwalking->SetOverridePosition(Vec3(0,0,0));
+			GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 			return;
 		}
 
-		if (axeListTeste.size() == 1)
+		if (DravenAxes.Count() == 1)
 		{
-			CatchAxe(axeListTeste.front());
+			CatchAxe(DravenAxes.FirstOrDefault());
 			return;
 		}
 		else
 		{
-			auto bestAxe = axeListTeste.front();
-			/*for (auto obj : axeListTeste)
+			if (axeMode->GetInteger() == 0)
 			{
-			if (GetDistanceVectors(GGame->CursorPosition(), bestAxe->GetPosition()) > GetDistanceVectors(GGame->CursorPosition(), obj->GetPosition()))
-			{
-			bestAxe = obj;
+				auto bestAxe = DravenAxes.FirstOrDefault();
+
+				for (auto obj : DravenAxes.ToVector())
+				{
+					if (GetDistanceVectors(GGame->CursorPosition(), bestAxe->GetPosition()) > GetDistanceVectors(GGame->CursorPosition(), obj->GetPosition()))
+					{
+						bestAxe = obj;
+					}
+				}
+
+				GOrbwalking->DisableNextAttack();
+				CatchAxe(bestAxe);
 			}
-			}*/
-			GOrbwalking->DisableNextAttack();
-			CatchAxe(bestAxe);
+			else
+			{
+				auto bestAxe = DravenAxes.FirstOrDefault();
+
+				GOrbwalking->DisableNextAttack();
+				CatchAxe(bestAxe);
+			}
 		}
 	}
 
@@ -346,7 +369,7 @@ public:
 			return;
 		}
 
-		if (axeListTeste.size() == 0)
+		if (DravenAxes.Count() == 0)
 		{
 			GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 			return;
@@ -354,8 +377,6 @@ public:
 
 		for (auto hero : GEntityList->GetAllHeros(false, true))
 		{
-			//if (!CheckTarget(hero)) return;
-
 			if (axeKill->Enabled() && GetDistance(GEntityList->Player(), hero) > 400 && GDamage->GetAutoAttackDamage(GEntityList->Player(), hero, false) * 2 > hero->GetHealth() && !hero->IsDead())
 			{
 				GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
@@ -363,24 +384,35 @@ public:
 			}
 		}
 
-		if (axeListTeste.size() == 1)
+		if (DravenAxes.Count() == 1)
 		{
-			CatchAxe(axeListTeste.front());
+			CatchAxe(DravenAxes.FirstOrDefault());
 			return;
 		}
 		else
 		{
-			auto bestAxe = axeListTeste.front();
-			/*for (auto obj : axeListTeste)
+			if (axeMode->GetInteger() == 0)
 			{
-				if (GetDistanceVectors(GGame->CursorPosition(), bestAxe->GetPosition()) > GetDistanceVectors(GGame->CursorPosition(), obj->GetPosition()))
-				{
-				bestAxe = obj;
-				}
-			}*/
+				auto bestAxe = DravenAxes.FirstOrDefault();
 
-			GOrbwalking->DisableNextAttack();
-			CatchAxe(bestAxe);
+				for (auto obj : DravenAxes.ToVector())
+				{
+					if (GetDistanceVectors(GGame->CursorPosition(), bestAxe->GetPosition()) > GetDistanceVectors(GGame->CursorPosition(), obj->GetPosition()))
+					{
+						bestAxe = obj;
+					}
+				}
+
+				GOrbwalking->DisableNextAttack();
+				CatchAxe(bestAxe);
+			}
+			else
+			{
+				auto bestAxe = DravenAxes.FirstOrDefault();
+
+				GOrbwalking->DisableNextAttack();
+				CatchAxe(bestAxe);
+			}
 		}
 	}
 
@@ -452,20 +484,26 @@ public:
 
 	static void OnCreateObject(IUnit* Source)
 	{
-		if (strstr(Source->GetObjectName(), "Draven_Base_Q_reticle_self.troy"))
+		if (Source->IsMissile() && GMissileData->GetCaster(Source)->GetNetworkId() == GEntityList->Player()->GetNetworkId())
 		{
-			axeListTeste.push_back(Source);
-			QMissile = Source;
+			if (strstr(GMissileData->GetName(Source), "DravenSpinningReturn"))
+			{
+				DravenAxes.Add(Source);
+				QMissile = Source;
+			}					
 		}
 	}
 
 	static void OnDeleteObject(IUnit* Source)
 	{
-		if (strstr(Source->GetObjectName(), "Draven_Base_Q_reticle_self.troy"))
+		if (Source->IsMissile() && GMissileData->GetCaster(Source)->GetNetworkId() == GEntityList->Player()->GetNetworkId())
 		{
-			axeListTeste.remove(Source);
-			QMissile = nullptr;
-		}
+			if (strstr(GMissileData->GetName(Source), "DravenSpinningReturn"))
+			{
+				DravenAxes.RemoveAll([&](IUnit* i) {return i->GetNetworkId() == Source->GetNetworkId(); });
+				QMissile = nullptr;
+			}
+		}		
 	}
 
 };

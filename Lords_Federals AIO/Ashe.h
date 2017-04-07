@@ -178,17 +178,26 @@ public:
 			{
 				if (ComboW->Enabled() && W->IsReady() && GOrbwalking->GetOrbwalkingMode() == kModeCombo && GEntityList->Player()->GetMana() > R->ManaCost() + W->ManaCost())
 				{
-					W->CastOnTarget(t, PredicChange());
+					if (GetDistance(GEntityList->Player(), t) > GEntityList->Player()->AttackRange())
+					{
+						W->CastOnTarget(t, PredicChange());
+					}
 				}
 
 				else if (HarassW->Enabled() && W->IsReady() && GOrbwalking->GetOrbwalkingMode() == kModeMixed  && GEntityList->Player()->GetMana() > R->ManaCost() + W->ManaCost() && GEntityList->Player()->ManaPercent() > HarassMana->GetInteger())
 				{
-					W->CastOnTarget(t, PredicChange());
+					if (GetDistance(GEntityList->Player(), t) > GEntityList->Player()->AttackRange())
+					{
+						W->CastOnTarget(t, PredicChange());
+					}
 				}
 
 				else if (AutoHarass->Enabled() && W->IsReady() && GEntityList->Player()->GetMana() > R->ManaCost() + W->ManaCost() && GEntityList->Player()->ManaPercent() > HarassMana->GetInteger())
 				{
-					W->CastOnTarget(t, PredicChange());
+					if (GetDistance(GEntityList->Player(), t) > GEntityList->Player()->AttackRange())
+					{
+						W->CastOnTarget(t, PredicChange());
+					}
 				}
 
 				else if (Killsteal->Enabled() && KillstealW->Enabled() && W->IsReady() && GHealthPrediction->GetKSDamage(t, kSlotW, W->GetDelay(), false) > t->GetHealth())
@@ -296,7 +305,7 @@ public:
 	static void OnAfterAttack(IUnit* source, IUnit* target)
 	{
 		if (source != GEntityList->Player() || target == nullptr)
-			return;
+			return;		
 
 		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && Q->IsReady() && ComboQ->Enabled() && GEntityList->Player()->GetMana() > R->ManaCost() + Q->ManaCost())
 		{
@@ -346,5 +355,21 @@ public:
 		{
 			R->CastOnTarget(Args.Source, PredicChange());
 		}
-	}	
+	}
+
+	static void OnProcessSpell(CastedSpell const& Args)
+	{
+		if (Args.Caster_ == GEntityList->Player())
+		{
+			if (Args.AutoAttack_ && Args.Target_->IsHero() && W->IsReady() && GOrbwalking->GetOrbwalkingMode() == kModeCombo && ComboW->Enabled())
+			{
+				W->CastOnTarget(Args.Target_, PredicChange());
+			}
+
+			if (Args.AutoAttack_ && Args.Target_->IsHero() && W->IsReady() && GOrbwalking->GetOrbwalkingMode() == kModeMixed && HarassW->Enabled())
+			{
+				W->CastOnTarget(Args.Target_, PredicChange());
+			}
+		}
+	}
 };

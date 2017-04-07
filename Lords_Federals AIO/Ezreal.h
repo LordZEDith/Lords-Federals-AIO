@@ -228,12 +228,12 @@ public:
 
 		if (!CheckTarget(target)) return;		
 
-		if (ComboQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GEntityList->Player()->GetMana() > Q->ManaCost() + W->ManaCost())
+		if (ComboQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()))
 		{			
 			Q->CastOnTarget(target, PredicChange());			
 		}
 
-		if (ComboW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && GEntityList->Player()->GetMana() > Q->ManaCost() + W->ManaCost() + R->ManaCost())
+		if (ComboW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()))
 		{
 			W->CastOnTarget(target, PredicChange());			
 		}

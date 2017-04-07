@@ -452,7 +452,7 @@ public:
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-
+		Ashe().OnProcessSpell(Args);
 	}
 
 	void OnExitVisible(IUnit* Source) override
@@ -4618,7 +4618,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "[News]: Galio, Pantheon, Gnar, Kindred and Ivern are now Supported");
 	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "[Donations]: If you like our plugins please leave a donation, link can be found in our signatures");
 
-	//GUtility->CreateDebugConsole();	
+	GUtility->CreateDebugConsole();	
 }
 
 // Called when plugin is unloaded

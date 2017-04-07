@@ -131,6 +131,8 @@ IMenuOption* axeTower;
 IMenuOption* axeTower2;
 IMenuOption* axeEnemy;
 IMenuOption* axePro;
+IMenuOption* axeSoften;
+IMenuOption* axeMode;
 
 IMenuOption* ComboQ;
 IMenuOption* ComboQA;
@@ -484,6 +486,7 @@ IUnit* CheckQKillable;
 
 //std::vector<IUnit*> axeList;
 std::list<IUnit*> axeListTeste;
+SArray<IUnit*> DravenAxes;
 std::map<int, IMenuOption*> MenuDontUlt;
 std::map<int, IMenuOption*> ChampionUse;
 std::map<int, IMenuOption*> ChampionUseW;
