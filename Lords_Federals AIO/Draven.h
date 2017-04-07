@@ -27,7 +27,8 @@ public:
 		{
 			gotoAxeC = AxeSettings->CheckBox("Catch axe", true);
 			axeMode = AxeSettings->AddSelection("Catch axe Mode: ", 0, std::vector<std::string>({ "Mode 1", "Mode 2" }));
-			axeSoften = AxeSettings->CheckBox("Beta Soften Orbwalk", false);
+			axeSoften = AxeSettings->CheckBox("Beta Soften Orbwalk", true);
+			//UseWToAxe = AxeSettings->CheckBox("Use W if Axe too far", true);
 			gotoAxeMaxDist = AxeSettings->AddFloat("Max dist to catch axe", 200, 1500, 800);
 			axeKill = AxeSettings->CheckBox("No Catch Axe if can kill 2 AA", true);
 			axeTower = AxeSettings->CheckBox("No Catch Axe Under Turret Combo", true);
@@ -46,7 +47,7 @@ public:
 		WSettings = MainMenu->AddMenu("W Settings");
 		{
 			ComboW = WSettings->CheckBox("Auto W", true);
-			slowW = WSettings->CheckBox("Auto W slow", true);
+			slowW = WSettings->CheckBox("Auto W Slow", true);
 		}
 
 		ESettings = MainMenu->AddMenu("E Settings");
@@ -292,7 +293,7 @@ public:
 			return;
 		}
 
-		if (axeTower2->Enabled() && modokey == kModeLaneClear  && IsUnderTurretPos(target->GetPosition()))
+		if (axeTower2->Enabled() && modokey == kModeLaneClear && CountMinionsAlly(returnNearPosTower(target), 900) == 0 && IsUnderTurretPos(target->GetPosition()))
 		{
 			GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 			return;
@@ -313,6 +314,17 @@ public:
 			else
 			{
 				GOrbwalking->SetOverridePosition(GMissileData->GetEndPosition(target));
+			}
+
+			if (GetDistanceVectors(GMissileData->GetEndPosition(target), GEntityList->Player()->GetPosition()) > 100)
+			{
+				auto delay = 1000 * (GetDistanceVectors(GMissileData->GetEndPosition(target), GEntityList->Player()->GetPosition()) / GEntityList->Player()->MovementSpeed());
+				/*auto expireTime = GMissileData-> - Environment.TickCount;
+
+				if (eta >= expireTime && this.Menu.Item("UseWForQ").IsActive())
+				{
+					this.W.Cast();
+				}*/
 			}
 		}
 		else
@@ -490,11 +502,16 @@ public:
 	{
 		if (Source->IsMissile() && GMissileData->GetCaster(Source)->GetNetworkId() == GEntityList->Player()->GetNetworkId())
 		{
-			if (strstr(GMissileData->GetName(Source), "DravenSpinningReturn"))
+			if (strstr(GMissileData->GetName(Source), "DravenSpinningReturnCatch"))
 			{
 				DravenAxes.Add(Source);
 				QMissile = Source;
-			}					
+			}
+
+			if (!strstr(GMissileData->GetName(Source), "DravenSpinningReturnCatch") && strstr(GMissileData->GetName(Source), "DravenSpinningReturn"))
+			{
+				//GUtility->LogConsole("Name: %s - Time: %f", GMissileData->GetName(Source), GMissileData->GetSpellCastTime(Source));
+			}
 		}
 	}
 
@@ -502,12 +519,16 @@ public:
 	{
 		if (Source->IsMissile() && GMissileData->GetCaster(Source)->GetNetworkId() == GEntityList->Player()->GetNetworkId())
 		{
-			if (strstr(GMissileData->GetName(Source), "DravenSpinningReturn"))
+			if (strstr(GMissileData->GetName(Source), "DravenSpinningReturnCatch"))
 			{
 				DravenAxes.RemoveAll([&](IUnit* i) {return i->GetNetworkId() == Source->GetNetworkId(); });
 				QMissile = nullptr;
 			}
-		}		
+		}
+		if (!strstr(GMissileData->GetName(Source), "DravenSpinningReturnCatch") && strstr(GMissileData->GetName(Source), "DravenSpinningReturn"))
+		{
+			//GUtility->LogConsole("Nome: %s - Time: %f", GMissileData->GetName(Source), GMissileData->GetSpellCastTime(Source));
+		}
 	}
 
 };

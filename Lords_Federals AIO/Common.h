@@ -422,9 +422,6 @@ inline int GetEnemiesInRange(float range)
 	return enemies;
 }
 
-
-
-
 inline int GetMinionsInRange(Vec3 Position, float Range)
 {
 	auto mingons = GEntityList->GetAllMinions(false, true, false);
@@ -539,18 +536,31 @@ inline bool IsUnderTurretPos(Vec3 source)
 {
 	for (auto turret : GEntityList->GetAllTurrets(false, true))
 	{
-		if (GetDistanceVectors(turret->GetPosition(), source) < 900)
+		if (GetDistanceVectors(turret->GetPosition(), source) < 900 && turret->GetHealth() >= 1)
 			return true;
 	}
 
 	return false;
 }
 
+inline Vec3 returnNearPosTower(IUnit* target)
+{
+	for (auto turret : GEntityList->GetAllTurrets(false, true))
+	{
+		if (turret != nullptr && turret->GetHealth() >= 1 && GetDistance(target, turret) <= 1500)
+		{
+			return turret->GetPosition();
+		}
+	}
+
+	return Vec3(0, 0, 0);
+}
+
 inline bool IsUnderTurretPosAlly(Vec3 source)
 {
 	for (auto turret : GEntityList->GetAllTurrets(true, false))
 	{
-		if (GetDistanceVectors(turret->GetPosition(), source) < 800)
+		if (GetDistanceVectors(turret->GetPosition(), source) < 800 && turret->GetHealth() >= 1)
 			return true;
 	}
 

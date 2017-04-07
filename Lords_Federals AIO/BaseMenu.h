@@ -133,6 +133,7 @@ IMenuOption* axeEnemy;
 IMenuOption* axePro;
 IMenuOption* axeSoften;
 IMenuOption* axeMode;
+IMenuOption* UseWToAxe;
 
 IMenuOption* ComboQ;
 IMenuOption* ComboQA;
