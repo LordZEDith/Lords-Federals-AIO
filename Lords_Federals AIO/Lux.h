@@ -81,13 +81,13 @@ public:
 
 	static void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, true, kCollidesWithYasuoWall);
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, (kCollidesWithYasuoWall, kCollidesWithHeroes, kCollidesWithMinions));
 		Q->SetSkillshot(0.25f, 80.f, 1200.f, 1175.f);
-		W = GPluginSDK->CreateSpell2(kSlotW, kLineCast, false, false, kCollidesWithNothing);
+		W = GPluginSDK->CreateSpell2(kSlotW, kLineCast, true, false, kCollidesWithNothing);
 		W->SetSkillshot(0.25f, 110.f, 1200.f, 1075.f);
-		E = GPluginSDK->CreateSpell2(kSlotE, kCircleCast, false, true, kCollidesWithNothing);
+		E = GPluginSDK->CreateSpell2(kSlotE, kCircleCast, true, true, kCollidesWithNothing);
 		E->SetSkillshot(0.3f, 250.f, 1050.f, 1075.f);
-		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, false, true, kCollidesWithYasuoWall);
+		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, true, true, kCollidesWithYasuoWall);
 		R->SetSkillshot(1.35f, 190.f, 2000.f, 3000.f);
 	}
 	
@@ -373,15 +373,12 @@ public:
 		if (JungleMana->GetInteger() < GEntityList->Player()->ManaPercent())
 		{
 			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
-				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()); });
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
 
 			if (Minion.Any())
 			{
 				jMonster = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
-			}
-
-			if (CheckTarget(jMonster))
-			{
+			
 				if (JungleQ->Enabled() && Q->IsReady() && !FoundMinions(Q->Range()) && FoundMinionsNeutral(Q->Range()))
 				{
 
@@ -440,15 +437,17 @@ public:
 	{
 		if (GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger() && !FoundMinionsNeutral(E->Range() + 100) && FoundMinions(E->Range()))
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, true, false))
-			{
-				if (!CheckTarget(minion)) return;
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()) && m->IsCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
 
-				if (LaneClearE->Enabled() && E->IsReady() && GEntityList->Player()->IsValidTarget(minion, E->Range()))
+			if (Minion.Any())
+			{
+
+				if (LaneClearE->Enabled() && E->IsReady())
 				{
 					Vec3 posQ;
 					int hitQ;
-					GPrediction->FindBestCastPosition(E->Range(), E->Radius(), false, true, false, posQ, hitQ);
+					GPrediction->FindBestCastPosition(E->Range(), E->Radius(), true, true, true, posQ, hitQ);
 
 					if (!ESkillToggle() && EMissile == nullptr && hitQ >= MinionsE->GetInteger() && E->CastOnPosition(posQ))
 					{
@@ -458,13 +457,15 @@ public:
 					if (ESkillToggle() && EMissile != nullptr && CountMinions(EMissile->GetPosition(), E->Radius()) >= 1)
 					{
 						E->CastOnPlayer();
-						GGame->IssueOrder(GEntityList->Player(), kAttackUnit, minion);
 					}
 				}
 
-				if (LaneClearQ->Enabled() && Q->IsReady() && !FoundMinionsNeutral(Q->Range() + 100) && minion->IsValidTarget(GEntityList->Player(), Q->Range()))
+				for (auto minion : Minion.ToVector())
 				{
-					Q->CastOnUnit(minion);
+					if (LaneClearQ->Enabled() && Q->IsReady() && !FoundMinionsNeutral(Q->Range() + 100) && minion->IsValidTarget(GEntityList->Player(), Q->Range()))
+					{
+						Q->CastOnTarget(minion);
+					}
 				}
 			}
 		}

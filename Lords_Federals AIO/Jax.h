@@ -314,46 +314,43 @@ public:
 		if (GEntityList->Player()->ManaPercent() < JungleMana->GetInteger()) return;
 
 		SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
-			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()); });
+			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
 
 		if (Minion.Any())
 		{
-			jMonster = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
-		}
+			if (FoundMinions(Q->Range())) return;
 
-		if (jMonster != nullptr && !jMonster->IsDead() && !jMonster->IsInvulnerable() && jMonster->IsVisible())
-		{
-			if (FoundMinions(Q->Range())) return;			
-
-			if (JungleE->Enabled() && E->IsReady() && !JaxEUsed())
+			for (auto jMonster : Minion.ToVector())
 			{
-				if (Q->IsReady() && GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
+				if (JungleE->Enabled() && E->IsReady() && !JaxEUsed())
 				{
-					E->CastOnPlayer();
-				}
-				else
-				{
-					if (GEntityList->Player()->IsValidTarget(jMonster, E->Range()))
+					if (Q->IsReady() && GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
 					{
 						E->CastOnPlayer();
 					}
+					else
+					{
+						if (GEntityList->Player()->IsValidTarget(jMonster, E->Range()))
+						{
+							E->CastOnPlayer();
+						}
+					}
 				}
-			}
 
-			if (JungleE->Enabled() && E->IsReady() && JaxEUsed() && CountMinionsNeutral(GEntityList->Player()->GetPosition(), E->Range()) > 0)
-			{
-				E->CastOnPlayer();
-			}
-
-			if (JungleQ->Enabled() && Q->IsReady())
-			{
-				if (GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
+				if (JungleE->Enabled() && E->IsReady() && JaxEUsed() && CountMinionsNeutral(GEntityList->Player()->GetPosition(), E->Range()) > 0)
 				{
-					Q->CastOnUnit(jMonster);
+					E->CastOnPlayer();
+				}
+
+				if (JungleQ->Enabled() && Q->IsReady())
+				{
+					if (GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
+					{
+						Q->CastOnUnit(jMonster);
+					}
 				}
 			}
-		}
-		
+		}		
 	}
 
 	void OnGameUpdate()

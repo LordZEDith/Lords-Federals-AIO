@@ -177,50 +177,48 @@ public:
 
 		for (auto target : GEntityList->GetAllHeros(false, true))
 		{
-			if (!CheckTarget(target)) return;
-			
-			if (useQKS && Q->IsReady() && target->IsVisible() && GEntityList->Player()->GetMana() >= QMANA && target->GetHealth() < GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) &&
-				GetDistance(GEntityList->Player(), target) <= Q->Range() && target->IsValidTarget())
+			if (CheckTarget(target))
 			{
-				Q->CastOnTarget(target, kHitChanceHigh);
-			}
-			if (useEKS && E->IsReady() && GEntityList->Player()->GetMana() >= EMANA && target->IsVisible() && target->GetHealth() < GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) &&
-				GetDistance(GEntityList->Player(), target) <= E->Range() + 450 && !target->IsDead() && target->IsValidTarget())
-			{
-				E->CastOnPosition(target->ServerPosition());
-				GGame->IssueOrder(GEntityList->Player(), kAutoAttack, target);
-			}
-			if (useIgniteKS && Ignite->GetSpellSlot() != kSlotUnknown && target->IsVisible() && GDamage->GetSummonerSpellDamage(GEntityList->Player(), target, kSummonerSpellIgnite) > target->GetHealth()
-				&& GetDistance(GEntityList->Player(), target) <= Ignite->GetSpellRange() && target->IsValidTarget())
-			{
-				Ignite->CastOnUnit(target);
-			}
-			if (useQKS && useEKS && Q->IsReady() && E->IsReady() && GEntityList->Player()->GetMana() >= QMANA + EMANA && target->IsVisible() && target->GetHealth() < (GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) + GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false)) &&
-				GetDistance(GEntityList->Player(), target) <= E->Range() + 450 && !target->IsDead() && target->IsValidTarget())
-			{
-				E->CastOnPosition(target->ServerPosition());
-				GGame->IssueOrder(GEntityList->Player(), kAutoAttack, target);
-				return;
-			}
-			if (useQKS && useIgniteKS && target->IsVisible() && Ignite->GetSpellSlot() != kSlotUnknown && Q->IsReady() && GEntityList->Player()->GetMana() >= QMANA && target->GetHealth() < (GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) + GDamage->GetSummonerSpellDamage(GEntityList->Player(), target, kSummonerSpellIgnite))
-				&& GetDistance(GEntityList->Player(), target) < 600 && !target->IsDead() && target->IsTargetable())
-			{
-				Q->CastOnTarget(target, kHitChanceHigh);
-				return;
-			}
-			if (useEKS && useIgniteKS && target->IsVisible() && Ignite->GetSpellSlot() != kSlotUnknown && E->IsReady() && GEntityList->Player()->GetMana() >= EMANA && target->GetHealth() < (GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) + GDamage->GetSummonerSpellDamage(GEntityList->Player(), target, kSummonerSpellIgnite))
-				&& GetDistance(GEntityList->Player(), target) < E->Range() + 450 && !target->IsDead() && target->IsTargetable())
-			{
-				E->CastOnPosition(target->ServerPosition());
-				GGame->IssueOrder(GEntityList->Player(), kAutoAttack, target);
-				return;
-			}
-			if (useQKS && useEKS && useIgniteKS && target->IsVisible() && Ignite->GetSpellSlot() != kSlotUnknown && Q->IsReady() && E->IsReady() && GEntityList->Player()->GetMana() >= QMANA + EMANA && target->GetHealth() < (GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) + GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) + GDamage->GetSummonerSpellDamage(GEntityList->Player(), target, kSummonerSpellIgnite))
-				&& GetDistance(GEntityList->Player(), target) && !target->IsDead() && !target->IsValidTarget())
-			{
-				E->CastOnPosition(target->ServerPosition());
-				GGame->IssueOrder(GEntityList->Player(), kAutoAttack, target);
-				return;
+
+				if (useQKS && Q->IsReady() && target->IsVisible() && GEntityList->Player()->GetMana() >= QMANA && target->GetHealth() < GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) &&
+					GetDistance(GEntityList->Player(), target) <= Q->Range() && target->IsValidTarget())
+				{
+					Q->CastOnTarget(target, kHitChanceHigh);
+				}
+				if (useEKS && E->IsReady() && GEntityList->Player()->GetMana() >= EMANA && target->IsVisible() && target->GetHealth() < GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) &&
+					GetDistance(GEntityList->Player(), target) <= E->Range() + 450 && !target->IsDead() && target->IsValidTarget())
+				{
+					E->CastOnPosition(target->ServerPosition());
+					GGame->IssueOrder(GEntityList->Player(), kAutoAttack, target);
+				}
+				if (useIgniteKS && Ignite->GetSpellSlot() != kSlotUnknown && target->IsVisible() && GDamage->GetSummonerSpellDamage(GEntityList->Player(), target, kSummonerSpellIgnite) > target->GetHealth()
+					&& GetDistance(GEntityList->Player(), target) <= Ignite->GetSpellRange() && target->IsValidTarget())
+				{
+					Ignite->CastOnUnit(target);
+				}
+				if (useQKS && useEKS && Q->IsReady() && E->IsReady() && GEntityList->Player()->GetMana() >= QMANA + EMANA && target->IsVisible() && target->GetHealth() < (GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) + GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false)) &&
+					GetDistance(GEntityList->Player(), target) <= E->Range() + 450 && !target->IsDead() && target->IsValidTarget())
+				{
+					E->CastOnPosition(target->ServerPosition());
+					GGame->IssueOrder(GEntityList->Player(), kAutoAttack, target);					
+				}
+				if (useQKS && useIgniteKS && target->IsVisible() && Ignite->GetSpellSlot() != kSlotUnknown && Q->IsReady() && GEntityList->Player()->GetMana() >= QMANA && target->GetHealth() < (GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) + GDamage->GetSummonerSpellDamage(GEntityList->Player(), target, kSummonerSpellIgnite))
+					&& GetDistance(GEntityList->Player(), target) < 600 && !target->IsDead() && target->IsTargetable())
+				{
+					Q->CastOnTarget(target, kHitChanceHigh);					
+				}
+				if (useEKS && useIgniteKS && target->IsVisible() && Ignite->GetSpellSlot() != kSlotUnknown && E->IsReady() && GEntityList->Player()->GetMana() >= EMANA && target->GetHealth() < (GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) + GDamage->GetSummonerSpellDamage(GEntityList->Player(), target, kSummonerSpellIgnite))
+					&& GetDistance(GEntityList->Player(), target) < E->Range() + 450 && !target->IsDead() && target->IsTargetable())
+				{
+					E->CastOnPosition(target->ServerPosition());
+					GGame->IssueOrder(GEntityList->Player(), kAutoAttack, target);					
+				}
+				if (useQKS && useEKS && useIgniteKS && target->IsVisible() && Ignite->GetSpellSlot() != kSlotUnknown && Q->IsReady() && E->IsReady() && GEntityList->Player()->GetMana() >= QMANA + EMANA && target->GetHealth() < (GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) + GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) + GDamage->GetSummonerSpellDamage(GEntityList->Player(), target, kSummonerSpellIgnite))
+					&& GetDistance(GEntityList->Player(), target) && !target->IsDead() && !target->IsValidTarget())
+				{
+					E->CastOnPosition(target->ServerPosition());
+					GGame->IssueOrder(GEntityList->Player(), kAutoAttack, target);					
+				}
 			}
 
 		}
@@ -251,20 +249,24 @@ public:
 	{
 		if (GEntityList->Player()->GetMana() > QMANA + RMANA)
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, false, true))
-			{
-				if (!CheckTarget(minion)) return;
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), W->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
 
-				auto mob = minion;
-				if (W->IsReady() && jungleW->Enabled() && GetDistance(GEntityList->Player(), mob) <= W->Range())
+			if (Minion.Any())
+			{
+				for (auto minion : Minion.ToVector())
 				{
-					W->CastOnPosition(mob->ServerPosition());
-					return;
-				}
-				if (Q->IsReady() && jungleQ->Enabled() && GetDistance(GEntityList->Player(), mob) <= Q->Range())
-				{
-					Q->CastOnPosition(mob->ServerPosition());
-					return;
+					auto mob = minion;
+
+					if (W->IsReady() && jungleW->Enabled() && GetDistance(GEntityList->Player(), mob) <= W->Range())
+					{
+						W->CastOnPosition(mob->ServerPosition());						
+					}
+
+					if (Q->IsReady() && jungleQ->Enabled() && GetDistance(GEntityList->Player(), mob) <= Q->Range())
+					{
+						Q->CastOnPosition(mob->ServerPosition());						
+					}
 				}
 			}
 		}

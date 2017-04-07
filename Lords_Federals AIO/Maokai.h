@@ -67,11 +67,11 @@ public:
 
 	static void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, true, kCollidesWithYasuoWall);
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, true, kCollidesWithYasuoWall);
 		Q->SetSkillshot(0.50f, 110.f, 1200.f, 600.f);
 		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, kCollidesWithNothing);
 		W->SetOverrideRange(500.f);
-		E = GPluginSDK->CreateSpell2(kSlotE, kCircleCast, false, false, kCollidesWithNothing);
+		E = GPluginSDK->CreateSpell2(kSlotE, kCircleCast, true, false, kCollidesWithNothing);
 		E->SetSkillshot(1.f, 250.f, 1500.f, 1100.f);
 		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, kCollidesWithNothing);
 		R->SetOverrideRange(450.f);

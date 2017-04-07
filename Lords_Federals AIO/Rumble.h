@@ -63,7 +63,7 @@ public:
 			JungleQ = JungleClearSettings->CheckBox("Use Q in Jungle", true);
 			JungleW = JungleClearSettings->CheckBox("Use W in Jungle", true);
 			HealthW = JungleClearSettings->AddInteger("Health % to use W", 0, 100, 80);
-			JungleE = JungleClearSettings->CheckBox("Use E in Jungle", false);
+			JungleE = JungleClearSettings->CheckBox("Use E in Jungle", true);
 		}
 
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
@@ -414,11 +414,12 @@ public:
 	{
 		if (LastHitE->Enabled() && E->IsReady())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, true, false))
-			{
-				if (!CheckTarget(minion)) return;
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()) && m->IsCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
 
-				if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+			if (Minion.Any())
+			{
+				for (auto minion : Minion.ToVector())
 				{
 					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotE, E->GetDelay(), false);
 
@@ -436,31 +437,36 @@ public:
 	{		
 		if (FoundMinions(E->Range()) || !FoundMinionsNeutral(E->Range())) return;
 
-		for (auto minion : GEntityList->GetAllMinions(false, false, true))
+		SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
+
+		if (Minion.Any())
 		{
-			if (!CheckTarget(minion)) return;
-
-			if (JungleQ->Enabled() && Q->IsReady())
+			for (auto minion : Minion.ToVector())
 			{
-				if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+
+				if (JungleQ->Enabled() && Q->IsReady())
 				{
-					Q->CastOnUnit(minion);
+					if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+					{
+						Q->CastOnUnit(minion);
+					}
 				}
-			}
 
-			if (JungleW->Enabled() && W->IsReady() && HealthW->GetInteger() < GEntityList->Player()->HealthPercent())
-			{
-				if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+				if (JungleW->Enabled() && W->IsReady() && HealthW->GetInteger() < GEntityList->Player()->HealthPercent())
 				{
-					W->CastOnPlayer();
+					if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+					{
+						W->CastOnPlayer();
+					}
 				}
-			}
 
-			if (JungleE->Enabled() && E->IsReady())
-			{
-				if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+				if (JungleE->Enabled() && E->IsReady())
 				{
-					E->CastOnUnit(minion);
+					if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+					{
+						E->CastOnTarget(minion);
+					}
 				}
 			}
 		}
@@ -472,11 +478,12 @@ public:
 
 		if (LaneClearE->Enabled() && E->IsReady())
 		{
-			for (auto minion : GEntityList->GetAllMinions(false, true, false))
-			{
-				if (!CheckTarget(minion)) return;
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()) && m->IsCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
 
-				if (GEntityList->Player()->IsValidTarget(minion, E->Range()))
+			if (Minion.Any())
+			{
+				for (auto minion : Minion.ToVector())
 				{
 					if (LaneClearELast->GetInteger() == 0)
 					{
