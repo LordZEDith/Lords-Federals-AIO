@@ -4613,9 +4613,9 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	//VersionCheck().RunVersionChecker();
 	LoadChampion();
 	pChampion->OnLoad();	
-	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "Welcome to Lords & Federals AIO");
-	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, false, "[Changes]: LeeSin, Varus, Caitlyn, Ziggs, Xerath, Ekko, ChoGath, Jax ");
+	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "Welcome to Lords & Federals AIO");	
 	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "[News]: Galio, Pantheon, Gnar, Kindred and Ivern are now Supported");
+	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, false, "[Betas]: Ahri Updates, Draven Update, Vayne");
 	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "[Donations]: If you like our plugins please leave a donation, link can be found in our signatures");
 
 	//GUtility->CreateDebugConsole();	
