@@ -22,6 +22,7 @@ public:
 			RMax = ComboSettings->CheckBox("Auto R fight logic + aim Q", true);
 			inUnderTower = ComboSettings->CheckBox("Dont Dash To Enemy Turret", false);
 			RWall = ComboSettings->CheckBox("Dont Dash to Wall", false);
+			EnemyCheck = ComboSettings->AddInteger("Block Dash in x enemies", 1, 5, 3);
 		}
 
 		HarassSettings = MainMenu->AddMenu("Harass Settings");
@@ -61,12 +62,13 @@ public:
 
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			EGapCloser = fedMiscSettings->CheckBox("Automatically E GapCloser", true);
-			EInterrupter = fedMiscSettings->CheckBox("Automatically E Interrupt Spell", true);
+			Predic = fedMiscSettings->AddSelection("Skills Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
+			EGapCloser = fedMiscSettings->CheckBox("Auto E GapCloser", true);
+			EInterrupter = fedMiscSettings->CheckBox("Auto E Interrupt Spell", true);
+			EUnderTowerAttack = fedMiscSettings->CheckBox("Auto E Under Turret", true);
 			CCedQ = fedMiscSettings->CheckBox("Auto Q When Enemies Cant Move", true);
 			CheckShield = fedMiscSettings->CheckBox("No Charm (BlackShield, Banshee)", true);
-			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
-
+			AimMissile = fedMiscSettings->CheckBox("Aim Return Missile", true);
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
@@ -111,73 +113,87 @@ public:
 		return mypredic = kHitChanceLow;
 	}
 
-	static Vec3 CalculateReturnPos(IUnit* Target)
+	static void AimMissileHelp()
 	{
-		if (QMissile != nullptr && QMissile->IsValidObject() && Target->IsValidTarget())
+		if (AimMissile->Enabled())
 		{
-			auto finishPosition = MissileEndPos;
-			auto misToPlayer = GetDistanceVectors(finishPosition, GEntityList->Player()->GetPosition());
-			auto tarToPlayer = GetDistanceVectors(Target->GetPosition(), GEntityList->Player()->GetPosition());
-
-			if (misToPlayer > tarToPlayer)
+			if (AimQ != Vec3(0, 0, 0) && QMissile != nullptr)
 			{
+				GOrbwalking->SetOverridePosition(AimQ);
+			}
+			else
+			{
+				GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
+			}
+		}		
+	}
 
-				auto misToTarget = GetDistanceVectors(Target->GetPosition(), finishPosition);
+	static Vec3 ReturnPosMissile(IUnit* Target)
+	{
+		if (QMissile != nullptr && Target->IsValidTarget())
+		{
+			auto ePosition = MissileEndPos;
+			auto missileToMe = GetDistanceVectors(ePosition, GEntityList->Player()->GetPosition());
+			auto distance = GetDistanceVectors(Target->GetPosition(), GEntityList->Player()->GetPosition());			
 
-				if (misToTarget < Q->Range() && misToTarget > 50)
+			if (missileToMe > distance)
+			{
+				auto missileTarget = GetDistanceVectors(Target->GetPosition(), ePosition);
 
+				if (missileTarget < Q->Range() && missileTarget > 50)
 				{
-					auto PlayerPos = GEntityList->Player()->GetPosition();
+					auto pPos = GEntityList->Player()->GetPosition();
 
-					auto cursorToTarget = GetDistanceVectors(PlayerPos.Extend(GGame->CursorPosition(), 100), Target->GetPosition());
-					extz = finishPosition.Extend(Target->ServerPosition(), cursorToTarget + misToTarget);
+					auto cursor = GetDistanceVectors(pPos.Extend(GGame->CursorPosition(), 100), Target->GetPosition());
+					extz = ePosition.Extend(Target->ServerPosition(), cursor + missileTarget);
 
-					if (GetDistanceVectors(PlayerPos, extz) < 800 && CountEnemy(extz, 400) < 2)
+					if (GetDistanceVectors(pPos, extz) < 800 && CountEnemy(extz, 400) < 2)
 					{
+						AimQ = extz;
 						return extz;
 					}
-
 				}
-
 			}
-
 		}
 
+		AimQ = Vec3(0, 0, 0);
 		return Vec3(0, 0, 0);
 	}
 
 	static void RLogic()
 	{
-		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 450 + R->Range());
+		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, 450 + R->Range());
 
 		Vec3 dashPosition;
-		auto PlayerPos = GEntityList->Player()->ServerPosition();
-		dashPosition = PlayerPos.Extend(GGame->CursorPosition(), 450);
+		auto pPos = GEntityList->Player()->ServerPosition();
+		dashPosition = pPos.Extend(GGame->CursorPosition(), 450);
 
 		if (GetDistanceVectors(GGame->CursorPosition(), GEntityList->Player()->GetPosition()) < 450)
-
+		{
 			dashPosition = GGame->CursorPosition();
+		}
 
-		if (CountEnemy(dashPosition, 800) > 2 || inUnderTower->Enabled() && IsUnderTurret(target) || RWall->Enabled() && GNavMesh->IsPointWall(dashPosition))
+		if (CountEnemy(dashPosition, 800) >= EnemyCheck->GetInteger() || inUnderTower->Enabled() && IsUnderTurret(target) || RWall->Enabled() && GNavMesh->IsPointWall(dashPosition))
+		{
 			return;
+		}
 
 		if (RMax->Enabled())
 		{
-
 			if (GEntityList->Player()->HasBuff("AhriTumble"))
 			{
-				auto BuffTime = GBuffData->GetEndTime(GEntityList->Player()->GetBuffDataByName("AhriTumble"));
+				auto BuffTime = GBuffData->GetEndTime(GEntityList->Player()->GetBuffDataByName("AhriTumble")) - GGame->Time();
 
 				if (BuffTime < 4)
 				{
 					R->CastOnPosition(dashPosition);
 				}
 
-				auto posPred = CalculateReturnPos(target);
+				auto posPred = ReturnPosMissile(target);
 
-				if (posPred.x > 0 && posPred.y > 0)
+				if (posPred != Vec3(0,0,0))
 				{
-					if (strstr(QMissile->GetObjectName(), "AhriOrbReturn") && GetDistanceVectors(GEntityList->Player()->GetPosition(), posPred) > 200)
+					if (strstr(GMissileData->GetName(QMissile), "AhriOrbReturn") && GetDistanceVectors(GEntityList->Player()->GetPosition(), posPred) > 200)
 					{
 						R->CastOnPosition(posPred);
 					}
@@ -187,7 +203,7 @@ public:
 
 		if (ComboR->Enabled())
 		{
-			auto rtarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 450 + R->Range());
+			auto rtarget = GTargetSelector->FindTarget(QuickestKill, SpellDamage, 450 + R->Range());
 
 			if (rtarget->IsValidTarget())
 			{
@@ -211,12 +227,19 @@ public:
 	}
 
 	static void Automatic()
-	{
+	{		
+		auto tTarget = Q->FindTarget(SpellDamage);
+		if (tTarget != nullptr)
+		{
+			ReturnPosMissile(tTarget);
+		}
+
+		AimMissileHelp();
+		
 		for (auto target : GEntityList->GetAllHeros(false, true))
 		{
 			if (CheckTarget(target))
-			{
-
+			{				
 				if (!target->HasBuff("ChronoShift") && Killsteal->Enabled())
 				{
 					if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
@@ -250,7 +273,7 @@ public:
 
 	static void Combo()
 	{
-		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
+		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, 900);
 
 		if (!CheckTarget(target)) return;
 
@@ -292,7 +315,7 @@ public:
 	{
 		if (GEntityList->Player()->ManaPercent() < HarassMana->GetInteger()) { return; }
 
-		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
+		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, 900);
 
 		if (!CheckTarget(target)) return;
 
@@ -418,11 +441,27 @@ public:
 
 		if (DrawAxe->Enabled())
 		{
-			if (extz.x > 0 && extz.y > 0)
+			if (QMissile != nullptr)
 			{
-				GRender->DrawOutlinedCircle(extz, Vec4(255, 255, 255, 255), 100);
+				if (AimQ != Vec3(0, 0, 0))
+				{
+					GRender->DrawOutlinedCircle(AimQ, Vec4(255, 255, 255, 255), 100);
+				}
+
+				auto rect = Geometry::Rectangle(QMissile->GetPosition().To2D(), GEntityList->Player()->GetPosition().To2D(), Q->Radius());
+
+				if (AimQ != Vec3(0, 0, 0) && GetDistanceVectors(AimQ, GEntityList->Player()->GetPosition()) > 150)
+				{
+					rect.Draw(Vec4(255, 0, 0, 255), 3);
+					GRender->DrawOutlinedCircle(QMissile->GetPosition(), Vec4(255, 0, 0, 255), 80);
+				}
+				else
+				{
+					rect.Draw(Vec4(255, 255, 255, 255), 3);
+					GRender->DrawOutlinedCircle(QMissile->GetPosition(), Vec4(255, 255, 255, 255), 80);
+				}
 			}
-		}		
+		}
 	}
 
 	static void OnGapcloser(GapCloserSpell const& args)
@@ -447,31 +486,41 @@ public:
 
 	static void OnCreateObject(IUnit* Source)
 	{
-		if (Source->IsEnemy(GEntityList->Player())) { return; }
-
-		if (strstr(Source->GetObjectName(), "AhriOrbMissile") || strstr(Source->GetObjectName(), "AhriOrbReturn"))
+		if (Source->IsMissile() && GMissileData->GetCaster(Source)->GetNetworkId() == GEntityList->Player()->GetNetworkId())
 		{
-			QMissile = Source;
-		}
+			if (strstr(GMissileData->GetName(Source), "AhriOrbMissile") || strstr(GMissileData->GetName(Source), "AhriOrbReturn"))
+			{
+				QMissile = Source;
+			}
 
-		if (strstr(Source->GetObjectName(), "AhriSeduceMissile"))
-		{
-			EMissile = Source;
+			if (strstr(GMissileData->GetName(Source), "AhriSeduceMissile"))
+			{
+				EMissile = Source;
+			}			
+
+			GUtility->LogConsole("Nome: %s", GMissileData->GetName(Source));
+
+			if (strstr(GMissileData->GetName(Source), "AhriOrbMissile"))
+			{
+				MissileEndPos = GMissileData->GetEndPosition(Source);
+			}
 		}
 	}
 
 	static void OnDeleteObject(IUnit* Source)
 	{
-		if (Source->IsEnemy(GEntityList->Player())) { return; }
-
-		if (strstr(Source->GetObjectName(), "AhriOrbReturn"))
+		if (Source->IsMissile() && GMissileData->GetCaster(Source)->GetNetworkId() == GEntityList->Player()->GetNetworkId())
 		{
-			QMissile = nullptr;
-		}
+			if (strstr(GMissileData->GetName(Source), "AhriOrbReturn"))
+			{
+				QMissile = nullptr;
+				GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
+			}
 
-		if (strstr(Source->GetObjectName(), "AhriSeduceMissile"))
-		{
-			EMissile = nullptr;
+			if (strstr(GMissileData->GetName(Source), "AhriSeduceMissile"))
+			{
+				EMissile = nullptr;
+			}		
 		}
 	}
 
@@ -498,9 +547,17 @@ public:
 
 	static void OnProcessSpell(CastedSpell const& Args)
 	{
-		if (strstr(Args.Name_, "AhriOrb"))
+		if (strstr(Args.Name_, "AhriOrbofDeception"))
 		{
-			MissileEndPos = Args.EndPosition_;
+			//MissileEndPos = Args.EndPosition_;
+		}		
+
+		if (EUnderTowerAttack->Enabled() && E->IsReady() && Args.Caster_->IsTurret() && Args.Target_->IsEnemy(GEntityList->Player()) && Args.Target_->IsHero())
+		{
+			if (Args.Target_->IsValidTarget(GEntityList->Player(), E->Range()))
+			{
+				E->CastOnTarget(Args.Target_, PredicChange());
+			}
 		}
 	}
 };

@@ -167,6 +167,7 @@ IMenuOption* onlyReady;
 IMenuOption* QAfterAA;
 IMenuOption* QAntiMelee;
 IMenuOption* QCancelAnimation;
+IMenuOption* AimMissile;
 
 IMenuOption* ComboW;
 IMenuOption* HarassW;
@@ -470,6 +471,7 @@ Vec3 ClickPOS;
 Vec3 JungleSpot;
 Vec3 JumpPos1;
 Vec3 JumpPos2;
+Vec3 AimQ;
 
 IUnit* Teamate01;
 IUnit* Teamate02;
