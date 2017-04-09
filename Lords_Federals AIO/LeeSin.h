@@ -24,6 +24,8 @@ public:
 			AutoStartWard = ComboSettings->CheckBox("Ward Jump In Auto Star Combo", true);
 			StartComboKey = ComboSettings->AddKey("Start Combo", 74);
 			PassiveStacks = ComboSettings->AddInteger("Passive Stacks", 0, 2, 2);
+			WSemiManualKey = ComboSettings->AddKey("Semi Manual W near Cursor", 87);
+			RSemiManualKey = ComboSettings->AddKey("Semi Manual R near Cursor", 82);
 		}
 
 		GankSettings = MainMenu->AddMenu("Gank Settings");
@@ -85,6 +87,7 @@ public:
 			InsecSelect = InsecSettings->AddSelection("Target to Insec", 0, std::vector<std::string>({ "Selected Target", "Target Selector" }));
 			InsecTo = InsecSettings->AddSelection("Insec To", 0, std::vector<std::string>({ "Allys>Tower>Ally", "Tower>Allys", "To Cursor" }));
 			InsecOrbwalk = InsecSettings->CheckBox("Orbwalk to Mouse", true);
+			gotoPosition = InsecSettings->CheckBox("Beta Move to InsecPos", false);
 			KickAndFlash = InsecSettings->CheckBox("Priorize Kick & Flash", false);
 			useFlash = InsecSettings->CheckBox("Use Flash if no Wards", true);
 			Flashdistance = InsecSettings->CheckBox("Ward & Flash (Selected Target)", false);
@@ -118,6 +121,7 @@ public:
 			DrawEscaW = DrawingSettings->CheckBox("Draw Q Line", true);
 			DrawSelect = DrawingSettings->CheckBox("Draw Target Selected", true);
 			DrawPosInsec = DrawingSettings->CheckBox("Draw Insec Line", true);
+			DrawTime = DrawingSettings->CheckBox("Draw Q Expire", true);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
 		}
 	}
@@ -479,7 +483,9 @@ public:
 	static void Automatic()
 	{	
 		SaveClick();
-		InsecUnderTower();		
+		InsecUnderTower();
+		SemiManualW();
+		SemiManualR();
 		
 		if (IsKeyDown(InstaFlashKey) && FoundFlash)
 		{
@@ -491,12 +497,32 @@ public:
 
 				if (!CheckTarget(target)) return;
 
-				if (target != nullptr && target->IsValidTarget(GEntityList->Player(), R->Range()) && R->CastOnUnit(target))
+				if (target != nullptr && target->IsValidTarget(GEntityList->Player(), R->Range()))
 				{
-					return;
+					R->CastOnUnit(target);
 				}
 			}
-		}	
+		}
+
+		if (IsKeyDown(InsecKey) || goInsecUnder)
+		{
+			if (R->IsReady())
+			{
+				CheckAttack = true;
+				GOrbwalking->SetAttacksAllowed(false);
+			}
+			else
+			{
+				CheckAttack = false;
+				GOrbwalking->SetAttacksAllowed(true);
+			}
+		}
+
+		if (!IsKeyDown(InsecKey) && CheckAttack)
+		{
+			CheckAttack = false;
+			GOrbwalking->SetAttacksAllowed(true);
+		}		
 
 		for (auto target : GEntityList->GetAllHeros(false, true))
 		{
@@ -1377,7 +1403,14 @@ public:
 
 		if (TorrePos == nullptr && AliadoPos == nullptr && AllySoloPos == nullptr && ClickPOS == Vec3(0,0,0))
 		{
-			InsecST = GEntityList->Player()->ServerPosition();
+			if (GUtility->IsPositionUnderTurret(GEntityList->Player()->GetPosition(), false, true))
+			{
+				InsecST = GEntityList->GetTeamNexus()->GetPosition();
+			}
+			else
+			{
+				InsecST = GEntityList->Player()->GetPosition();
+			}
 		}
 		else
 		{
@@ -1450,7 +1483,7 @@ public:
 	{
 		if (IsKeyDown(InsecKey))
 		{
-			if (InsecOrbwalk->Enabled())
+			if (InsecOrbwalk->Enabled() && (LeeQone() && InsecType != "Ultimate" && gotoPosition->Enabled() || !gotoPosition->Enabled()))
 			{
 				GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
 			}			
@@ -1488,10 +1521,10 @@ public:
 				}
 			}
 
-			if (!CheckTarget(GetTarget) || GHealthPrediction->GetKSDamage(GetTarget, kSlotR, R->GetDelay(), false) + 
-				(GHealthPrediction->GetKSDamage(GetTarget, kSlotQ, Q->GetDelay(), false) * 2) > GetTarget->GetHealth()) return;
+			if (!CheckTarget(GetTarget) /*|| GHealthPrediction->GetKSDamage(GetTarget, kSlotR, R->GetDelay(), false) + 
+				(GHealthPrediction->GetKSDamage(GetTarget, kSlotQ, Q->GetDelay(), false) * 2) > GetTarget->GetHealth() */) return;
 
-			InsecPOS = GetInsecPos(GetTarget);
+			//InsecPOS = GetInsecPos(GetTarget);
 			
 			if (Q->IsReady() && TargetHaveQ(GetTarget) && !R->IsReady() && LastRTick - GGame->TickCount() < 2000 && InsecTextQ2 == "Q2Now" &&
 				(CastingR(GetTarget) || ExpireQ(GetTarget)))
@@ -1502,11 +1535,19 @@ public:
 			if (R->IsReady() && CheckShielded(GetTarget) && GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) < 200 &&
 				(InsecType == "VamosInsec" || InsecType == "Ultimate"))
 			{
+				if (InsecType == "Ultimate")
+				{
+					if (InsecOrbwalk->Enabled() && (!Q->IsReady() && gotoPosition->Enabled()))
+					{
+						GOrbwalking->Orbwalk(nullptr, GetInsecPos(GetTarget));
+					}
+				}
+				
 				if (GetDistance(GetTarget, GEntityList->Player()) <= 375)
 				{
 					if (Q->IsReady() && LeeQone())
 					{
-						GOrbwalking->ResetAA();
+						//GOrbwalking->ResetAA();
 						Q->CastOnTarget(GetTarget, PredicChange());
 						InsecTextQ2 = "Q2Now";
 					}
@@ -1533,14 +1574,14 @@ public:
 			else if (GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) < 650 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
 				R->IsReady() && checkWardsTemp() && InsecType == "VamosInsec" && (!KickAndFlash->Enabled() || !FoundFlash || !Flash->IsReady()))
 			{
-				WardJump(GetInsecPos(GetTarget), false, true);
+				WardJump(GetInsecPos(GetTarget), false, true);				
 			}			
 			else
 			{				
 				if (!R->IsReady() || (!FoundFlash || !Flash->IsReady()) && !checkWardsTemp()) return;
 				
 				if (Q->IsReady() && LeeQone() && InsecType != "ColoqueiWard" &&
-					GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) > 680)
+					GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) > 680)
 				{
 
 					if (GetTarget->IsValidTarget(GEntityList->Player(), Q->Range()))
@@ -1553,6 +1594,9 @@ public:
 
 					else
 					{
+						otherT = nullptr;
+						otherTM = nullptr;
+
 						SArray<IUnit*> pPerto = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* m) {return m != nullptr &&
 							!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) &&
 							GHealthPrediction->GetKSDamage(m, kSlotQ, Q->GetDelay(), false) < m->GetHealth() &&
@@ -1563,7 +1607,7 @@ public:
 							!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) &&
 							GHealthPrediction->GetKSDamage(m, kSlotQ, Q->GetDelay(), false) < m->GetHealth() &&
 							GetDistanceVectors(m->GetPosition(), GetInsecPos(GetTarget)) < maxDistance() &&
-							GetDistance(m, GEntityList->Player()) < GetDistance(GEntityList->Player(), GetTarget); });
+							GetDistance(m, GEntityList->Player()) < GetDistance(GEntityList->Player(), GetTarget) && m->HealthPercent() > 60; });
 
 						if (pPerto.Any())
 						{
@@ -1573,7 +1617,6 @@ public:
 						{
 							otherT = nullptr;
 						}
-
 
 						if (mPerto.Any())
 						{
@@ -1655,7 +1698,7 @@ public:
 
 				if (!KickAndFlash->Enabled() && InsecType == "goGapCloser" || InsecType == "goGapCloserFlashInCD")
 				{
-					if (GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) < 590 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
+					if (GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) < 590 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
 						R->IsReady())
 					{
 						if (!goUltimate && W->IsReady())
@@ -1668,7 +1711,11 @@ public:
 							{
 								if (!useFlash->Enabled())
 								{
-									GGame->IssueOrder(GEntityList->Player(), kMoveTo, InsecPOS);
+									//GGame->IssueOrder(GEntityList->Player(), kMoveTo, GetInsecPos(GetTarget));
+									if (InsecOrbwalk->Enabled() && (!Q->IsReady() && gotoPosition->Enabled()))
+									{
+										GOrbwalking->Orbwalk(nullptr, GetInsecPos(GetTarget));
+									}
 									InsecType = "Ultimate";
 								}
 								else
@@ -1678,8 +1725,8 @@ public:
 							}
 							else
 							{
-								WardJump(InsecPOS, false, true);
-								Rposition = InsecPOS;
+								WardJump(GetInsecPos(GetTarget), false, true);
+								Rposition = GetInsecPos(GetTarget);
 							}
 						}
 					}
@@ -1687,15 +1734,15 @@ public:
 
 				if (InsecType == "WardFlashDistance" && Flashdistance->Enabled() && FoundFlash && Flash->IsReady() && checkWardsTemp())
 				{
-					if (GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) < 590 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
+					if (GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) < 590 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
 						R->IsReady() || InsecText == "TargetDirect")
 					{
 						InsecType = "goGapCloser";
 						return;
 					}
 					
-					if (GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) > 600 &&
-						GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) < maxDistance() &&
+					if (GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) > 600 &&
+						GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) < maxDistance() &&
 						GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 &&
 						R->IsReady())
 					{
@@ -1705,8 +1752,8 @@ public:
 							
 							InsecTime = GGame->TickCount() + 2000;
 
-							WardJump(InsecPOS, true, false);
-							Rposition = InsecPOS;
+							WardJump(GetInsecPos(GetTarget), true, false);
+							Rposition = GetInsecPos(GetTarget);
 							InsecText = "FlashDistance";
 						}
 					}
@@ -1714,12 +1761,12 @@ public:
 
 				if (KickAndFlash->Enabled() && InsecType == "goKickFlash" || InsecType == "goKickFlashWardInCD")
 				{
-					if (GetDistanceVectors(InsecPOS, GEntityList->Player()->GetPosition()) < 425
+					if (GetDistanceVectors(GetInsecPos(GetTarget), GEntityList->Player()->GetPosition()) < 425
 						&& GetDistance(GetTarget, GEntityList->Player()) < 375 && GEntityList->Player()->GetSpellBook()->GetLevel(kSlotR) >= 1 && R->IsReady() && !goUltimate && FoundFlash && Flash->IsReady())
 					{
 						InsecTime = GGame->TickCount() + 3000;
 						InsecText = "Flash";
-						Rposition = InsecPOS;
+						Rposition = GetInsecPos(GetTarget);
 						R->CastOnUnit(GetTarget);
 					}
 				}
@@ -1739,7 +1786,7 @@ public:
 		if (!CheckTarget(target)) return;		
 
 		if (goInsecUnder)
-		{			
+		{
 			Vec3 position = GetInsecPos(target, true);
 
 			if (Q->IsReady() && TargetHaveQ(target) && !R->IsReady() && LastRTick - GGame->TickCount() < 2000 && InsecTextQ2 == "Q2Now" &&
@@ -1910,6 +1957,10 @@ public:
 		{
 			goInsecUnder = true;
 			TargetUnder = Args.Target_;
+		}
+		else
+		{
+			goInsecUnder = false;
 		}
 	}
 
@@ -2199,61 +2250,116 @@ public:
 				GetTargetDraw = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 1300);
 			}
 
-			if (GetTargetDraw == nullptr) return;
-			if (!GetTargetDraw->IsHero() || !GetTargetDraw->IsEnemy(GEntityList->Player())) return;
-
-			if (DrawSelect->Enabled())
+			if (GetTargetDraw != nullptr && GetTargetDraw->IsHero() && GetTargetDraw->IsEnemy(GEntityList->Player()))
 			{
-				Vec2 textPos = Vec2();
-				auto select = GetTargetDraw;
 
-				if (select->IsHero() && select->IsEnemy(GEntityList->Player()) && select->GetHPBarPosition(textPos))
+				if (DrawSelect->Enabled())
 				{
-					auto altura = -50;
-					auto comprimento = -10;
+					Vec2 textPos = Vec2();
+					auto select = GetTargetDraw;
 
-					static auto message = GRender->CreateFontW("Impact", 30.f, kFontWeightNormal);
-					message->SetColor(Vec4(128, 255, 0, 255));
-					message->SetOutline(true);
-					message->Render(textPos.x + comprimento, textPos.y + altura, "> Insecded Target <");
+					if (select->IsHero() && select->IsEnemy(GEntityList->Player()) && select->GetHPBarPosition(textPos))
+					{
+						auto altura = -50;
+						auto comprimento = -10;
 
-					GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 51, 0, 255), 100);
-					GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 102, 0, 255), 90);
-					GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 153, 0, 255), 80);
-					GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 204, 0, 255), 70);
-					GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 255, 0, 255), 60);
+						static auto message = GRender->CreateFontW("Impact", 30.f, kFontWeightNormal);
+						message->SetColor(Vec4(128, 255, 0, 255));
+						message->SetOutline(true);
+						message->Render(textPos.x + comprimento, textPos.y + altura, "> Insecded Target <");
+
+						GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 51, 0, 255), 100);
+						GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 102, 0, 255), 90);
+						GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 153, 0, 255), 80);
+						GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 204, 0, 255), 70);
+						GRender->DrawOutlinedCircle(select->GetPosition(), Vec4(0, 255, 0, 255), 60);
+						GRender->DrawOutlinedCircle(GetInsecPos(select), Vec4(0, 51, 0, 255), 100);
+					}
 				}
-			}
 
-			if (DrawPosInsec->Enabled() && GetTargetDraw != nullptr)
-			{
-				Vec2 mypos;
-				Vec2 axepos;
-				auto position = GetInsecPos(GetTargetDraw);				
-				auto direction = InsecST.Extend(GetTargetDraw->GetPosition(), +GetDistanceVectors(GetTargetDraw->GetPosition(), InsecST) - 690);
-				GGame->Projection(direction, &mypos);
-				GGame->Projection(GetTargetDraw->GetPosition(), &axepos);				
-
-				//GRender->DrawOutlinedCircle(direction, Vec4(0, 255, 0, 255), 100);				
-				static auto message = GRender->CreateFontW("Comic Sans", 50.f, kFontWeightBold);
-				message->SetColor(Vec4(0, 255, 0, 255));
-				message->SetOutline(true);
-				message->Render(mypos.x - 12, mypos.y - 20, "X");
-
-				if (ClickPOS != Vec3(0, 0, 0) && clickInsec->Enabled())
+				if (DrawPosInsec->Enabled() && GetTargetDraw != nullptr)
 				{
-					Vec2 myposclick;
-					GGame->Projection(ClickPOS, &myposclick);
-					//GRender->DrawOutlinedCircle(ClickPOS, Vec4(150, 255, 0, 255), 50);
+					Vec2 mypos;
+					Vec2 axepos;
+					auto position = GetInsecPos(GetTargetDraw);
+					auto direction = InsecST.Extend(GetTargetDraw->GetPosition(), +GetDistanceVectors(GetTargetDraw->GetPosition(), InsecST) - 690);
+					GGame->Projection(direction, &mypos);
+					GGame->Projection(GetTargetDraw->GetPosition(), &axepos);
+
+					//GRender->DrawOutlinedCircle(direction, Vec4(0, 255, 0, 255), 100);				
 					static auto message = GRender->CreateFontW("Comic Sans", 50.f, kFontWeightBold);
-					message->SetColor(Vec4(255, 0, 0, 255));
+					message->SetColor(Vec4(0, 255, 0, 255));
 					message->SetOutline(true);
-					message->Render(myposclick.x - 12, myposclick.y - 20, "M");
-				}
+					message->Render(mypos.x - 12, mypos.y - 20, "X");
 
-				GRender->DrawLine(mypos, axepos, Vec4(0, 255, 0, 255));
+					if (ClickPOS != Vec3(0, 0, 0) && clickInsec->Enabled())
+					{
+						Vec2 myposclick;
+						GGame->Projection(ClickPOS, &myposclick);
+						//GRender->DrawOutlinedCircle(ClickPOS, Vec4(150, 255, 0, 255), 50);
+						static auto message = GRender->CreateFontW("Comic Sans", 50.f, kFontWeightBold);
+						message->SetColor(Vec4(255, 0, 0, 255));
+						message->SetOutline(true);
+						message->Render(myposclick.x - 12, myposclick.y - 20, "M");
+					}
+
+					GRender->DrawLine(mypos, axepos, Vec4(0, 255, 0, 255));
+				}
 			}
-		}		
+		}
+
+		if (DrawTime->Enabled())
+		{
+			SArray<IUnit*> Target = SArray<IUnit*>(GEntityList->GetAllUnits()).Where([](IUnit* e) {return e != nullptr && (e->IsHero() || e->IsCreep() || e->IsJungleCreep()) && 
+				e->HasBuff("BlindMonkQOne") && e->GetTeam() != GEntityList->Player()->GetTeam(); });
+
+			if (Target.Any())
+			{				
+				auto target = Target.FirstOrDefault();
+				auto end = GBuffData->GetEndTime(Target.FirstOrDefault()->GetBuffDataByName("BlindMonkQOne"));
+				auto time = end - GGame->Time() - (GGame->Latency() / 1000);
+
+				if (time > 0)
+				{
+					static auto messageTimer = GRender->CreateFontW("Impact", 30.f, kFontWeightNormal);
+					messageTimer->SetLocationFlags(kFontLocationCenter);
+					messageTimer->SetOutline(true);
+					
+					if (time < 1)
+					{
+						messageTimer->SetColor(Vec4(255, 0, 0, 255));
+					}
+					else
+					{
+						messageTimer->SetColor(Vec4(255, 255, 0, 255));
+					}
+
+					Vec2 pos;
+					GGame->Projection(Target.FirstOrDefault()->GetPosition(), &pos);
+					
+					if (target->IsHero() || strstr(target->GetObjectName(), "Dragon") || strstr(target->ChampionName(), "Baron"))
+					{						
+						if (strstr(target->GetObjectName(), "Dragon"))
+						{
+							messageTimer->Render(pos.x, pos.y, "Dragon: Q Expire: %.1F", time);
+						}
+						else if (strstr(target->ChampionName(), "Baron"))
+						{
+							messageTimer->Render(pos.x, pos.y, "Baron: Q Expire: %.1F", time);
+						}
+						else
+						{
+							messageTimer->Render(pos.x, pos.y, "%s: Q Expire: %.1F", target->ChampionName(), time);
+						}						
+					}
+					else
+					{						
+						messageTimer->Render(pos.x, pos.y, "Q Expire: %.1F", time);
+					}
+
+				}
+			}
+		}
 	}
 
 	static void SaveClick()
@@ -2394,4 +2500,63 @@ public:
 			GankMode();
 		}
 	}
+
+	static void SemiManualW()
+	{
+		if (IsKeyDown(WSemiManualKey) && W->IsReady() && LeeWone())
+		{
+			IUnit* aliados = nullptr;
+			IUnit* wards = nullptr;
+			IUnit* minions = nullptr;
+
+			SArray<IUnit*> Aliado = SArray<IUnit*>(GEntityList->GetAllHeros(true, false)).Where([](IUnit* Aliados) {return Aliados != nullptr && Aliados != GEntityList->Player() &&
+				!Aliados->IsDead() && Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) <= W->Range(); });
+
+			if (Aliado.Any())
+			{
+				aliados = Aliado.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
+
+				W->CastOnUnit(aliados);
+			}
+
+			if (aliados == nullptr)
+			{
+				SArray<IUnit*> Wards = SArray<IUnit*>(GEntityList->GetAllUnits()).Where([](IUnit* Aliados) {return Aliados != nullptr && Aliados->IsWard() &&
+					Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) <= W->Range(); });
+
+				if (Wards.Any())
+				{
+					wards = Wards.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
+					W->CastOnUnit(wards);
+				}
+			}
+
+			if (wards == nullptr && aliados == nullptr)
+			{
+				SArray<IUnit*> Minions = SArray<IUnit*>(GEntityList->GetAllMinions(true, false, false)).Where([](IUnit* Aliados) {return Aliados != nullptr &&
+					!Aliados->IsDead() && Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) <= W->Range(); });
+
+				if (Minions.Any())
+				{
+					minions = Minions.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
+					W->CastOnUnit(minions);
+				}
+			}
+		}
+	}
+
+	static void SemiManualR()
+	{
+		if (IsKeyDown(RSemiManualKey) && R->IsReady())
+		{
+			SArray<IUnit*> Target = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* e) {return e != nullptr &&
+				!e->IsDead() && e->IsVisible() && GetDistance(GEntityList->Player(), e) <= R->Range(); });
+
+			if (Target.Any())
+			{
+				R->CastOnUnit(Target.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); }));
+			}			
+		}
+	}	
+
 };

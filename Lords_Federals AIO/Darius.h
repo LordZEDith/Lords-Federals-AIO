@@ -44,7 +44,7 @@ public:
 		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, false, kCollidesWithNothing);
 		E = GPluginSDK->CreateSpell2(kSlotE, kConeCast, false, false, kCollidesWithNothing);
 		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, kCollidesWithNothing);
-		Q->SetOverrideRange(425);
+		Q->SetOverrideRange(415);
 		W->SetOverrideRange(170);
 		E->SetOverrideRange(545);
 		R->SetOverrideRange(475);
@@ -52,8 +52,6 @@ public:
 		Q->SetOverrideDelay(0.95f);
 		E->SetOverrideRadius(50);
 		E->SetOverrideDelay(0.5f);
-
-
 	}
 
 	void Automatic()
@@ -98,13 +96,46 @@ public:
 
 		void Combo()
 		{
+			if (GEntityList->Player()->HasBuff("dariusqcast") && CountEnemy(GEntityList->Player()->GetPosition(), 700) < 3 )
+			{				
+				GOrbwalking->SetMovementAllowed(false);
+				GOrbwalking->SetAttacksAllowed(false);
+
+				auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+
+				if (CheckTarget(target))
+				{
+					auto pPos = GEntityList->Player()->GetPosition();
+
+					if (GetDistance(target, GEntityList->Player()) <= 250)
+					{
+						GGame->IssueOrder(GEntityList->Player(), kMoveTo, pPos.Extend(target->GetPosition(), -Q->Range()));						
+					}
+					else if (GetDistance(target, GEntityList->Player()) <= Q->Range())
+					{
+						GGame->IssueOrder(GEntityList->Player(), kMoveTo, GGame->CursorPosition());						
+					}
+					else
+					{
+						GGame->IssueOrder(GEntityList->Player(), kMoveTo, target->GetPosition());
+					}
+				}
+			}
+			else
+			{
+				GOrbwalking->SetMovementAllowed(true);
+				GOrbwalking->SetAttacksAllowed(true);
+			}
+
 			if (ComboQ->Enabled())
 			{
 				if (Q->IsReady())
 				{
 					auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-					
-					Q->CastOnTarget(target);
+					if (CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), Q->Range()))
+					{
+						Q->CastOnUnit(target);
+					}
 				}
 			}
 			if (ComboW->Enabled())
@@ -124,10 +155,6 @@ public:
 				}
 			}
 		}
-
-	
-
-
 	
 	void Farm()
 	{
@@ -170,6 +197,14 @@ public:
 			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }
 
 			if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range()); }
+		}
+	}
+
+	static void OnBuffRemove(IUnit* Source, void* BuffData)
+	{
+		if (GetDistance(GEntityList->Player(), Source) < 500)
+		{
+			GGame->PrintChat(GBuffData->GetBuffName(BuffData));
 		}
 	}
 

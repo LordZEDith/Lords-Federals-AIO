@@ -934,3 +934,48 @@ static int Random(int min, int max)
 	auto r = rand() / RAND_MAX;
 	return min + r * (max - min);
 }
+
+static void ProjectOn(Vec2 const& Point, Vec2 const& SegmentStart, Vec2 const& SegmentEnd, ProjectionInfo& Out)
+{
+	auto cx = Point.x;
+	auto cy = Point.y;
+	auto ax = SegmentStart.x;
+	auto ay = SegmentStart.y;
+	auto bx = SegmentEnd.x;
+	auto by = SegmentEnd.y;
+
+	auto rL = ((cx - ax) * (bx - ax) + (cy - ay) * (by - ay)) / (powf(bx - ax, 2) + powf(by - ay, 2));
+	auto pointLine = Vec2(ax + rL * (bx - ax), ay + rL * (by - ay));
+	float rS;
+
+	if (rL < 0)
+	{
+		rS = 0;
+	}
+	else if (rL > 1)
+	{
+		rS = 1;
+	}
+	else
+	{
+		rS = rL;
+	}
+
+	auto isOnSegment = (rS == rL);
+	auto pointSegment = isOnSegment ? pointLine : Vec2(ax + rS * (bx - ax), ay + rS * (by - ay));
+
+	Out = ProjectionInfo(isOnSegment, pointSegment, pointLine);
+}
+
+static float Distance(Vec2 point, Vec2 start, Vec2 End, bool onlyOnSegment)
+{
+	ProjectionInfo projection_info;
+
+	ProjectOn(point, start, End, projection_info);
+
+	if (projection_info.IsOnSegment || onlyOnSegment == false)
+	{
+		return projection_info.SegmentPoint.DistanceToSqr(point);
+	}
+	return FLT_MAX;
+}
