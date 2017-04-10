@@ -15,7 +15,7 @@ public:
 	{
 		MainMenu = GPluginSDK->AddMenu("Lords & Federals Renekton");
 
-		dsettings = MainMenu->AddMenu("Drawings");
+		dsettings = MainMenu->AddMenu("Drawings Settings");
 		{
 			drawqq = dsettings->CheckBox("Draw Q", true);
 			drawee = dsettings->CheckBox("Draw E", true);
@@ -23,38 +23,45 @@ public:
 			//drawcombo = dsettings->CheckBox("Draw Combo Damage", true);
 		}
 
-		csettings = MainMenu->AddMenu("Combo");
+		csettings = MainMenu->AddMenu("Combo Settings");
 		{
 			useq = csettings->CheckBox("Use Q", true);
 			usew = csettings->CheckBox("Use W", true);
 			usee = csettings->CheckBox("Use E", true);
 			user = csettings->AddInteger("Use R under", 0, 100, 15);
 			userindanger = csettings->AddInteger("Use R min X enemy", 1, 5, 2);
-			furyMode = csettings->AddInteger("Fury Priority", 1, 3, 1);
+			furyMode = csettings->AddSelection("Fury Priority", 0, std::vector<std::string>({ "No priority", "Q", "W", "E" }));			
 			useIgnite = csettings->CheckBox("Use Ignite", true);
 
 		}
 
-		Hsettings = MainMenu->AddMenu("Harass");
+		Hsettings = MainMenu->AddMenu("Harass Settings");
 		{
 			useqH = Hsettings->CheckBox("Use Q", true);
 			usewH = Hsettings->CheckBox("Use W", true);
-			useCH = Hsettings->AddInteger("Harass Mode", 1, 2, 1);
+			useCH = Hsettings->AddSelection("Harass Mode", 0, std::vector<std::string>({ "E-furyQ-Eback if possible", "Basic" }));
 			donteqwebtower = Hsettings->CheckBox("Dont Q Under Tower", true);
 		}
 
-		Msettings = MainMenu->AddMenu("Misc");
+		fedMiscSettings = MainMenu->AddMenu("Misc Settings");
 		{
-			useHydra = Msettings->CheckBox("Use Titanic/Ravenous", true);
+			useHydra = fedMiscSettings->CheckBox("Use Titanic/Ravenous", true);
 		}
 	}
 
 	void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kCircleCast, false, true, kCollidesWithNothing);
-		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, kCollidesWithNothing);
-		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, kCollidesWithNothing);
-		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, true, kCollidesWithNothing);
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kCircleCast, false, false, (kCollidesWithNothing));
+		Q->SetSkillshot(0.25, 225, 1000, 225);		
+
+		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, (kCollidesWithNothing));
+		W->SetSkillshot(0.25, 0, 1000, FLT_MAX);		
+
+		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, (kCollidesWithNothing));
+		E->SetSkillshot(0.25, 85, 1000, 450);		
+
+		R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, (kCollidesWithNothing));
+		R->SetSkillshot(0.25, 0, 1000, FLT_MAX);		
 
 		if (GEntityList->Player()->GetSpellSlot("SummonerDot") != kSlotUnknown)
 			Ignites = GPluginSDK->CreateSpell2(GEntityList->Player()->GetSpellSlot("SummonerDot"), kTargetCast, false, false, kCollidesWithNothing);
@@ -84,18 +91,28 @@ public:
 
 	static bool rene()
 	{
-		return GEntityList->Player()->HasBuff("renektonsliceanddicedelay");
+		if (GEntityList->Player()->HasBuff("renektonsliceanddicedelay"))
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	static bool fury()
 	{
-		return GEntityList->Player()->HasBuff("renektonrageready");
+		if (GEntityList->Player()->HasBuff("renektonrageready"))
+		{			
+			return true;
+		}
+
+		return false;
 	}
 
 	static bool renw()
 	{
 		return GEntityList->Player()->HasBuff("renektonpreexecute");
-	}
+	}	
 
 	bool canBeOpWithQ(Vec3 vector3)
 	{
@@ -228,13 +245,13 @@ public:
 			}
 			break;
 		case 2:
-			if (spellSlot != kSlotW && W->IsReady())
+			if (spellSlot != kSlotW && (W->IsReady() || renw()) && target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(target)))
 			{
 				return false;
 			}
 			break;
 		case 3:
-			if (spellSlot != kSlotE && E->IsReady())
+			if (spellSlot != kSlotE && E->IsReady() && rene())
 			{
 				return false;
 			}
@@ -246,63 +263,76 @@ public:
 	void ComboLogic()
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range() * 2);
-		if (target == nullptr)
-			return;
+		if (!CheckTarget(target)) return;
 
-		bool hasIgnite = GEntityList->Player()->GetSpellState(GEntityList->Player()->GetSpellSlot("SummonerDot")) == Ready;
+		//bool hasIgnite = GEntityList->Player()->GetSpellState(GEntityList->Player()->GetSpellSlot("SummonerDot")) == Ready;
+		//temp fix
+		auto hasIgnite = false;
+
 		float FuryQ = GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotQ) * 0.5;
 		float FuryW = GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotW) * 0.5;
 		float eDmg = GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotE);
 		float combodamage = CalcComboDmg(target);
-		if (target != nullptr && useIgnite->Enabled() && hasIgnite && GDamage->GetSummonerSpellDamage(GEntityList->Player(), target, kSummonerSpellIgnite) > target->GetHealth())
+
+		//temp fix
+		/*if (target != nullptr && useIgnite->Enabled() && hasIgnite && GDamage->GetSummonerSpellDamage(GEntityList->Player(), target, kSummonerSpellIgnite) > target->GetHealth())
 		{
 			Ignites->CastOnTarget(target);
-		}
-		if (GetDistancePos(GEntityList->Player()->GetPosition(), target->GetPosition()) > E->Range() && E->IsReady() && (W->IsReady() || Q->IsReady() && lastE == 0) && usee->Enabled())
-		{
-			auto vecMinions = GEntityList->GetAllMinions(false, true, false);
-			auto closeGapTarget = std::find_if(vecMinions.begin(), vecMinions.end(), InRange);
+		}*/
 
-			if (closeGapTarget != vecMinions.end())
+		if (GetDistancePos(GEntityList->Player()->GetPosition(), target->GetPosition()) > E->Range() && E->IsReady() && (W->IsReady() || Q->IsReady()) && lastE == 0 && usee->Enabled())
+		{
+			GetTarget = target;
+			IUnit* minions = nullptr;
+			SArray<IUnit*> Minions = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, true)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && GetDistance(GEntityList->Player(), m) <= E->Range() && GetDistance(m, GetTarget) < Q->Range() - 40; });
+
+			if (Minions.Any())
 			{
-				auto pUnit = (*closeGapTarget);
-				if ((canBeOpWithQ(pUnit->GetPosition()) || fury()) && !rene())
+				minions = Minions.MaxOrDefault<int>([](IUnit* i) {return CountMinions(i->GetPosition(), Q->Range()); });			
+				
+				if ((canBeOpWithQ(minions->GetPosition()) || fury()) && !rene())
 				{
-					if (E->IsReady() && GEntityList->Player()->IsValidTarget(pUnit, E->Range()))
+					if (E->IsReady() && GEntityList->Player()->IsValidTarget(minions, E->Range()))
 					{
-						E->CastOnPosition(pUnit->GetPosition());
+						E->CastOnPosition(minions->GetPosition());
 						lastE = GGame->TickCount();
 						return;
 					}
 				}
 			}
 		}
+
 		if (useq->Enabled() && Q->IsReady() && GEntityList->Player()->IsValidTarget(target, Q->Range()) && !renw() && !GEntityList->Player()->IsDashing() && checkFuryMode(kSlotQ, target))
 		{
 			Q->CastOnPlayer();
 		}
-		float distance = GetDistancePos(GEntityList->Player()->GetPosition(), target->GetPosition());
+
+		auto distance = GetDistance(GEntityList->Player(), target);
+
 		if (usee->Enabled() && E->IsReady() && lastE == 0 && GEntityList->Player()->IsValidTarget(target, E->Range())
 			&& (eDmg > target->GetHealth() || (((W->IsReady() && canBeOpWithQ(target->GetPosition()) && !rene()) ||
-			(distance > GetDistancePos(target->GetPosition(), Extend(GEntityList->Player()->GetPosition(), target->GetPosition(), E->Range())) - distance)))))
+			(distance > GetDistanceVectors(target->GetPosition(), Extend(GEntityList->Player()->GetPosition(), target->GetPosition(), E->Range())) - distance)))))
 		{
 			E->CastOnPosition(target->GetPosition());
 			lastE = GGame->TickCount();
 			return;
 		}
+
 		if (usee->Enabled() && checkFuryMode(kSlotE, target) && lastE != 0 &&
 			(eDmg + GDamage->CalcPhysicalDamage(GEntityList->Player(), target, GEntityList->Player()->PhysicalDamage()) > target->GetHealth() ||
-			(((W->IsReady() && canBeOpWithQ(target->GetPosition()) && !rene() ||
-				(distance < GetDistancePos(target->GetPosition(), Extend(GEntityList->Player()->GetPosition(), target->GetPosition(), E->Range())) - distance) ||
-				GetDistancePos(GEntityList->Player()->GetPosition(), target->GetPosition()) > E->Range() - 100)))))
+			(((W->IsReady() && canBeOpWithQ(target->GetPosition()) && !rene()) ||
+				(distance < GetDistanceVectors(target->GetPosition(), Extend(GEntityList->Player()->GetPosition(), target->GetPosition(), E->Range())) - distance) ||
+				GetDistance(GEntityList->Player(), target) > E->Range() - 100))))
 		{
 			int time = GGame->TickCount() - lastE;
-			if (time > 3600.0f || combodamage > target->GetHealth() || GetDistancePos(GEntityList->Player()->GetPosition(), target->GetPosition()) > E->Range() - 100)
+			if (time > 3600.f || combodamage > target->GetHealth() || GetDistance(GEntityList->Player(), target) > E->Range() - 100)
 			{
 				E->CastOnPosition(target->GetPosition());
 				lastE = 0;
 			}
 		}
+
 		if (GEntityList->Player()->HealthPercent() <= user->GetInteger())
 		{
 			R->CastOnPlayer();
@@ -325,36 +355,43 @@ public:
 		if (Target->IsHero() && GOrbwalking->GetOrbwalkingMode() == kModeCombo && checkFuryMode(kSlotW, Target) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 		{
 			float time = GGame->Time() - GEntityList->Player()->GetSpellRemainingCooldown(kSlotW);
+
 			if (useHydra->Enabled() &&
 				(GEntityList->Player()->GetSpellRemainingCooldown(kSlotW) - abs(time) < 1 || time < -6 || GEntityList->Player()->HealthPercent() < 50))
 			{
 				if (titHydra->IsOwned() && titHydra->IsReady())
+				{
 					titHydra->CastOnPlayer();
+				}
 				if (ravHydra->IsOwned() && ravHydra->IsReady())
+				{
 					ravHydra->CastOnPlayer();
+				}
 			}
-			if (Target != nullptr && W->IsReady() && Target->IsHero() && GOrbwalking->GetOrbwalkingMode() == kModeCombo && usew->Enabled() && checkFuryMode(kSlotW, Target))
+		}
+		if (Target != nullptr && W->IsReady() && Target->IsHero() && GOrbwalking->GetOrbwalkingMode() == kModeCombo && usew->Enabled() && checkFuryMode(kSlotW, Target))
+		{
+			W->CastOnPlayer();
+			GOrbwalking->ResetAA();
+			return;
+		}
+		if (Target != nullptr && Target->IsHero() && GOrbwalking->GetOrbwalkingMode() == kModeMixed && useCH->GetInteger() == 0)
+		{
+			if (Target != nullptr && W->IsReady())
 			{
 				W->CastOnPlayer();
+				GOrbwalking->ResetAA();
 				return;
 			}
-			if (Target != nullptr && Target->IsHero() && GOrbwalking->GetOrbwalkingMode() == kModeMixed && useCH->GetInteger() == 0)
+			if (Target != nullptr && Q->IsReady())
 			{
-				if (Target != nullptr && W->IsReady())
-				{
-					W->CastOnPlayer();
-					return;
-				}
-				if (Target != nullptr && Q->IsReady())
-				{
-					Q->CastOnPlayer();
-					return;
-				}
-				if (Target != nullptr && E->IsReady() && GEntityList->Player()->IsValidTarget(Target, E->Range() - 100))
-				{
-					E->CastOnPosition(Target->GetPosition());
-					return;
-				}
+				Q->CastOnPlayer();
+				return;
+			}
+			if (Target != nullptr && E->IsReady() && GEntityList->Player()->IsValidTarget(Target, E->Range() - 100))
+			{
+				E->CastOnPosition(Target->GetPosition());
+				return;
 			}
 		}
 	}
