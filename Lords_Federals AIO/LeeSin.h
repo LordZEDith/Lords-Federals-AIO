@@ -485,7 +485,7 @@ public:
 		SaveClick();
 		InsecUnderTower();
 		SemiManualW();
-		SemiManualR();
+		SemiManualR();		
 		
 		if (IsKeyDown(InstaFlashKey) && FoundFlash)
 		{
@@ -712,13 +712,116 @@ public:
 			}
 		}
 	}
+
+	static void jCastQ(IUnit* minion)
+	{
+		if (JungleQ->Enabled() && Q->IsReady() && GGame->TickCount() - LastSpellTick > 500)
+		{
+			if (LeeQone())
+			{
+				if (PassiveStacksNum < 2 && !IsDashingW() && (LeeEone() || !E->IsReady()) && (LeeWone() || !W->IsReady()))
+				{
+					if (GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 200 || JunglePassive())
+					{
+						if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+						{
+							Q->CastOnUnit(minion);
+							LastSpellTick = GGame->TickCount();
+						}
+					}
+				}
+			}
+			else
+			{
+				if (TargetHaveQ(minion) && (ExpireQ(minion) || GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false) > minion->GetHealth() ||
+					GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 200 || JunglePassive()))
+				{
+					if (!IsDashingW())
+					{
+						Q->CastOnPlayer();
+						LastSpellTick = GGame->TickCount();
+					}
+				}
+			}
+		}
+	}
+	
+	static void jCastW(IUnit* minion)
+	{
+		if (JungleW->Enabled())
+		{
+			if (W->IsReady() && !isDashingQ && !IsDashingW() && GGame->TickCount() - LastSpellTick > 500)
+			{
+				if (LeeWone())
+				{
+					if (GGame->TickCount() - LastWTick > 500 && (LeeQone() || !Q->IsReady()) && (LeeEone() || E->IsReady() || GEntityList->Player()->GetSpellBook()->GetLevel(kSlotE) == 0))
+					{
+						if ((!FoundMinions(Q->Range()) && FoundMinionsNeutral(Q->Range()) &&
+							GEntityList->Player()->HealthPercent() < 30) || JunglePassive())
+						{
+							if (GEntityList->Player()->IsValidTarget(minion, 400))
+							{
+								W->CastOnPlayer();
+								LastSpellTick = GGame->TickCount();
+							}
+						}
+					}
+				}
+				else
+				{
+					if (GEntityList->Player()->HealthPercent() < 20 || GGame->TickCount() - LastWTick >= 2800 || JunglePassive())
+					{
+						if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+						{
+							W->CastOnPlayer();
+							LastSpellTick = GGame->TickCount();
+						}
+					}
+				}
+			}
+		}
+
+	}
+
+	static void jCastE(IUnit* minion)
+	{
+		if (JungleE->Enabled())
+		{
+			if (E->IsReady() && !isDashingQ && !IsDashingW() && GGame->TickCount() - LastSpellTick > 500)
+			{
+				if (LeeEone())
+				{
+					if (!FoundMinions(Q->Range()) && FoundMinionsNeutral(Q->Range()) && JunglePassive() && (LeeQone() || !Q->IsReady()) && (LeeWone() || !W->IsReady()))
+					{
+						if (GEntityList->Player()->IsValidTarget(minion, E->Range() + 50) && E->CastOnPlayer())
+						{
+							LastSpellTick = GGame->TickCount();
+						}
+					}
+				}
+				else
+				{
+					/*if (minion->IsValidTarget(GEntityList->Player(), E2->Range()) && TargetHaveE(minion) &&
+						JunglePassive() && E2->CastOnPlayer())
+					{
+						LastSpellTick = GGame->TickCount();						
+					}*/
+
+					if ((JunglePassive() || ExpireE(minion)) && E2->CastOnPlayer())
+					{
+						LastSpellTick = GGame->TickCount();
+					}
+				}
+			}
+		}
+	}
 	
 	static void JungleClear()
 	{
 		if (FoundMinions(Q->Range()) && !FoundMinionsNeutral(1300)) { return; }
 
 		SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
-			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()); });	
+			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()); });
 
 		if (Minion.Any())
 		{
@@ -727,99 +830,35 @@ public:
 
 		if (CheckTarget(jMonster))
 		{
-			if (JungleE->Enabled())
+			if (GEntityList->Player()->HealthPercent() < 60)
 			{
-				if (E->IsReady() && !isDashingQ && !IsDashingW() && GGame->TickCount() - LastSpellTick > 500)
+				jCastW(jMonster);
+
+				if (CountMinionsNeutral(GEntityList->Player()->GetPosition(), E->Range() + 50) > 1)
 				{
-
-					if (LeeEone())
-					{
-						if (!FoundMinions(Q->Range()) && FoundMinionsNeutral(Q->Range()) && JunglePassive() && (LeeQone() || !Q->IsReady()) && (LeeWone() || !W->IsReady()))
-						{
-							if (GEntityList->Player()->IsValidTarget(jMonster, E->Range() + 50) && E->CastOnPlayer())
-							{
-								LastSpellTick = GGame->TickCount();
-							}
-						}
-					}
-					else
-					{
-						if (jMonster->IsValidTarget(GEntityList->Player(), E2->Range()) && TargetHaveE(jMonster) &&
-							JunglePassive() && E2->CastOnPlayer())
-						{
-							LastSpellTick = GGame->TickCount() + 300;
-							return;
-						}
-
-						if ((JunglePassive() || ExpireE(jMonster)) && E2->CastOnPlayer())
-						{
-							LastSpellTick = GGame->TickCount();
-						}
-					}
-				}
-			}
-
-			if (JungleW->Enabled())
-			{
-				if (W->IsReady() && !isDashingQ && !IsDashingW() && GGame->TickCount() - LastSpellTick > 500)
-				{
-					if (LeeWone())
-					{
-						if (GGame->TickCount() - LastWTick > 500 && (LeeQone() || !Q->IsReady()) && (LeeEone() || E->IsReady() || GEntityList->Player()->GetSpellBook()->GetLevel(kSlotE) == 0))
-						{
-							if ((!FoundMinions(Q->Range()) && FoundMinionsNeutral(Q->Range()) &&
-								GEntityList->Player()->HealthPercent() < 30) || JunglePassive())
-							{
-								if (GEntityList->Player()->IsValidTarget(jMonster, 400))
-								{
-									W->CastOnPlayer();
-									LastSpellTick = GGame->TickCount() + 500;
-								}
-							}
-						}
-					}
-					else
-					{
-						if (GEntityList->Player()->HealthPercent() < 20 || GGame->TickCount() - LastWTick >= 2800 || JunglePassive())
-						{
-							if (GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
-							{
-								W->CastOnPlayer();
-								LastSpellTick = GGame->TickCount();
-							}
-						}
-					}
-				}
-			}
-
-			if (JungleQ->Enabled() && Q->IsReady() && GGame->TickCount() - LastWTick > 500)
-			{
-				if (LeeQone())
-				{
-					if (PassiveStacksNum < 2 && !IsDashingW() && (LeeEone() || !E->IsReady()) && (LeeWone() || !W->IsReady()))
-					{
-						if (GetDistance(GEntityList->Player(), jMonster) > GEntityList->Player()->GetRealAutoAttackRange(jMonster) + 200 || JunglePassive())
-						{
-							if (GEntityList->Player()->IsValidTarget(jMonster, Q->Range()))
-							{
-								Q->CastOnUnit(jMonster);
-								LastSpellTick = GGame->TickCount();
-							}
-						}
-					}
+					jCastE(jMonster);
+					jCastQ(jMonster);
 				}
 				else
 				{
-					if (TargetHaveQ(jMonster) && (ExpireQ(jMonster) || GHealthPrediction->GetKSDamage(jMonster, kSlotQ, Q->GetDelay(), false) > jMonster->GetHealth() ||
-						GetDistance(GEntityList->Player(), jMonster) > GEntityList->Player()->GetRealAutoAttackRange(jMonster) + 200 || JunglePassive()))
-					{
-						if (!IsDashingW())
-						{
-							Q->CastOnPlayer();
-							LastSpellTick = GGame->TickCount();
-						}
-					}
+					jCastQ(jMonster);
+					jCastE(jMonster);
 				}
+			}
+			else
+			{
+				if (CountMinionsNeutral(GEntityList->Player()->GetPosition(), E->Range() + 50) > 1)
+				{
+					jCastE(jMonster);
+					jCastQ(jMonster);
+				}
+				else
+				{
+					jCastQ(jMonster);
+					jCastE(jMonster);
+				}
+
+				jCastW(jMonster);
 			}
 		}
 	}
@@ -1243,7 +1282,7 @@ public:
 
 			for (auto ward : GEntityList->GetAllUnits())
 			{
-				if (ward != nullptr && ward->IsWard() && !ward->IsEnemy(GEntityList->Player()) && ward->IsVisible() && GetDistance(GEntityList->Player(), ward) > 200 &&
+				if (ward != nullptr && (ward->IsWard() || strstr(ward->GetObjectName(), "JammerDevice")) && !ward->IsEnemy(GEntityList->Player()) && ward->IsVisible() && GetDistance(GEntityList->Player(), ward) > 200 &&
 					GetDistanceVectors(JumpPos, ward->GetPosition()) < 200 &&
 					GetDistance(GEntityList->Player(), ward) < W->Range())
 				{
@@ -1266,7 +1305,6 @@ public:
 		{
 			if (W->IsReady() && LeeWone() && LastWard < GGame->TickCount())
 			{
-
 				if (Ward1->IsReady() && Ward1->IsOwned())
 				{
 					Ward1->CastOnPosition(JumpPos);
@@ -1898,6 +1936,8 @@ public:
 	{
 		if (Args.Caster_ == GEntityList->Player())
 		{
+			GUtility->LogConsole("Ataques: %s", Args.Name_);
+			
 			if (strstr(Args.Name_, "BlindMonkQTwo"))
 			{
 				isDashingQ = true;
@@ -1966,7 +2006,7 @@ public:
 
 	static void OnCreateObject(IUnit* Source)
 	{
-		if (W->IsReady() && (strstr(Source->GetObjectName(), "SightWard") || strstr(Source->GetObjectName(), "VisionWard")))
+		if (W->IsReady() && (strstr(Source->GetObjectName(), "SightWard") || strstr(Source->GetObjectName(), "VisionWard") || strstr(Source->GetObjectName(), "JammerDevice")))
 		{
 			if (GetDistanceVectors(Source->GetPosition(), WardPos) < 100)
 			{
@@ -2521,7 +2561,7 @@ public:
 
 			if (aliados == nullptr)
 			{
-				SArray<IUnit*> Wards = SArray<IUnit*>(GEntityList->GetAllUnits()).Where([](IUnit* Aliados) {return Aliados != nullptr && Aliados->IsWard() &&
+				SArray<IUnit*> Wards = SArray<IUnit*>(GEntityList->GetAllUnits()).Where([](IUnit* Aliados) {return Aliados != nullptr && (Aliados->IsWard() || strstr(Aliados->GetObjectName(), "JammerDevice")) &&
 					Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) <= W->Range(); });
 
 				if (Wards.Any())
