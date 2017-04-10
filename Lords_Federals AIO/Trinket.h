@@ -15,7 +15,7 @@ public:
 		{
 			StartTrinket = TrinketSettings->AddSelection("Start Trinket", 1, std::vector<std::string>({ "Off", "Yellow", "Red" }));
 			ChangeTrinket = TrinketSettings->AddSelection("Change Trinket Lv9", 1, std::vector<std::string>({ "Off", "Blue", "Red" }));
-			TrinketBush = TrinketSettings->AddSelection("Trinket Bush Mode", 1, std::vector<std::string>({ "Off", "Last Target Enter", "All Target Enter" }));
+			TrinketBush = TrinketSettings->AddSelection("Trinket Bush Mode", 2, std::vector<std::string>({ "Off", "Last Target Enter", "All Target Enter" }));
 			TrinketBushdelay = TrinketSettings->AddInteger("Trinket Delay (ms)", 0, 600, 180);
 		}
 	}
@@ -54,7 +54,7 @@ public:
 
 	static void TrinketOnExitVisible(IUnit* Source)
 	{
-		if (TrinketBush->GetInteger() != 0 && Source->IsHero() && GetDistance(GEntityList->Player(), Source) < 700)
+		if (TrinketBush->GetInteger() != 0 && Source->IsHero() && GetDistance(GEntityList->Player(), Source) < 1200)
 		{
 			if ((TrinketBush->GetInteger() == 1 && GOrbwalking->GetLastTarget() == Source) || TrinketBush->GetInteger() == 2)
 			{
@@ -70,6 +70,14 @@ public:
 	{
 		if (Args.Caster_ == GEntityList->Player())
 		{
+			if (strstr(Args.Name_, "TrinketOrbLvl3"))
+			{
+				if (CheckTime > GGame->TickCount())
+				{
+					putTrinket = false;
+				}
+			}
+
 			if (strstr(Args.Name_, "TrinketTotemLvl1"))
 			{
 				if (CheckTime > GGame->TickCount())
@@ -77,6 +85,16 @@ public:
 					putTrinket = false;
 				}
 			}
+
+			if (GSpellData->GetSlot(Args.Data_) == kSlotE)
+			{
+				if (CheckTime > GGame->TickCount())
+				{
+					putTrinket = false;
+				}
+			}
+
+			GGame->PrintChat(Args.Name_);
 		}		
 	}
 
@@ -113,26 +131,35 @@ public:
 
 	static void WardBush()
 	{
-		if (TrinketBush->GetInteger() != 0 && putTrinket && checkTrinket() &&
-			timeTrinket < GGame->TickCount())
+		if (TrinketBush->GetInteger() != 0 && putTrinket && checkTrinket())
 		{
 			auto pPos = GEntityList->Player()->GetPosition();
 			auto distance = GetDistanceVectors(pPos, TrinketPos);
-			auto check = 200 / 20;
-
+			auto check = 200 / 20;			
+			
 			for (auto i = 1; i < 20; i++)
 			{
 				JumpPos = pPos.Extend(TrinketPos, (distance + 150) + (check * i));
 
 				if (GNavMesh->IsPointGrass(JumpPos))
 				{
-					if (TrinketY->IsReady() && TrinketY->IsOwned())
+					if (strstr(GEntityList->Player()->ChampionName(), "Ashe") && E->IsReady() && distance < 1300)
 					{
-						TrinketY->CastOnPosition(JumpPos);
+						E->CastOnPosition(JumpPos);
 					}
-					else if (TrinketB->IsReady() && TrinketB->IsOwned())
+					else
 					{
-						TrinketB->CastOnPosition(JumpPos);
+						if (timeTrinket < GGame->TickCount())
+						{
+							if (TrinketY->IsReady() && TrinketY->IsOwned() && distance < 700)
+							{
+								TrinketY->CastOnPosition(JumpPos);
+							}
+							else if (TrinketB->IsReady() && TrinketB->IsOwned() && distance < 1300)
+							{
+								TrinketB->CastOnPosition(JumpPos);
+							}
+						}
 					}
 				}
 			}
