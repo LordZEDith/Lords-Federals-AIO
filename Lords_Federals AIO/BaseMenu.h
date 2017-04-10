@@ -590,6 +590,7 @@ IMenuOption* QSemiManualKey;
 IMenuOption* WSemiManualKey;
 IMenuOption* ESemiManualKey;
 IMenuOption* RSemiManualKey;
+IMenuOption* OrbwalkSemiKey;
 IMenuOption* WardMax;
 IMenuOption* JumpMinion;
 IMenuOption* JumpAllys;

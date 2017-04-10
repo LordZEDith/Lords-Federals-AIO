@@ -26,6 +26,7 @@ public:
 			PassiveStacks = ComboSettings->AddInteger("Passive Stacks", 0, 2, 2);
 			WSemiManualKey = ComboSettings->AddKey("Semi Manual W near Cursor", 87);
 			RSemiManualKey = ComboSettings->AddKey("Semi Manual R near Cursor", 82);
+			OrbwalkSemiKey = ComboSettings->CheckBox("Orbwalk Semi Manual Key?", false);
 		}
 
 		GankSettings = MainMenu->AddMenu("Gank Settings");
@@ -122,6 +123,7 @@ public:
 			DrawSelect = DrawingSettings->CheckBox("Draw Target Selected", true);
 			DrawPosInsec = DrawingSettings->CheckBox("Draw Insec Line", true);
 			DrawTime = DrawingSettings->CheckBox("Draw Q Expire", true);
+			DrawNear = DrawingSettings->CheckBox("Draw Semi Manual W Cursor Range", true);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
 		}
 	}
@@ -996,11 +998,8 @@ public:
 	static void Combo()
 	{
 		auto ComboTarget = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 1300);
-		if (!CheckTarget(ComboTarget)) return;
-
-		StartComboKill(ComboTarget);		
-
-	
+		
+		StartComboKill(ComboTarget);	
 
 		if (!CheckTarget(ComboTarget)) return;
 
@@ -1079,27 +1078,25 @@ public:
 			}
 		}
 
-		if (ComboW->Enabled())
+		if (ComboW->Enabled() && GGame->TickCount() - LastSpellTick > 500)
 		{
-			if (!W->IsReady() || isDashingQ || GGame->TickCount() - LastSpellTick <= 500 || GetDistance(ComboTarget, GEntityList->Player()) > 500)
+			if (!W->IsReady() || isDashingQ || GetDistance(ComboTarget, GEntityList->Player()) > 500)
 			{
 				return;
 			}		
 
 			if (LeeWone())
 			{
-				if (GGame->TickCount() - LastWTick <= 500)
-				{
-					return;
-				}
-
 				if (((GEntityList->Player()->HealthPercent() < 5 || GEntityList->Player()->HealthPercent() < ComboTarget->HealthPercent() && GEntityList->Player()->HealthPercent() < 20) || 
 					ComboPassive() && (LeeEone() || !E->IsReady())) && W->CastOnPlayer())
 				{
 					LastSpellTick = GGame->TickCount() + 500;
 				}
 			}
-			else if (((GEntityList->Player()->HealthPercent() < 5 || GEntityList->Player()->HealthPercent() < ComboTarget->HealthPercent() && GEntityList->Player()->HealthPercent() < 20) || GGame->TickCount() - LastWTick >= 2800 || ComboPassive()) && W->CastOnPlayer())
+			else if (((GEntityList->Player()->HealthPercent() < 5 ||
+				GEntityList->Player()->HealthPercent() < ComboTarget->HealthPercent() && GEntityList->Player()->HealthPercent() < 20) || 
+				GGame->TickCount() - LastWTick >= 2800 || 
+				ComboPassive()) && W->CastOnPlayer())
 			{
 				LastSpellTick = GGame->TickCount();
 			}
@@ -2208,6 +2205,11 @@ public:
 
 		if (DrawWard->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), 590); }
 
+		if (IsKeyDown(WSemiManualKey) && DrawNear->Enabled())
+		{
+			GRender->DrawOutlinedCircle(GGame->CursorPosition(), Vec4(0, 191, 255, 255), 250);
+		}
+
 		auto regua = Geometry::Rectangle(
 			GEntityList->Player()->GetPosition().To2D(),
 			GEntityList->Player()->GetPosition().To2D().Extend(GGame->CursorPosition().To2D(), 1050), 400);		
@@ -2543,14 +2545,21 @@ public:
 
 	static void SemiManualW()
 	{
-		if (IsKeyDown(WSemiManualKey) && W->IsReady() && LeeWone())
+		if (IsKeyDown(WSemiManualKey))
 		{
+			if (OrbwalkSemiKey->Enabled())
+			{
+				GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
+			}
+
+			if (!W->IsReady() || !LeeWone()) return;
+			
 			IUnit* aliados = nullptr;
 			IUnit* wards = nullptr;
 			IUnit* minions = nullptr;
 
 			SArray<IUnit*> Aliado = SArray<IUnit*>(GEntityList->GetAllHeros(true, false)).Where([](IUnit* Aliados) {return Aliados != nullptr && Aliados != GEntityList->Player() &&
-				!Aliados->IsDead() && Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) <= W->Range(); });
+				!Aliados->IsDead() && Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) <= W->Range() && CountAlly(GGame->CursorPosition(), 250) > 0; });
 
 			if (Aliado.Any())
 			{
@@ -2562,7 +2571,8 @@ public:
 			if (aliados == nullptr)
 			{
 				SArray<IUnit*> Wards = SArray<IUnit*>(GEntityList->GetAllUnits()).Where([](IUnit* Aliados) {return Aliados != nullptr && (Aliados->IsWard() || strstr(Aliados->GetObjectName(), "JammerDevice")) &&
-					Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) <= W->Range(); });
+					Aliados->IsVisible() && Aliados->GetTeam() == GEntityList->Player()->GetTeam() &&
+					GetDistance(GEntityList->Player(), Aliados) <= W->Range() && CountWards(GGame->CursorPosition(), 250) > 0; });
 
 				if (Wards.Any())
 				{
@@ -2574,7 +2584,7 @@ public:
 			if (wards == nullptr && aliados == nullptr)
 			{
 				SArray<IUnit*> Minions = SArray<IUnit*>(GEntityList->GetAllMinions(true, false, false)).Where([](IUnit* Aliados) {return Aliados != nullptr &&
-					!Aliados->IsDead() && Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) <= W->Range(); });
+					!Aliados->IsDead() && Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) <= W->Range() && CountMinionsAlly(GGame->CursorPosition(), 250) > 0; });
 
 				if (Minions.Any())
 				{
@@ -2587,8 +2597,15 @@ public:
 
 	static void SemiManualR()
 	{
-		if (IsKeyDown(RSemiManualKey) && R->IsReady())
+		if (IsKeyDown(RSemiManualKey))
 		{
+			if (OrbwalkSemiKey->Enabled())
+			{
+				GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
+			}
+			
+			if (!R->IsReady()) return;
+			
 			SArray<IUnit*> Target = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* e) {return e != nullptr &&
 				!e->IsDead() && e->IsVisible() && GetDistance(GEntityList->Player(), e) <= R->Range(); });
 

@@ -411,6 +411,21 @@ inline int CountAlly(Vec3 Location, int range)
 	return (Count);
 }
 
+inline int CountWards(Vec3 Location, int range)
+{
+	int Count = 0;
+
+	for (auto wards : GEntityList->GetAllUnits())
+	{
+		if (wards != nullptr && (wards->GetPosition() - Location).Length() < range && (wards->IsWard() || strstr(wards->GetObjectName(), "JammerDevice")) && wards->GetTeam() == GEntityList->Player()->GetTeam() &&
+			wards->IsVisible())
+		{
+			Count++;
+		}
+	}
+	return (Count);
+}
+
 inline int GetEnemiesInRange(float range)
 {
 	int enemies = 0;
