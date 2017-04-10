@@ -17,7 +17,15 @@ public:
 			ComboQ = ComboSettings->CheckBox("Use Q", true);
 			ComboW = ComboSettings->CheckBox("Use W", true);			
 			ComboR = ComboSettings->CheckBox("Use R KS combo R + Q + W + AA", true);
-			inUnderTower = ComboSettings->CheckBox("No R Under turret", false);					
+			inUnderTower = ComboSettings->CheckBox("No R Under turret", false);
+			SemiManualKey = ComboSettings->AddKey("Semi-manual cast R key", 71);
+			RMode = ComboSettings->AddSelection("R Semi-manual Mode", 0, std::vector<std::string>({ "Target Selector", "Nearest Mouse" }));
+
+			for (auto enemy : GEntityList->GetAllHeros(false, true))
+			{
+				std::string szMenuName = "R Semi-manual WhiteList - " + std::string(enemy->ChampionName());
+				MenuDontUlt[enemy->GetNetworkId()] = ComboSettings->CheckBox(szMenuName.c_str(), true);
+			}
 		}
 
 		HarassSettings = MainMenu->AddMenu("Harass Settings");
@@ -25,8 +33,13 @@ public:
 			HarassQ = HarassSettings->CheckBox("Use Q", true);
 			HarassWithFarm = HarassSettings->CheckBox("Use Q with FarmClear", true);
 			HarassW = HarassSettings->CheckBox("Use W", false);
-			AutoHarass = HarassSettings->CheckBox("Harass Toggle", false);
+			AutoHarass = HarassSettings->CheckBox("Auto Harass Toggle", false);
 			HarassMana = HarassSettings->AddInteger("Minimum MP% to Harass", 1, 100, 60);
+			for (auto enemy : GEntityList->GetAllHeros(false, true))
+			{
+				std::string szMenuName = "Can Harass - " + std::string(enemy->ChampionName());
+				ChampionUse[enemy->GetNetworkId()] = HarassSettings->CheckBox(szMenuName.c_str(), true);
+			}
 		}
 
 		KillstealSettings = MainMenu->AddMenu("Killsteal Settings");
@@ -76,7 +89,10 @@ public:
 			AntiMelee = fedMiscSettings->CheckBox("E Anti Melee", false);
 			AntiGrab = fedMiscSettings->CheckBox("E Anti Grab ToDo", false);
 			StackMune = fedMiscSettings->CheckBox("Stack Tear", false);
-			AutoW = fedMiscSettings->CheckBox("Auto W Push Tower", true);			
+			AutoW = fedMiscSettings->CheckBox("Auto W Push Tower", true);
+			TrinketBush = fedMiscSettings->CheckBox("Revealer Bush", true);
+			TrinketBushdelay = fedMiscSettings->AddInteger("Trinket Delay (ms)", 0, 600, 180);
+			BuyBlueTrinket = fedMiscSettings->CheckBox("Buy Blue Trinket", false);
 		}
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
@@ -174,50 +190,57 @@ public:
 
 	static void Automatic()
 	{		
+		KeyPressUltimate();
+
 		for (auto target : GEntityList->GetAllHeros(false, true))
 		{
-			if (!CheckTarget(target)) continue;
-
-			if (Killsteal->Enabled())
+			if (CheckTarget(target))
 			{
-				if (checkRrange(target) && KillstealR->Enabled() && R->IsReady() && target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) > target->GetHealth())
+
+				if (Killsteal->Enabled())
 				{
-					R->CastOnTarget(target, PredicChange());
-				}
-				
-				if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
-				{
-					Q->CastOnTarget(target, PredicChange());
+					if (checkRrange(target) && KillstealR->Enabled() && R->IsReady() && target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) > target->GetHealth())
+					{
+						R->CastOnTarget(target, PredicChange());
+					}
+
+					if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
+					{
+						Q->CastOnTarget(target, PredicChange());
+					}
+
+					if (KillstealW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && GHealthPrediction->GetKSDamage(target, kSlotW, W->GetDelay(), false) > target->GetHealth())
+					{
+						W->CastOnTarget(target, PredicChange());
+					}
+
+					if (KillstealE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()) && GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) > target->GetHealth())
+					{
+						E->CastOnUnit(target);
+					}
 				}
 
-				if (KillstealW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && GHealthPrediction->GetKSDamage(target, kSlotW, W->GetDelay(), false) > target->GetHealth())
+				if (CCedR->Enabled() && R->IsReady())
 				{
-					W->CastOnTarget(target, PredicChange());
+					if (target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && !CanMove(target) && !target->IsDead() && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > R->ManaCost())
+					{
+						R->CastOnTarget(target, PredicChange());
+					}
+
 				}
 
-				if (KillstealE->Enabled() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), E->Range()) && GHealthPrediction->GetKSDamage(target, kSlotE, E->GetDelay(), false) > target->GetHealth())
+				if (AutoHarass->Enabled() && Q->IsReady() && HarassMana->GetInteger() < GEntityList->Player()->ManaPercent() && CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), Q->Range()))
 				{
-					E->CastOnUnit(target);
+					if (ChampionUse[target->GetNetworkId()]->Enabled())
+					{
+						Q->CastOnTarget(target, PredicChange());
+					}
 				}
-			}
 
-			if (CCedR->Enabled() && R->IsReady())
-			{
-				if (target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && !CanMove(target) && !target->IsDead() && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > R->ManaCost())
+				if (UltEnemies->GetInteger() > 0 && R->IsReady() && target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > R->ManaCost())
 				{
-					R->CastOnTarget(target, PredicChange());
+					R->CastOnTargetAoE(target, UltEnemies->GetInteger(), PredicChange());
 				}
-				
-			}
-
-			if (AutoHarass->Enabled() && Q->IsReady() && HarassMana->GetInteger() < GEntityList->Player()->ManaPercent() && CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), Q->Range()))
-			{
-				Q->CastOnTarget(target, PredicChange());				
-			}
-
-			if (UltEnemies->GetInteger() > 0 && R->IsReady() && target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > R->ManaCost())
-			{
-				R->CastOnTargetAoE(target, 3, PredicChange());
 			}
 		}
 	}
@@ -260,17 +283,20 @@ public:
 
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 
-		if (!CheckTarget(target)) return;		
+		if (!CheckTarget(target)) return;	
 
-		if (HarassQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()))
+		if (ChampionUse[target->GetNetworkId()]->Enabled())
 		{
-			Q->CastOnTarget(target, PredicChange());			
+			if (HarassQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()))
+			{
+				Q->CastOnTarget(target, PredicChange());
+			}
+
+			if (HarassW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()))
+			{
+				W->CastOnTarget(target, PredicChange());
+			}
 		}
-		
-		if (HarassW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()))
-		{
-			W->CastOnTarget(target, PredicChange());			
-		}		
 	}
 
 	static void LastHit()
@@ -493,4 +519,44 @@ public:
 			}
 		}		
 	}
+
+	static void KeyPressUltimate()
+	{
+		if (IsKeyDown(SemiManualKey))
+		{
+			GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
+
+			if (!R->IsReady())
+			{
+				return;
+			}
+
+			IUnit* TargetR = nullptr;
+
+			if (RMode->GetInteger() == 0)
+			{
+				TargetR = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, RMax->GetInteger());
+			}
+			else
+			{
+				SArray<IUnit*> rtarget = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* m) {return m != nullptr &&
+					!m->IsDead() && m->IsVisible() && MenuDontUlt[m->GetNetworkId()]->Enabled() && m->IsValidTarget(GEntityList->Player(), RMax->GetInteger()); });
+
+				if (rtarget.Any())
+				{
+					TargetR = rtarget.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
+				}
+			}
+
+			if (TargetR == nullptr || TargetR->IsDead() || TargetR->IsInvulnerable() || !TargetR->IsValidTarget(GEntityList->Player(), RMax->GetInteger()))
+			{
+				return;
+			}
+
+			if (MenuDontUlt[TargetR->GetNetworkId()]->Enabled())
+			{
+				R->CastOnTarget(TargetR, PredicChange());
+			}
+		}
+	}	
 };

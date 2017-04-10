@@ -66,7 +66,7 @@ public:
 			RInterrupter = fedMiscSettings->CheckBox("Automatically R Interrupt Spell", true);
 			RGapCloser = fedMiscSettings->CheckBox("Automatically R GapCloser", true);
 			CCedR = fedMiscSettings->CheckBox("Auto R When Enemies Cant Move", false);
-			RMax = fedMiscSettings->AddFloat("R Max Range", 1000, 25000, 3000);
+			RMax = fedMiscSettings->AddFloat("R Max Range", 1000, 25000, 3000);			
 			Predic = fedMiscSettings->AddSelection("Q Prediction ->", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
 		}
 
@@ -371,5 +371,5 @@ public:
 				W->CastOnTarget(Args.Target_, PredicChange());
 			}
 		}
-	}
+	}	
 };

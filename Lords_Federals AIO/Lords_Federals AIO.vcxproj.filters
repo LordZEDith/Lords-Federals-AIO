@@ -240,6 +240,12 @@
     <ClInclude Include="Pantheon.h">
       <Filter>Header Files\Champions\TopLane</Filter>
     </ClInclude>
+    <ClInclude Include="Syndra.h">
+      <Filter>Header Files\Champions\Midlane</Filter>
+    </ClInclude>
+    <ClInclude Include="Trinket.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">

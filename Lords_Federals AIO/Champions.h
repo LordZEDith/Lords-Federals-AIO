@@ -18,6 +18,7 @@
 #include "TwistedFate.h"
 #include "Xerath.h"
 #include "Ziggs.h"
+#include "Syndra.h"
 
 // Champions Jungle
 #include "Olaf.h";

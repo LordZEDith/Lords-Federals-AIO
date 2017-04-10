@@ -6,6 +6,7 @@
 #include "SkinsChange.h"
 #include "Toxic.h"
 #include "Version Checker.h"
+#include "Trinket.h"
 
 #pragma region Events
 PLUGIN_EVENT(void) OnOrbwalkBeforeAttack(IUnit* Target)
@@ -382,6 +383,8 @@ public:
 		AutoSmite().MenuSmite();
 		//Skins().Menu();
 		Toxic().MenuToxic();
+		Trinket().SpellsTrinket();
+		Trinket().MenuTrinket();
 	}
 
 	virtual void OnRender() override
@@ -391,6 +394,8 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
+		Trinket().AutoTrinket();
+
 		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
@@ -452,12 +457,13 @@ public:
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-		Ashe().OnProcessSpell(Args);
+		Trinket().TrinketOnProcessSpell(Args);
+		Ashe().OnProcessSpell(Args);		
 	}
 
 	void OnExitVisible(IUnit* Source) override
 	{
-
+		Trinket().TrinketOnExitVisible(Source);
 	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
@@ -603,6 +609,8 @@ public:
 		Ezreal().InitializeMenu();
 		//Skins().Menu();
 		Toxic().MenuToxic();
+		Trinket().SpellsTrinket();
+		Trinket().MenuTrinket();
 	}
 
 	virtual void OnRender() override
@@ -612,6 +620,8 @@ public:
 
 	virtual void OnGameUpdate() override
 	{
+		Trinket().AutoTrinket();
+
 		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
@@ -678,12 +688,13 @@ public:
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-		Ezreal().OnProcessSpell(Args);
+		Trinket().TrinketOnProcessSpell(Args);
+		Ezreal().OnProcessSpell(Args);		
 	}
 
 	void OnExitVisible(IUnit* Source) override
 	{
-
+		Trinket().TrinketOnExitVisible(Source);
 	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override
@@ -2456,6 +2467,7 @@ public:
 
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
+		//Darius().OnBuffRemove(Source, BuffData);
 	}
 
 	void OnGameEnd() override
@@ -4410,6 +4422,115 @@ public:
 	}
 };
 
+class cSyndra : public IChampion
+{
+public:
+
+	virtual void OnLoad() override
+	{
+		//Message().JungleLaneSeries();
+		//Message().ChampionLoadMessage();
+		Syndra().InitializeMenu();
+		Syndra().LoadSpells();
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+		//Skins().Menu();
+		Toxic().MenuToxic();
+	}
+
+	virtual void OnRender() override
+	{
+		Syndra().Drawing();
+		AutoSmite().DrawingsSmite();
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
+		{
+			return;
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		{
+			Syndra().Combo();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		{
+
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		{
+			Syndra().LaneClear();
+			Syndra().JungleClear();
+		}
+
+		Syndra().Automatic();
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();		
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+		Syndra().OnGapcloser(Args);
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+		Syndra().OnAfterAttack(Source, Target);
+	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+		
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+		
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+		
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+		
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+		Syndra().OnProcessSpell(Args);
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+		
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+		//Syndra().OnBuffAdd(Source, BuffData);
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+		//Syndra().OnBuffRemove(Source, BuffData);
+	}
+
+	void OnGameEnd() override
+	{
+		//Toxic().OnGameEnd();
+	}
+};
+
 IChampion* pChampion = nullptr;
 
 PLUGIN_EVENT(void) OnRender()
@@ -4518,6 +4639,8 @@ void LoadChampion()
 		pChampion = new cXerath;
 	else if (szChampion == "twistedFate")
 		pChampion = new cTwistedFate;
+	else if (szChampion == "syndra")
+		pChampion = new cSyndra;
 	// Jungle
 	else if (szChampion == "olaf")
 		pChampion = new cOlaf;

@@ -197,10 +197,12 @@
     <ClInclude Include="Riven.h" />
     <ClInclude Include="Shen.h" />
     <ClInclude Include="Sona.h" />
+    <ClInclude Include="Syndra.h" />
     <ClInclude Include="Template.h" />
     <ClInclude Include="SpellLib.h" />
     <ClInclude Include="TextHeader.h" />
     <ClInclude Include="Toxic.h" />
+    <ClInclude Include="Trinket.h" />
     <ClInclude Include="Tristana.h" />
     <ClInclude Include="Trundle.h" />
     <ClInclude Include="TwistedFate.h" />

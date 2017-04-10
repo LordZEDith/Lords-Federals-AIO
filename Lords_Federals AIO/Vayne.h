@@ -132,7 +132,7 @@ public:
 		}
 
 		Ward1 = GPluginSDK->CreateItemForId(3340, 600);
-		Ward2 = GPluginSDK->CreateItemForId(3363, 900);
+		Ward2 = GPluginSDK->CreateItemForId(3363, 4000);
 		zzRots = GPluginSDK->CreateItemForId(3512, 400);
 	}
 
