@@ -3,7 +3,6 @@
 #include "BaseMenu.h"
 #include "Common.h"
 
-IMenu* BlacklistMenuW;
 
 class Template
 {
@@ -12,13 +11,7 @@ public:
 	static void InitializeMenu()
 	{
 		MainMenu = GPluginSDK->AddMenu("Lords & Federals Template");
-
-		BlacklistMenuW = MainMenu->AddMenu("E Priority");
-		for (auto allys : GEntityList->GetAllHeros(true, false))
-		{
-			std::string szMenuName = "Use E on - " + std::string(allys->ChampionName());
-			ChampionUse[allys->GetNetworkId()] = BlacklistMenuW->CheckBox(szMenuName.c_str(), false);
-		}
+		
 	}
 
 	static void LoadSpells()
@@ -38,13 +31,7 @@ public:
 
 	static void Automatic()
 	{
-		for (auto fed : GEntityList->GetAllMinions(true, false, false))
-		{
-			if (GetDistance(GEntityList->Player(), fed) < 1500 && fed->IsCreep())
-			{
-				GUtility->LogConsole("Nome %s", fed->GetBaseSkinName());
-			}
-		}
+		
 	}
 
 	static void Combo()
@@ -78,42 +65,35 @@ public:
 
 	static void OnAfterAttack(IUnit* source, IUnit* target)
 	{
-		if (!source->IsEnemy(GEntityList->Player()) &&
-				source->IsValidTarget(GEntityList->Player(), 1500))
-			{
-				GGame->PrintChat("test1");
-				if (ChampionUse[source->GetNetworkId()]->Enabled())
-				{
-					GGame->PrintChat("test2");
-					//E->CastOnUnit(source);
-				}
-			}
+		
 	}
 
 	static void OnProcessSpell(CastedSpell const& Args)
 	{		
-		// Credits by zFederaL
-		if (Args.Caster_ == nullptr || Args.Caster_->IsDead() || !Args.Caster_->IsVisible()) return;
-		if (Args.Target_ == nullptr || Args.Target_->IsDead() || !Args.Target_->IsVisible()) return;
-
-
-		if (Args.Caster_->IsHero() && Args.Target_->IsHero() && Args.AutoAttack_ && !Args.Caster_->IsEnemy(GEntityList->Player()))
-		{
-			if (E->IsReady() && Args.Caster_->IsValidTarget(GEntityList->Player(), E->Range()) &&
-				ChampionUse[Args.Caster_->GetNetworkId()]->Enabled())
-			{
-				E->CastOnUnit(Args.Caster_);				
-			}			
-		}
+		
 	}
 
 	static void OnCreateObject(IUnit* Source)
-	{		
+	{
+		if (Source->IsMissile() && GMissileData->GetCaster(Source)->GetNetworkId() == GEntityList->Player()->GetNetworkId())
+		{
+			if (strstr(GMissileData->GetName(Source), "RocketGrabMissile"))
+			{
+				SkillMissiles.Add(Source);
+				QMissile = Source;
+			}
+
+			//GUtility->LogConsole("Skill: %s - Speed: %f / Range: %f / Radius: %f ", GMissileData->GetName(Source), GMissileData->GetSpeed(Source), GMissileData->GetRange(Source), GMissileData->GetRadius(Source));
+		}
 
 	}
 
 	static void OnDeleteObject(IUnit* Source)
 	{
-
+		if (strstr(GMissileData->GetName(Source), "RocketGrabMissile"))
+		{
+			SkillMissiles.RemoveAll([&](IUnit* i) {return i->GetNetworkId() == Source->GetNetworkId(); });
+			QMissile = nullptr;
+		}
 	}
 };

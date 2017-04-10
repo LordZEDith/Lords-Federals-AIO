@@ -89,11 +89,8 @@ public:
 			AntiMelee = fedMiscSettings->CheckBox("E Anti Melee", false);
 			AntiGrab = fedMiscSettings->CheckBox("E Anti Grab ToDo", false);
 			StackMune = fedMiscSettings->CheckBox("Stack Tear", false);
-			AutoW = fedMiscSettings->CheckBox("Auto W Push Tower", true);
-			TrinketBush = fedMiscSettings->CheckBox("Revealer Bush", true);
-			TrinketBushdelay = fedMiscSettings->AddInteger("Trinket Delay (ms)", 0, 600, 180);
-			BuyBlueTrinket = fedMiscSettings->CheckBox("Buy Blue Trinket", false);
-		}
+			AutoW = fedMiscSettings->CheckBox("Auto W Push Tower", true);			
+		}		
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
 		{
@@ -190,7 +187,7 @@ public:
 
 	static void Automatic()
 	{		
-		KeyPressUltimate();
+		KeyPressUltimate();		
 
 		for (auto target : GEntityList->GetAllHeros(false, true))
 		{
@@ -461,46 +458,26 @@ public:
 				E->CastOnPosition(extend);
 			}
 		}
-	}
-
-	static void OnAfterAttack(IUnit* source, IUnit* target)
-	{
-		if (W->IsReady() && AutoW->Enabled() && target->IsValidTarget() && GEntityList->Player()->GetMana() > R->ManaCost() + E->ManaCost() + Q->ManaCost() + W->ManaCost() + W->ManaCost())
-		{
-
-			if (strstr(target->GetObjectName(), "Turret") || strstr(target->GetObjectName(), "Barracks") ||
-				strstr(target->GetObjectName(), "Dragon") || strstr(target->GetObjectName(), "Baron") || strstr(target->GetObjectName(), "RiftHerald"))
-			{
-				for(auto Allyx : GEntityList->GetAllHeros(true, false))
-				{
-					if (GetDistance(GEntityList->Player(), Allyx) < 600 && !Allyx->IsEnemy(GEntityList->Player()) && Allyx->IsHero() && CountAlly(GEntityList->Player()->GetPosition(), W->Range()) >= 1 && Allyx != GEntityList->Player())
-					{
-						if (!Allyx->HasBuff("EzrealEssenceFlux"))
-						{
-							W->CastOnTarget(Allyx, kHitChanceMedium);
-						}
-					}
-				}
-			}
-		}
-	}
+	}	
 
 	static void OnProcessSpell(CastedSpell const& Args)
 	{
 		if (strstr(Args.Name_, "EzrealMysticShot"))
 		{
 			QLastCast = GGame->TickCount();
-		}
+		}		
 
-		if (Args.Caster_->IsEnemy(GEntityList->Player()) && strstr(Args.Name_, "RocketGrab"))
+		if (Args.Caster_->IsHero() && Args.Caster_->GetTeam() == GEntityList->Player()->GetTeam() &&
+			Args.Caster_ != GEntityList->Player() && GetDistance(GEntityList->Player(), Args.Caster_) < W->Range() &&
+			!Args.Caster_->HasBuff("EzrealEssenceFlux") && 
+			(strstr(Args.Target_->GetObjectName(), "Dragon") || 
+				strstr(Args.Target_->GetObjectName(), "Baron") || 
+				Args.Target_->IsTurret() && Args.Target_->IsEnemy(GEntityList->Player())))
 		{
-			auto dashpos = GEntityList->Player()->ServerPosition();
-			auto extend = dashpos.Extend(Args.Position_, -E->Range());
-
-			if (!GNavMesh->IsPointWall(extend))
+			if (W->IsReady() && AutoW->Enabled() && GEntityList->Player()->GetMana() > R->ManaCost() + E->ManaCost() + Q->ManaCost() + W->ManaCost())
 			{
-				E->CastOnPosition(extend);
-			}
+				W->CastOnTarget(Args.Caster_, kHitChanceMedium);
+			}		
 		}
 
 		if (Args.Caster_->IsEnemy(GEntityList->Player()) && Args.Target_ == GEntityList->Player() && Args.Caster_->IsMelee() && Args.AutoAttack_)

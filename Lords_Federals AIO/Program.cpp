@@ -109,7 +109,7 @@ public:
 
 	void OnCreateObject(IUnit* Source) override
 	{
-
+		Template().OnCreateObject(Source);
 	}
 
 	void OnDeleteObject(IUnit* Source) override
@@ -661,7 +661,7 @@ public:
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
 	{
-		Ezreal().OnAfterAttack(Source, Target);
+
 	}
 	void OnBeforeAttack(IUnit* Target) override
 	{
@@ -674,12 +674,12 @@ public:
 
 	void OnCreateObject(IUnit* Source) override
 	{
-
+		
 	}
 
 	void OnDeleteObject(IUnit* Source) override
 	{
-
+		
 	}
 
 	void OnDash(UnitDash* Args) override
@@ -4700,7 +4700,7 @@ void LoadChampion()
 	// Support
 	else if (szChampion == "sona")
 		pChampion = new cSona;
-	else if (szChampion == "bardo")
+	else if (szChampion == "blitzcrank")
 		pChampion = new cTemplate;
 	else
 	{		
