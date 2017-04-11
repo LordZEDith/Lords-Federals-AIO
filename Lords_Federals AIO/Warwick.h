@@ -1,6 +1,7 @@
 #pragma once
 #include "PluginSDK.h"
 #include "BaseMenu.h"
+#include "Common.h"
 
 //ISpell2* pSmite;
 class Warwick
@@ -31,7 +32,7 @@ public:
 		HarassMana = EMenu->AddInteger("Mana Manager(%)", 1, 100, 60);
 
 		ComboR = RMenu->CheckBox("R When Enemy Health % ", true);
-		UltPercent = WMenu->AddFloat("Enemy Health (%)", 1, 100, 60);
+		UltPercent = RMenu->AddFloat("Enemy Health (%)", 1, 100, 60);
 
 			UseItems = Miscs->CheckBox("Use Items in Combo", true);
 
@@ -46,19 +47,19 @@ public:
 
 		Tiamat = GPluginSDK->CreateItemForId(3077, 400);
 		Hydra = GPluginSDK->CreateItemForId(3748, 400);
-		Ravenous = GPluginSDK->CreateItemForId(3074, 400);
+		Ravenous = GPluginSDK->CreateItemForId(3074, 400);		
+		
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kTargetCast, false, false, (kCollidesWithNothing));
+		Q->SetSkillshot(0.25, 0, 1000, 350);		
 
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
-		W = GPluginSDK->CreateSpell2(kSlotW, kConeCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
-		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
-		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
-		Q->SetOverrideRange(350);
-		W->SetOverrideRange(4000);
-		E->SetOverrideRange(350);
-		//	R->SetOverrideRange(1000);
-		//R->SetOverrideDelay(0.5f);
-		//	Q->SetOverrideRadius(125);
-		//	R->SetOverrideSpeed(3000);
+		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, (kCollidesWithNothing));
+		W->SetSkillshot(0.25, 0, 1000, FLT_MAX);		
+
+		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, true, (kCollidesWithNothing));
+		E->SetSkillshot(0.25, 0, 1000, 375);		
+
+		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, true, false, (kCollidesWithNothing));
+		R->SetSkillshot(0.25, 0, 1000, 700);		
 
 	}
 	int GetEnemiesInRange(float range)
@@ -87,29 +88,30 @@ public:
 			if (Q->IsReady())
 			{
 				auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
-				if ((target != nullptr))
+				if (CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), Q->Range()))
 				{
-					Q->CastOnPlayer();
-
+					Q->CastOnUnit(target);
 				}
 			}
 		}
 		if (UseItems->Enabled())
 		{
 			auto targetI = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 400);
-			Tiamat->CastOnTarget(targetI);
-			Ravenous->CastOnTarget(targetI);
-			Hydra->CastOnTarget(targetI);
+			if (CheckTarget(targetI))
+			{
+				Tiamat->CastOnTarget(targetI);
+				Ravenous->CastOnTarget(targetI);
+				Hydra->CastOnTarget(targetI);
+			}
 
 		}
 		if (ComboE->Enabled() && !GEntityList->Player()->HasBuff("WarwickE"))
 		{
 			if (E->IsReady())
-			{
-				auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range());
+			{				
 				if (GetEnemiesInRange(350) >= 1)
 				{
-					E->CastOnTarget(target);
+					E->CastOnPlayer();
 				}
 				 
 			}
@@ -119,14 +121,14 @@ public:
 			if (R->IsReady())
 			{
 				auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, R->Range());
-				int enemies = 0;
-				Vec3 pos = Vec3();
-				//R->FindBestCastPosition(false, true, pos, enemies);
-				if (enemies == 1)
-					if (!(target->HasBuffOfType(BUFF_SpellShield)) && (target->HealthPercent() <= UltPercent->GetFloat()))
+				
+				if (CheckTarget(target) && CheckShielded(target))
+				{
+					if (target->HealthPercent() <= UltPercent->GetFloat())
 					{
 						R->CastOnTarget(target, 6);
 					}
+				}
 			}
 		}
 	}
@@ -140,36 +142,38 @@ public:
 	}
 	void Harass()
 	{
-		if (HarassQ->Enabled() && Q->IsReady() && (GEntityList->Player()->ManaPercent() >= HarassManaQ->GetInteger()))
+		if (HarassQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= HarassManaQ->GetInteger())
 		{
-			auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
-			if (target != nullptr)
+			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+			if (CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), Q->Range()))
 			{
-				Q->CastOnTarget(target);
+				Q->CastOnUnit(target);
 			}
 		}
-		if (HarassE->Enabled() && E->IsReady() && (GEntityList->Player()->ManaPercent() >= HarassMana->GetInteger()) && !GEntityList->Player()->HasBuff("WarwickE"))
-		{
-			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range()); 
+		if (HarassE->Enabled() && E->IsReady() && GEntityList->Player()->ManaPercent() >= HarassMana->GetInteger() && !GEntityList->Player()->HasBuff("WarwickE"))
+		{			 
 			if (GetEnemiesInRange(350) >= 1)
 			{
-				E->CastOnTarget(target);
-			}
-		 
-			 
+				E->CastOnPlayer();
+			}			 
 		}
 	}
 	void JungleClear()
 	{
-		if (FarmQ->Enabled())
+		for (auto junglex : GEntityList->GetAllMinions(false, false, true))
 		{
-			Q->AttackMinions(1);
+			if (CheckTarget(junglex))
+			{
+				if (FarmQ->Enabled() && Q->IsReady() && junglex->IsValidTarget(GEntityList->Player(), Q->Range()))
+				{
+					Q->CastOnUnit(junglex);
 
-		}
-		if (FarmE->Enabled())
-		{
-			E->AttackMinions(1);
-
+				}
+				if (FarmE->Enabled() && E->IsReady() && junglex->IsValidTarget(GEntityList->Player(), E->Range()))
+				{
+					E->CastOnPlayer();
+				}
+			}
 		}
 	}
 	void Drawing()
@@ -178,9 +182,7 @@ public:
 		{
 			if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range()); }
 
-			if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
-
-			//if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }
+			if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }			
 
 			if (R->IsReady() && DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range()); }
 
@@ -189,9 +191,7 @@ public:
 		{
 			if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range()); }
 
-			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
-
-			//if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }
+			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }			
 
 			if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range()); }
 		}
