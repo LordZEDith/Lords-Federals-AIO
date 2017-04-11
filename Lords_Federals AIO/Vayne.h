@@ -39,7 +39,7 @@ public:
 			KillstealE = ESettings->CheckBox("Smart E KS", false);
 		}
 
-		EMenu = ESettings->AddMenu("Condemn Interrupters");
+		EMenu = ESettings->AddMenu("::Condemn Interrupters");
 		{
 			EInterrupter = EMenu->CheckBox("Use Condemn Interrupter", true);
 			AntiSpells = EMenu->CheckBox("Interrupt Danger Spells", true);			
@@ -48,7 +48,7 @@ public:
 			AntiKindred = EMenu->CheckBox("Inside Kindred R", true);
 		}
 
-		EMenuGap = ESettings->AddMenu("Melee & Gapcloser");
+		EMenuGap = ESettings->AddMenu("::Melee & Gapcloser");
 		{
 			EGapCloser = EMenuGap->CheckBox("E GapCloser | Anti Meele", false);
 			AntiMeleeMode = EMenuGap->AddSelection("Anti Meele Mode", 0, std::vector<std::string>({ "After Hit Me", "Near Me" }));
@@ -79,12 +79,14 @@ public:
 			Rdelay = RSettings->AddInteger("Stealh Duration", 0, 1000, 500);
 		}
 
-		JungleClearSettings = MainMenu->AddMenu("JungleClear Settings");
+		JungleClearSettings = MainMenu->AddMenu("Farm Settings");
 		{
+			LaneClearQ = JungleClearSettings->CheckBox("Use Q in LaneClear", false);
+			LaneClearMana = JungleClearSettings->AddInteger("Min Mana to Jungle", 1, 100, 60);
 			JungleQ = JungleClearSettings->CheckBox("Use Q in Jungle", true);
 			jPassiveStacks = JungleClearSettings->AddInteger("Q at X stack", 1, 2, 2);
 			JungleE = JungleClearSettings->CheckBox("Use E in Jungle", true);			
-			JungleMana = JungleClearSettings->AddInteger("Min Mana to Jungle", 1, 100, 40);
+			JungleMana = JungleClearSettings->AddInteger("Min Mana to Jungle", 1, 100, 30);
 		}
 
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
@@ -136,9 +138,14 @@ public:
 		zzRots = GPluginSDK->CreateItemForId(3512, 400);
 	}
 
+	static int PassiveWCount(IUnit* target)
+	{
+		return target->GetBuffCount("VayneSilveredDebuff");
+	}
+
 	static double Wdmg(IUnit* target)
 	{
-		return target->GetMaxHealth() * (4.5 + GEntityList->Player()->GetSpellBook()->GetLevel(kSlotW) * 1.5) * 0.01;
+		return target->GetMaxHealth() * (4.5 + GEntityList->Player()->GetSpellBook()->GetLevel(kSlotW) * 1.5) * 0.01;		
 	}
 
 	static void BuyTrinket()
@@ -515,7 +522,7 @@ public:
 	{
 		if (target == nullptr || !target->IsValidTarget(GEntityList->Player(), RangeE->GetFloat())
 			|| target->IsDead() || target->IsDashing()
-			|| target->HasBuffOfType(BUFF_SpellShield)
+			|| !CheckShielded(target)
 			|| target->HasBuffOfType(BUFF_SpellImmunity)
 			|| (!target->IsHero() && !target->IsJungleCreep()))
 			return false;
@@ -551,7 +558,7 @@ public:
 	{
 		if (target == nullptr || !target->IsValidTarget(GEntityList->Player(), RangeE->GetFloat())
 			|| target->IsDead() || target->IsDashing()
-			|| target->HasBuffOfType(BUFF_SpellShield)
+			|| !CheckShielded(target)
 			|| target->HasBuffOfType(BUFF_SpellImmunity)
 			|| (!target->IsHero() && !target->IsJungleCreep()))
 			return false;
@@ -616,7 +623,7 @@ public:
 			{
 				if (CheckTarget(Hero) && CheckShielded(Hero))
 				{
-					if (E->IsReady() && Wdmg(Hero) + GDamage->GetSpellDamage(GEntityList->Player(), Hero, kSlotE) > Hero->GetHealth() + (Hero->HPRegenRate() * 2) + 10 && Hero->GetBuffCount("VayneSilveredDebuff") == 2)
+					if (E->IsReady() && Wdmg(Hero) + GDamage->GetSpellDamage(GEntityList->Player(), Hero, kSlotE) > Hero->GetHealth() + (Hero->HPRegenRate() * 2) + 10 && PassiveWCount(Hero) == 2)
 					{
 						E->CastOnUnit(Hero);						
 					}
@@ -746,8 +753,46 @@ public:
 		}
 	}	
 
-	static void LastHit()
+	static void LaneClear()
 	{
+		if (Q->IsReady() && LaneClearQ->Enabled() && !FoundMinionsNeutral(E->Range()) && GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		{
+			if (GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger())
+			{
+				for (auto t : GEntityList->GetAllMinions(false, true, false))
+				{
+					if (CheckTarget(t) && GetDistance(GEntityList->Player(), t) < GEntityList->Player()->GetRealAutoAttackRange(t))
+					{
+						auto dmg1 = GDamage->GetSpellDamage(GEntityList->Player(), t, kSlotQ);
+						auto dmg2 = GDamage->GetAutoAttackDamage(GEntityList->Player(), t, true);
+
+						auto dmg3 = Wdmg(t);
+
+						if (dmg3 > 200)
+						{
+							dmg3 = 200;
+						}						
+
+						if (PassiveWCount(t) != 2)
+						{
+							dmg3 = 0;
+						}
+
+						auto pPos = GEntityList->Player()->GetPosition();
+						auto dashPosition = pPos.Extend(GGame->CursorPosition(), Q->Range());						
+
+						if (dmg3 + dmg2 + dmg1 > t->GetHealth() || dmg1 + dmg2 > t->GetHealth())
+						{
+							if (t->GetHealth() > dmg1 && GPosition(dashPosition))
+							{																
+								GOrbwalking->SetOverrideTarget(t);
+								Q->CastOnPosition(dashPosition);								
+							}
+						}
+					}
+				}
+			}
+		}		
 	}
 
 	static void JungleClear()
@@ -801,11 +846,6 @@ public:
 				}
 			}				
 		}
-	}
-
-	static void LaneClear()
-	{
-
 	}	
 
 	static void Drawing()
@@ -850,41 +890,53 @@ public:
 
 	static void OnAfterAttack(IUnit* source, IUnit* target)
 	{
-		if (target->IsHero() && !target->IsDead())
-		{			
-			if (AutoQ->Enabled() && Q->IsReady() &&
-				(target->GetBuffCount("VayneSilveredDebuff") == PassiveStacks->GetInteger() - 1
-					|| GEntityList->Player()->HasBuff("VayneInquisition")
-					|| GEntityList->Player()->GetSpellBook()->GetLevel(kSlotW) == 0))
-			{
-				auto dashPos = PosQ(true, target);
-				if (dashPos != Vec3(0, 0, 0))
-				{
-					Q->CastOnPosition(dashPos);
-
-					canAttack = true;
-					BaseTarget = target;
-				}
-			}			
-		}		
-
-		if (target->IsJungleCreep())
+		if (source->GetNetworkId() == GEntityList->Player()->GetNetworkId())
 		{
-			if (Q->IsReady() && JungleQ->Enabled() && (target->GetBuffCount("VayneSilveredDebuff") == jPassiveStacks->GetInteger() - 1 || GEntityList->Player()->GetSpellBook()->GetLevel(kSlotW) == 0))
+			if (target->IsHero() && !target->IsDead())
 			{
-				if (GEntityList->Player()->ManaPercent() < JungleMana->GetInteger()) return;
+				if (AutoQ->Enabled() && Q->IsReady() &&
+					(PassiveWCount(target) == PassiveStacks->GetInteger() - 1
+						|| GEntityList->Player()->HasBuff("VayneInquisition")
+						|| GEntityList->Player()->GetSpellBook()->GetLevel(kSlotW) == 0))
+				{
+					auto dashPos = PosQ(true, target);
+					if (dashPos != Vec3(0, 0, 0))
+					{
+						Q->CastOnPosition(dashPos);
 
-				auto pPos = GEntityList->Player()->GetPosition();
-				auto dash = pPos.Extend(GGame->CursorPosition(), Q->Range());
+						canAttack = true;
+						BaseTarget = target;
+					}
+				}
+			}
 
-				if (!GPosition(dash)) return;
+			if (target->IsJungleCreep())
+			{
+				if (Q->IsReady() && JungleQ->Enabled() && (PassiveWCount(target) == jPassiveStacks->GetInteger() - 1 || GEntityList->Player()->GetSpellBook()->GetLevel(kSlotW) == 0))
+				{
+					if (GEntityList->Player()->ManaPercent() > JungleMana->GetInteger())
+					{
 
-				Q->CastOnPosition(dash);
+						auto pPos = GEntityList->Player()->GetPosition();
+						auto dash = pPos.Extend(GGame->CursorPosition(), Q->Range());
+
+						if (GPosition(dash))
+						{
+							Q->CastOnPosition(dash);
+
+							canAttack = true;
+							BaseTarget = target;
+						}
+					}
+				}
+			}
+
+			if (target->IsCreep())
+			{
 				
-				canAttack = true;
-				BaseTarget = target;
-			}		
-		}		
+			}
+
+		}
 	}
 
 	static void OnProcessSpell(CastedSpell const& Args)
@@ -916,6 +968,15 @@ public:
 				checkVisible = false;
 				putWard = false;
 			}			
+		}
+
+		if (strstr(Args.Name_, "TrinketOrbLvl3"))
+		{
+			if (CheckTime > GGame->TickCount())
+			{
+				checkVisible = false;
+				putWard = false;
+			}
 		}
 
 		if (E->IsReady() && AntiFlash->Enabled() && Args.Caster_->IsEnemy(GEntityList->Player()) && strstr(Args.Name_, "SummonerFlash") && CheckTarget(Args.Caster_) && 
