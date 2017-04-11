@@ -3464,6 +3464,7 @@ public:
 
 	virtual void OnRender() override
 	{
+		Renekton().Drawing();
 		AutoSmite().DrawingsSmite();
 	}
 
@@ -3512,7 +3513,7 @@ public:
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-
+		Renekton().OnProcessSpell(Args);
 	}
 
 	void OnExitVisible(IUnit* Source) override
