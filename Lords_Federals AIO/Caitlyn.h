@@ -23,8 +23,22 @@ public:
 		{
 			wCCed = WSettings->CheckBox("Auto Trap on CC", true);
 			WTele = WSettings->CheckBox("Auto Trap on Teleport", true);
-			WRevive = WSettings->CheckBox("Auto Trap on Revive", true);			
+			WRevive = WSettings->CheckBox("Auto Trap on Revive", true);
 			WForce = WSettings->CheckBox("Force Trap After E", true);
+			TrapKey = WSettings->AddKey("Use Trap", 87);
+			TrapDelayDistance = WSettings->AddInteger("Future Prediction Trap", 300, 1500, 800);
+		}
+
+		W2Settings = WSettings->AddMenu("::Auto Trap Full Ammo..");
+		{
+			AutoTrapFull = W2Settings->CheckBox("Auto Trap Full Ammo", true);
+			ManaFullAmmo = W2Settings->AddInteger("Min Mana%", 0, 100, 70);
+			AutoInGrass = W2Settings->CheckBox("Trap in Grass Pos", true);
+			AutoInTowers = W2Settings->CheckBox("Trap in Towers/Route Pos", true);
+		}
+
+		WhiteList = WSettings->AddMenu(":: Trap on GaCloser..");
+		{
 			for (auto enemy : GEntityList->GetAllHeros(false, true))
 			{
 				std::string szMenuName = "Trap On Gapcloser - " + std::string(enemy->ChampionName());
@@ -45,8 +59,7 @@ public:
 			inUnderTower = ComboSettings->CheckBox("Dont R under turret", true);
 			SemiManualKey = ComboSettings->AddKey("Dash to Mouse", 90);
 			StartComboKey = ComboSettings->AddKey("Combo E + Trap + Q", 71);
-			TrapKey = ComboSettings->AddKey("Use Trap", 87);
-			TrapDelayDistance = ComboSettings->AddInteger("Future Prediction Trap", 300, 1500, 800);
+						
 		}
 
 		HarassSettings = MainMenu->AddMenu("Harass Settings");
@@ -143,7 +156,7 @@ public:
 			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), W->Range()); }
 			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), E->Range()); }
 			if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), R->Range()); }
-		}		
+		}			
 	}
 
 	static int PredicChange()
@@ -181,7 +194,8 @@ public:
 		WAntiMelee();
 		TrapRevelerBush();
 		ComboWithKey();
-		TrapWithKey();		
+		TrapWithKey();
+		TrapWhenFull();		
 		
 		if (CheckTime < GGame->TickCount())
 		{			
@@ -331,7 +345,6 @@ public:
 
 			if (Minion.Any())
 			{
-
 				if (JungleE->Enabled() && E->IsReady() && !FoundMinions(E->Range()) && FoundMinionsNeutral(Q->Range()))
 				{
 					auto eMinion = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
@@ -575,14 +588,29 @@ public:
 					W->CastOnUnit(Source);
 				}
 			}
-		}
+		}		
+
+		//GUtility->LogConsole("Create %s", Source->GetObjectName());
 	}	
+
+	static void OnDeleteObject(IUnit* Source)
+	{
+		//GUtility->LogConsole("Delete %s", Source->GetObjectName());
+	}
 
 	static void OnProcessSpell(CastedSpell const& Args)
 	{
 		if (Args.Caster_ == GEntityList->Player())
 		{
 			if (strstr(Args.Name_, "TrinketTotemLvl1"))
+			{
+				if (CheckTime > GGame->TickCount())
+				{					
+					putWard = false;
+				}
+			}
+
+			if (strstr(Args.Name_, "TrinketOrbLvl3"))
 			{
 				if (CheckTime > GGame->TickCount())
 				{					
@@ -606,6 +634,8 @@ public:
 				{
 					putWard = false;
 				}
+
+				//GUtility->LogConsole("Vec3(%ff, %ff, %ff),", Args.EndPosition_.x, Args.EndPosition_.y, Args.EndPosition_.z);
 
 				LastWTick = GGame->TickCount();
 			}
@@ -772,4 +802,45 @@ public:
 			harassKeyWasDown = false;			
 		}
 	}
+
+	static int FullAmmoCount()
+	{
+		int baseAmmo[6] = { 0, 3, 3, 4, 4, 5 };
+		return baseAmmo[GEntityList->Player()->GetSpellLevel(kSlotW)];
+	}
+	
+	static void TrapWhenFull()
+	{
+		if (AutoTrapFull->Enabled() && static_cast<int>(GGame->Time() * 10) % 2 == 0 && W->IsReady() &&
+			GEntityList->Player()->GetSpellBook()->GetAmmo(kSlotW) == FullAmmoCount() &&
+			GOrbwalking->GetOrbwalkingMode() == kModeNone &&
+			GEntityList->Player()->ManaPercent() > ManaFullAmmo->GetInteger())
+		{
+			if (FullAmmoCount() == 3 && CountCaitTrap(GEntityList->Player()->GetPosition(), 25000) >= 3) return;
+			
+			//Grass
+			if (AutoInGrass->Enabled())
+			{
+				for (auto grass : GrassSpots)
+				{
+					if (CountCaitTrap(grass, 60) == 0 && CountEnemy(GEntityList->Player()->GetPosition(), 1000) == 0 && GetDistanceVectors(grass, GEntityList->Player()->GetPosition()) < W->Range())
+					{
+						W->CastOnPosition(grass);						
+					}
+				}
+			}
+
+			//Towers
+			if (AutoInTowers->Enabled())
+			{
+				for (auto tws : TrapTowerSpots)
+				{
+					if (CountCaitTrap(tws, 60) == 0 && GetDistanceVectors(tws, GEntityList->Player()->GetPosition()) < W->Range() && CountEnemy(GEntityList->Player()->GetPosition(), 1000) == 0 && (!IsUnderTurretPosAlly(tws) && !IsUnderTurretPos(tws) || IsUnderTurretPos(tws)))
+					{
+						W->CastOnPosition(tws);
+					}
+				}
+			}
+		}	
+	}	
 };

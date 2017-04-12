@@ -246,6 +246,9 @@
     <ClInclude Include="Trinket.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Points.h">
+      <Filter>Header Files\Custom/Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">

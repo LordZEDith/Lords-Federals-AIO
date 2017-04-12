@@ -509,7 +509,7 @@ public:
 					{
 						auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false);
 
-						if (damage > minion->GetHealth())
+						if (CheckTarget(minion) && damage > minion->GetHealth())
 						{
 							GOrbwalking->ResetAA();
 							Q->CastOnUnit(minion);
@@ -532,7 +532,8 @@ public:
 		{
 			for (auto minion : Minion.ToVector())
 			{
-
+				if (!CheckTarget(minion)) return;
+				
 				if (JungleQ->Enabled() && Q->IsReady())
 				{
 					if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
@@ -612,20 +613,23 @@ public:
 			{
 				for (auto minion : Minion.ToVector())
 				{
-					if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
+					if (CheckTarget(minion))
 					{
-						if (LaneClearQLast->GetInteger() == 0)
+						if (GEntityList->Player()->IsValidTarget(minion, Q->Range()))
 						{
-							Q->CastOnUnit(minion);
-						}
-						else
-						{
-							auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false);
-
-							if (damage > minion->GetHealth())
+							if (LaneClearQLast->GetInteger() == 0)
 							{
-								GOrbwalking->ResetAA();
 								Q->CastOnUnit(minion);
+							}
+							else
+							{
+								auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false);
+
+								if (damage > minion->GetHealth())
+								{
+									GOrbwalking->ResetAA();
+									Q->CastOnUnit(minion);
+								}
 							}
 						}
 					}

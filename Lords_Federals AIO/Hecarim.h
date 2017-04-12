@@ -237,7 +237,7 @@ public:
 			{
 				for (auto minion : Minion.ToVector())
 				{
-					if (GEntityList->Player()->IsValidTarget(minion, Q->Range() - 50))
+					if (CheckTarget(minion) && GEntityList->Player()->IsValidTarget(minion, Q->Range() - 50))
 					{
 						auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false);
 

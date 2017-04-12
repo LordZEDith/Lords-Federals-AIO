@@ -322,11 +322,14 @@ public:
 			{
 				minions = Minions.MaxOrDefault<int>([](IUnit* i) {return CountMinions(i->GetPosition(), Q->Range()); });			
 				
-				if ((canBeOpWithQ(minions->GetPosition()) || fury()) && !rene())
+				if (CheckTarget(minions))
 				{
-					if (E->IsReady() && GEntityList->Player()->IsValidTarget(minions, E->Range()))
+					if ((canBeOpWithQ(minions->GetPosition()) || fury()) && !rene())
 					{
-						E->CastOnPosition(minions->GetPosition());						
+						if (E->IsReady() && GEntityList->Player()->IsValidTarget(minions, E->Range()))
+						{
+							E->CastOnPosition(minions->GetPosition());
+						}
 					}
 				}
 			}

@@ -1,6 +1,7 @@
 #pragma once
 #include "PluginSDK.h"
 #include "BaseMenu.h"
+#include "Points.h"
 #include <string>
 
 #define M_PI 3.14159265358979323846f
@@ -411,6 +412,20 @@ inline int CountAlly(Vec3 Location, int range)
 	return (Count);
 }
 
+inline int CountCaitTrap(Vec3 Location, int range)
+{
+	int Count = 0;
+
+	for (auto Ally : GEntityList->GetAllUnits())
+	{
+		if ((Ally->GetPosition() - Location).Length() < range && strstr(Ally->GetObjectName(), "Cupcake Trap") && Ally->IsVisible() && Ally->GetTeam() == GEntityList->Player()->GetTeam())
+		{
+			Count++;
+		}
+	}
+	return (Count);
+}
+
 inline int CountWards(Vec3 Location, int range)
 {
 	int Count = 0;
@@ -533,8 +548,6 @@ inline int CountMinionsNeutral(Vec3 Location, int range)
 	}
 	return (Count);
 }
-
-
 
 inline float GetDistanceVectors(Vec3 from, Vec3 to)
 {
@@ -783,24 +796,6 @@ static int GetWardSlot()
 	return kSlotUnknown;
 }
 
-std::vector<Vec3> JunglePos =
-{
-	Vec3(8478.954102f, 50.614502f, 2693.716797f),
-	Vec3(7759.046875f, 53.976929f, 4017.512207f),
-	Vec3(6823.443359f, 54.464600f, 5496.273438f),
-	Vec3(3805.739014f, 52.463013f, 6484.474609f),
-	Vec3(3900.733643f, 51.903198f, 7921.557617f),
-	Vec3(2070.769043f, 51.777466f, 8468.146484f),
-	Vec3(4992.753906f, -71.240479f, 10477.328125f),
-	Vec3(8003.530273f, 52.330688f, 9492.878906f),
-	Vec3(7109.897949f, 56.316406f, 10934.271484f),
-	Vec3(6335.169434f, 56.476685f, 12154.182617f),
-	Vec3(10997.046875f, 61.481201f, 8406.560547f),
-	Vec3(10997.899414f, 51.723267f, 7036.743652f),
-	Vec3(12711.439453f, 51.689331f, 6435.098633f),
-	Vec3(9805.319336f, -71.240601f, 4404.221680f)	
-};
-
 template<class T>
 vector<T> Add(vector<T> vec, T i)
 {
@@ -925,12 +920,10 @@ T MaxOrDefault(vector<T> vec, function<T2(T)> max_function)
 
 std::vector<Vec3> CirclePoints(float CircleLineSegmentN, float radius, Vec3 position)
 {
-
 	std::vector<Vec3> points;
 
 	for (auto i = 1; i <= CircleLineSegmentN; i++)
 	{
-
 		auto angle = i * 2 * 3.1415927 / CircleLineSegmentN;
 		auto point = Vec3(position.x + radius * static_cast<float>(std::cos(angle)), position.y + radius * static_cast<float>(std::sin(angle)), position.z);
 

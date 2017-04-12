@@ -231,9 +231,13 @@ public:
 			!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), E->Range()) &&
 			m->HasBuff("KindredRNoDeathBuff") && m->HealthPercent() <= 10; });
 
-		if (AntiKindred->Enabled() && E->IsReady() && enemy.Any())
+		for (auto tenemy : enemy.ToVector())
 		{
-			E->CastOnUnit(enemy.FirstOrDefault());
+
+			if (AntiKindred->Enabled() && E->IsReady() && CheckTarget(tenemy))
+			{
+				E->CastOnUnit(tenemy);
+			}
 		}
 	}
 
@@ -271,7 +275,11 @@ public:
 			if (enemy.Any())
 			{
 				auto fTarget = enemy.MaxOrDefault<int>([](IUnit* i) {return i->GetBuffCount("VayneSilveredDebuff"); });
-				GOrbwalking->SetOverrideTarget(fTarget);
+
+				if (CheckTarget(fTarget))
+				{
+					GOrbwalking->SetOverrideTarget(fTarget);
+				}
 			}
 
 			else if (minions.Any() && GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
@@ -807,7 +815,7 @@ public:
 			jMonster = Minion.MaxOrDefault<float>([](IUnit* i) {return i->GetMaxHealth(); });
 		}
 
-		if (jMonster != nullptr)
+		if (CheckTarget(jMonster))
 		{
 			if (JungleE->Enabled() && E->IsReady())
 			{
@@ -932,7 +940,7 @@ public:
 			}
 
 			if (target->IsCreep())
-			{
+			{				
 				
 			}
 

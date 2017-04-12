@@ -584,7 +584,7 @@ public:
 				{
 					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), false);
 
-					if (damage > minion->GetHealth())
+					if (CheckTarget(minion) && damage > minion->GetHealth())
 					{
 						if (RangeQlh->Enabled() && GetDistance(GEntityList->Player(), minion) > 400)
 						{
@@ -630,10 +630,12 @@ public:
 					{
 						for (auto minion : Minion.ToVector())
 						{
-
-							if ((PassiveStacksNum == 0 || ExpireE(minion)) && minion->IsCreep() && E->CastOnPlayer())
+							if (CheckTarget(minion))
 							{
-								LastSpellTick = GGame->TickCount();
+								if ((PassiveStacksNum == 0 || ExpireE(minion)) && minion->IsCreep() && E->CastOnPlayer())
+								{
+									LastSpellTick = GGame->TickCount();
+								}
 							}
 						}
 					}

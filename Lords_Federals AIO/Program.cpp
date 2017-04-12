@@ -813,6 +813,7 @@ public:
 
 	void OnBuffRemove(IUnit* Source, void* BuffData) override
 	{
+		Ahri().OnBuffRemove(Source, BuffData);
 	}
 
 	void OnGameEnd() override
@@ -2769,7 +2770,7 @@ public:
 
 	void OnDeleteObject(IUnit* Source) override
 	{
-
+		Caitlyn().OnDeleteObject(Source);
 	}
 	void OnInterruptible(InterruptibleSpell const& Args) override
 	{

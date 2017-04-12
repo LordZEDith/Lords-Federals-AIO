@@ -62,7 +62,6 @@ public:
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
 			CCedW = fedMiscSettings->CheckBox("Auto W When Enemies Cant Move", true);			
-			AutoE = fedMiscSettings->CheckBox("Auto E target Brush", true);
 			RInterrupter = fedMiscSettings->CheckBox("Automatically R Interrupt Spell", true);
 			RGapCloser = fedMiscSettings->CheckBox("Automatically R GapCloser", true);
 			CCedR = fedMiscSettings->CheckBox("Auto R When Enemies Cant Move", false);
@@ -109,23 +108,7 @@ public:
 	}
 
 	static void Automatic()
-	{
-		if (AutoE->Enabled() && E->IsReady())
-		{
-			for (auto hero : GEntityList->GetAllHeros(false, true))
-			{
-				if (!CheckTarget(hero) || GetDistance(GEntityList->Player(), hero) > 1500) return;
-
-				Vec3 position;
-				auto delay = E->GetDelay() + GetDistance(GEntityList->Player(), hero) / E->Speed();
-				GPrediction->GetFutureUnitPosition(hero, delay, true, position);
-
-				if (GNavMesh->IsPointGrass(position) && !hero->IsVisible())
-				{
-					E->CastOnPosition(position);
-				}
-			}
-		}
+	{		
 	}	
 
 	static void KeyPressUltimate()
@@ -224,7 +207,7 @@ public:
 							CountMinions(Minion->GetPosition(), 400) >= MinionsW->GetInteger() &&
 							GetDistance(GEntityList->Player(), Minion) >= GOrbwalking->GetAutoAttackRange(GEntityList->Player()))
 						{
-							W->CastOnUnit(Minion);
+							W->CastOnUnit(Minion);							
 						}
 					}
 				}
@@ -235,13 +218,13 @@ public:
 				SArray<IUnit*> jMinion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
 					!m->IsDead() && m->IsVisible() && !strstr(m->GetObjectName(), "WardCorpse") && m->IsValidTarget(GEntityList->Player(), W->Range()); });
 
-				if (jMinion.Any())
+				if (jMinion.Count() > 0)
 				{
-					jMonster = jMinion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
-
-					if (GEntityList->Player()->ManaPercent() > JungleMana->GetInteger())
+					auto jm = jMinion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });					
+					
+					if (CheckTarget(jm) && GEntityList->Player()->ManaPercent() > JungleMana->GetInteger())
 					{
-						W->CastOnUnit(jMonster);
+						W->CastOnUnit(jm);
 					}
 				}				
 			}

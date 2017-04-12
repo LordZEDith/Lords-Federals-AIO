@@ -42,6 +42,8 @@ IMenu* Drawingss;
 IMenu* GankSettings;
 IMenu* Jump2Settings;
 IMenu* FarmMenu;
+IMenu* FleeMode;
+IMenu* WhiteList;
 
 IMenu* MainMenu;
 IMenu* HarassSettings;
@@ -51,6 +53,7 @@ IMenu* fedMiscSettings;
 IMenu* InsecSettings;
 IMenu* QSettings;
 IMenu* WSettings;
+IMenu* W2Settings;
 IMenu* ESettings;
 IMenu* RSettings;
 IMenu* AxeSettings;
@@ -98,6 +101,11 @@ IMenuOption* Ending;
 IMenuOption* SayEnding;
 IMenuOption* QuitGame;
 IMenuOption* QuitDelay;
+
+IMenuOption* AutoTrapFull;
+IMenuOption* ManaFullAmmo;
+IMenuOption* AutoInGrass;
+IMenuOption* AutoInTowers;
 
 int LastEmoteSpam = 0;
 int MyKills = 0;
@@ -250,6 +258,7 @@ IMenuOption* MinionsR;
 IMenuOption* JungleR;
 IMenuOption* RinRisk;
 IMenuOption* SemiManualKey;
+IMenuOption* FleeKey;
 IMenuOption* inUnderTower;
 IMenuOption* RWall;
 IMenuOption* RMax;
@@ -388,6 +397,9 @@ IMenuOption* AntiSpells;
 IMenuOption* BuyBlueTrinket;
 IMenuOption* StartTrinket;
 IMenuOption* ChangeTrinket;
+IMenuOption* FleeQ;
+IMenuOption* FleeE;
+IMenuOption* FleeR;
 
 IMenuOption* useProto;
 IMenuOption* useZhonyas;

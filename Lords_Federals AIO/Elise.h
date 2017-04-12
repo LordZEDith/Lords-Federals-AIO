@@ -295,6 +295,8 @@ public:
 			{
 				for (auto minion : Minion.ToVector())
 				{
+					if (!CheckTarget(minion)) return;
+					
 					if (EliseHuman())
 					{
 						if (JungleR->Enabled() && R->IsReady())

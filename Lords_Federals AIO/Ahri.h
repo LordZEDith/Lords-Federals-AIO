@@ -71,6 +71,14 @@ public:
 			AimMissile = fedMiscSettings->CheckBox("Aim Return Missile", true);
 		}
 
+		FleeMode = fedMiscSettings->AddMenu("::Flee Mode");
+		{
+			FleeQ = FleeMode->CheckBox("Use Q in Flee Mode", true);
+			FleeE = FleeMode->CheckBox("Use E in Flee Mode", true);
+			FleeR = FleeMode->CheckBox("Use R in Flee Mode", true);
+			FleeKey = FleeMode->AddKey("Flee Mode Key", 90);
+		}
+
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
 		{
 			DrawReady = DrawingSettings->CheckBox("Draw Only Ready Spells", true);
@@ -79,6 +87,7 @@ public:
 			DrawW = DrawingSettings->CheckBox("Draw W", false);
 			DrawE = DrawingSettings->CheckBox("Draw E", false);
 			DrawR = DrawingSettings->CheckBox("Draw R", false);
+			DrawTemp = DrawingSettings->CheckBox("Draw Passive", true);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
 		}		
 	}
@@ -111,6 +120,47 @@ public:
 		}
 
 		return mypredic = kHitChanceLow;
+	}
+
+	static int PassiveCount()
+	{
+		if (GEntityList->Player()->HasBuff("ahrisoulcrusher"))
+		{
+			return 99;
+		}
+		
+		return GEntityList->Player()->GetBuffCount("ahrisoulcrushercounter");
+	}	 
+
+	static void FleeKeyMode()
+	{
+		if (IsKeyDown(FleeKey))
+		{
+			GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
+
+			auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
+
+			if (FleeQ->Enabled())
+			{
+				if (Q->IsReady() && CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), Q->Range()))
+				{
+					Q->CastOnTarget(target, PredicChange());
+				}
+			}
+
+			if (FleeE->Enabled())
+			{
+				if (E->IsReady() && CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), Q->Range()))
+				{
+					E->CastOnTarget(target, PredicChange());
+				}
+			}
+
+			if (FleeR->Enabled() && R->IsReady())
+			{
+				R->CastOnPosition(GGame->CursorPosition());
+			}
+		}
 	}
 
 	static void AimMissileHelp()
@@ -235,6 +285,7 @@ public:
 		}
 
 		AimMissileHelp();
+		FleeKeyMode();
 		
 		for (auto target : GEntityList->GetAllHeros(false, true))
 		{
@@ -462,6 +513,30 @@ public:
 				}
 			}
 		}
+
+		if (DrawTemp->Enabled())
+		{
+			Vec2 pos;
+			GGame->Projection(GEntityList->Player()->GetPosition(), &pos);
+
+			static auto messageTimer = GRender->CreateFontW("Impact", 30.f, kFontWeightNormal);
+			messageTimer->SetLocationFlags(kFontLocationCenter);
+			messageTimer->SetOutline(true);
+
+			if (PassiveCount() == 99)
+			{
+				messageTimer->SetColor(Vec4(0, 255, 0, 255));
+				messageTimer->Render(pos.x, pos.y, "Passive: Ready!");
+			}
+			else
+			{
+				if (PassiveCount() > 0)
+				{
+					messageTimer->SetColor(Vec4(255, 255, 0, 255));
+					messageTimer->Render(pos.x, pos.y, "Passive: %i", PassiveCount());
+				}
+			}
+		}
 	}
 
 	static void OnGapcloser(GapCloserSpell const& args)
@@ -558,6 +633,15 @@ public:
 			{
 				E->CastOnTarget(Args.Target_, PredicChange());
 			}
+		}
+	}
+
+	static void OnBuffRemove(IUnit* Source, void* BuffData)
+	{
+		if (GetDistance(GEntityList->Player(), Source) < 500)
+		{
+			//GGame->PrintChat(GBuffData->GetBuffName(BuffData));
+			//GUtility->LogConsole("Nome %s", GBuffData->GetBuffName(BuffData));
 		}
 	}
 };

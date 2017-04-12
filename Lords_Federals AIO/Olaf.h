@@ -327,7 +327,7 @@ public:
 					//auto damage = GDamage->GetSpellDamage(GEntityList->Player(), minion, kSlotQ);
 					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, delay, true);					
 
-					if (damage > minion->GetHealth())
+					if (CheckTarget(minion) && damage > minion->GetHealth())
 					{
 						if (RangeQ->Enabled() && GetDistance(GEntityList->Player(), minion) > 400)
 						{
@@ -354,7 +354,7 @@ public:
 				{
 					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotE, E->GetDelay(), true);
 
-					if (damage > minion->GetHealth())
+					if (CheckTarget(minion) && damage > minion->GetHealth())
 					{
 						GOrbwalking->ResetAA();
 						E->CastOnUnit(minion);

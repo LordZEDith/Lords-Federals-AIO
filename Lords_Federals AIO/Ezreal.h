@@ -193,7 +193,6 @@ public:
 		{
 			if (CheckTarget(target))
 			{
-
 				if (Killsteal->Enabled())
 				{
 					if (checkRrange(target) && KillstealR->Enabled() && R->IsReady() && target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) > target->GetHealth())
@@ -311,7 +310,7 @@ public:
 					//auto damage = GDamage->GetSpellDamage(GEntityList->Player(), minion, kSlotQ);
 					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, delay, false);
 
-					if (damage > minion->GetHealth())
+					if (CheckTarget(minion) && damage > minion->GetHealth())
 					{
 						if (RangeQlh->Enabled() && GetDistance(GEntityList->Player(), minion) > 400)
 						{
@@ -338,7 +337,11 @@ public:
 			
 			if (Minion.Any())
 			{
-				Q->CastOnUnit(Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); }));
+				auto jminion = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
+				if (CheckTarget(jminion))
+				{
+					Q->CastOnUnit(jminion);
+				}
 			}			
 		}
 	}
@@ -356,6 +359,8 @@ public:
 				{
 					auto damage = GHealthPrediction->GetKSDamage(minion, kSlotQ, Q->GetDelay(), true);					
 					
+					if (!CheckTarget(minion)) return;
+
 					if (LaneClearQLast->Enabled())
 					{
 						if (damage > minion->GetHealth())
@@ -467,17 +472,20 @@ public:
 			QLastCast = GGame->TickCount();
 		}		
 
-		if (Args.Caster_->IsHero() && Args.Caster_->GetTeam() == GEntityList->Player()->GetTeam() &&
-			Args.Caster_ != GEntityList->Player() && GetDistance(GEntityList->Player(), Args.Caster_) < W->Range() &&
-			!Args.Caster_->HasBuff("EzrealEssenceFlux") && 
-			(strstr(Args.Target_->GetObjectName(), "Dragon") || 
-				strstr(Args.Target_->GetObjectName(), "Baron") || 
-				Args.Target_->IsTurret() && Args.Target_->IsEnemy(GEntityList->Player())))
+		if (Args.Caster_ != nullptr && Args.Target_ != nullptr)
 		{
-			if (W->IsReady() && AutoW->Enabled() && GEntityList->Player()->GetMana() > R->ManaCost() + E->ManaCost() + Q->ManaCost() + W->ManaCost())
+			if (Args.Caster_->IsHero() && !Args.Caster_->IsEnemy(GEntityList->Player()) &&
+				Args.Caster_ != GEntityList->Player() && GetDistance(GEntityList->Player(), Args.Caster_) < W->Range() &&
+				!Args.Caster_->HasBuff("EzrealEssenceFlux") &&
+				(strstr(Args.Target_->GetObjectName(), "Dragon") ||
+					strstr(Args.Target_->GetObjectName(), "Baron") ||
+					Args.Target_->IsTurret() && Args.Target_->IsEnemy(GEntityList->Player())))
 			{
-				W->CastOnTarget(Args.Caster_, kHitChanceMedium);
-			}		
+				if (W->IsReady() && AutoW->Enabled() && GEntityList->Player()->GetMana() > R->ManaCost() + E->ManaCost() + Q->ManaCost() + W->ManaCost())
+				{
+					W->CastOnTarget(Args.Caster_, kHitChanceMedium);
+				}
+			}
 		}
 
 		if (Args.Caster_->IsEnemy(GEntityList->Player()) && Args.Target_ == GEntityList->Player() && Args.Caster_->IsMelee() && Args.AutoAttack_)
