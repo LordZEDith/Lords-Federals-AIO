@@ -493,6 +493,23 @@ inline bool FoundMinions(float range)
 	 return false;
  }
 
+inline bool FoundNeutralEpic(float range)
+{
+	for (auto minions : GEntityList->GetAllMinions(false, false, true))
+	{
+		if (GEntityList->Player()->IsValidTarget(minions, range) && !minions->IsDead() && minions->IsVisible() && minions->IsWindingUp() &&
+			(strstr(minions->GetObjectName(), "Dragon")
+				|| strstr(minions->GetObjectName(), "Baron")
+				|| strstr(minions->GetObjectName(), "Red")
+				|| strstr(minions->GetObjectName(), "Blue")))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 inline int CountMinions(Vec3 Location, int range)
  {
 	 int Count = 0;

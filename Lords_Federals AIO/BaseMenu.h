@@ -312,6 +312,7 @@ IMenuOption* DrawNear;
 IMenuOption* WMinions;
 IMenuOption* DrawPetStatus;
 IMenuOption* DrawECustom;
+IMenuOption* DrawCaitSpots;
 
 IMenuOption* HealthPercent;
 IMenuOption* FarmMana;
@@ -552,6 +553,8 @@ bool justQ;
 bool checkVisible;
 bool putWard;
 bool putTrinket;
+bool wardjump;
+bool ColoqueiWard;
 
 short keystate;
 short keystate2;
@@ -658,6 +661,7 @@ IUnit* GetTargetDraw = nullptr;
 IUnit* TargetUnder = nullptr;
 IUnit* jMonster = nullptr;
 IUnit* BaseTarget = nullptr;
+IUnit* WardObj = nullptr;
 
 // Elise
 float _humQcd, _humWcd, _humEcd;

@@ -119,11 +119,6 @@ public:
 
 		if (FoundSmite && Smite->IsReady() && SmiteActive->Enabled())
 		{
-			if (SmiteAmmo->Enabled() && (GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot1) <= 1 || GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot2) <= 1))
-			{
-				return;
-			}			
-
 			if (KillstealSmite->Enabled())
 			{
 				for (auto hero : GEntityList->GetAllHeros(false, true))
@@ -135,7 +130,15 @@ public:
 					{
 						if (20 + 8 * GEntityList->Player()->GetLevel() > hero->GetHealth())
 						{
-							Smite->CastOnUnit(hero);
+							if (!FoundNeutralEpic(1500))
+							{
+								if (SmiteAmmo->Enabled() && (GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot1) == 1 || GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot2) == 1))
+								{
+									return;
+								}
+								
+								Smite->CastOnUnit(hero);
+							}
 						}
 					}
 				}
@@ -153,7 +156,15 @@ public:
 						{
 							if (GetDistance(GEntityList->Player(), hero) <= 570 && SmiteComboHP->GetInteger() >= hero->HealthPercent())
 							{
-								Smite->CastOnUnit(hero);
+								if (!FoundNeutralEpic(1500))
+								{
+									if (SmiteAmmo->Enabled() && (GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot1) == 1 || GEntityList->Player()->GetSpellBook()->GetAmmo(kSummonerSlot2) == 1))
+									{
+										return;
+									}
+
+									Smite->CastOnUnit(hero);
+								}
 							}
 						}
 					}

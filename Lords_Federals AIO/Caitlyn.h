@@ -35,6 +35,7 @@ public:
 			ManaFullAmmo = W2Settings->AddInteger("Min Mana%", 0, 100, 70);
 			AutoInGrass = W2Settings->CheckBox("Trap in Grass Pos", true);
 			AutoInTowers = W2Settings->CheckBox("Trap in Towers/Route Pos", true);
+			DrawCaitSpots = W2Settings->CheckBox("Draw Traps Spots", true);
 		}
 
 		WhiteList = WSettings->AddMenu(":: Trap on GaCloser..");
@@ -156,7 +157,27 @@ public:
 			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), W->Range()); }
 			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), E->Range()); }
 			if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), R->Range()); }
-		}			
+		}
+
+		if (DrawCaitSpots->Enabled())
+		{
+			if (AutoInGrass->Enabled())
+			{
+				for (auto tg : GrassSpots)
+				{
+					GRender->DrawOutlinedCircle(tg, Vec4(255, 255, 255, 255), 60);
+				}
+			}
+
+			if (AutoInTowers->Enabled())
+			{
+				for (auto tt : TrapTowerSpots)
+				{
+					GRender->DrawOutlinedCircle(tt, Vec4(255, 255, 0, 255), 60);
+				}
+
+			}
+		}
 	}
 
 	static int PredicChange()
