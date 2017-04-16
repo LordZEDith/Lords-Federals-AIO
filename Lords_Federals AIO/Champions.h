@@ -10,6 +10,7 @@
 #include "zTristana.h"
 #include "Caitlyn.h"
 #include "Vayne.h"
+#include "zVarus.h"
 
 // Champions Midlane
 #include "Ahri.h"

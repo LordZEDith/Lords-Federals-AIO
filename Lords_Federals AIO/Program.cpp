@@ -156,22 +156,26 @@ public:
 	{
 		//Message().ADCLaneSeries();
 		//Message().ChampionLoadMessage();
-		Varus().Menu();
-		Varus().LoadSpells();
+		VarusV2().InitializeMenu();
+		VarusV2().LoadSpells();
 		AutoSmite().SpellsSmite();
 		AutoSmite().MenuSmite();
 		//Skins().Menu();
 		Toxic().MenuToxic();
+		Trinket().SpellsTrinket();
+		Trinket().MenuTrinket();
 	}
 
 	virtual void OnRender() override
 	{
-		Varus().Drawing();
+		VarusV2().Drawing();
 
 	}
 
 	virtual void OnGameUpdate() override
 	{
+		Trinket().AutoTrinket();
+
 		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
 			return;
@@ -179,21 +183,18 @@ public:
 		
 			if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 			{
-				Varus().Combo();
+				VarusV2().Combo();
 			}
 			if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 			{
-				Varus().Harass();
+				VarusV2().Harass();
 			}
 			if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
-			{
-				Varus().FarmHarass();
-				Varus().LaneClear();
-				Varus().JungleClear();
+			{				
+				VarusV2().LaneClear();
+				VarusV2().JungleClear();
 			}
-			Varus().SemiRLogic();
-			Varus().AutoHarass();
-			Varus().KillSteal();		
+			VarusV2().Automatic();				
 			AutoSmite().AutomaticSmite();
 			AutoSmite().KeyPressSmite();
 			Toxic().SpamEmote();
@@ -202,7 +203,7 @@ public:
 	}
 	void OnGapCloser(GapCloserSpell const& Args) override
 	{
-
+		VarusV2().OnGapcloser(Args);
 	}
 	void OnAfterAttack(IUnit* Source, IUnit* Target) override
 	{
@@ -237,12 +238,13 @@ public:
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-
+		Trinket().TrinketOnProcessSpell(Args);
+		VarusV2().OnProcessSpell(Args);
 	}
 
 	void OnExitVisible(IUnit* Source) override
 	{
-
+		Trinket().TrinketOnExitVisible(Source);
 	}	
 
 	void OnBuffAdd(IUnit* Source, void* BuffData) override

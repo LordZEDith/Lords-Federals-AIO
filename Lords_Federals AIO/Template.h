@@ -195,4 +195,25 @@ SArray<T> SArray<T>::OrderBy(std::function<T2(T)> OrderBy)
 }
 
 
-#pragma  endregion 
+#pragma  endregion
+
+class FarmLocation
+{
+public:
+	Vec3 CastPosition;
+	Vec3 CastPositionFrom;
+	int HitCount = 0;
+
+	IUnit* CastOnUnit = nullptr;
+	
+	FarmLocation(Vec3 castposition, Vec3 castpositionfrom, int hitcount, IUnit* castonunit)
+	{
+		CastPosition = castposition;
+		CastPositionFrom = castpositionfrom;
+		HitCount = hitcount;
+		CastOnUnit = castonunit;
+	}
+
+	FarmLocation() {};
+
+};

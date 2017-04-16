@@ -1,4 +1,4 @@
-	#pragma once
+#pragma once
 #include "PluginSDK.h"
 #include "BaseMenu.h"
 #include "Common.h"
@@ -11,27 +11,72 @@ public:
 	static void InitializeMenu()
 	{
 		MainMenu = GPluginSDK->AddMenu("Lords & Federals Template");
-		
+
+
+		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
+		{
+			DrawReady = DrawingSettings->CheckBox("Draw Only Ready Spells", true);
+			DrawQ = DrawingSettings->CheckBox("Draw Q", true);
+			DrawE = DrawingSettings->CheckBox("Draw E", false);
+			DrawR = DrawingSettings->CheckBox("Draw R", false);
+			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
+		}
+
 	}
 
 	static void LoadSpells()
 	{
-		Q = GPluginSDK->CreateSpell2(kSlotQ, kCircleCast, true, false, (kCollidesWithYasuoWall));
-		Q->SetSkillshot(1.0, 150, 3200, 1625);		
+		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, (kCollidesWithYasuoWall | kCollidesWithHeroes | kCollidesWithMinions));
+		Q->SetSkillshot(0.25f, 50.f, 1850.f, 925.f);
+		Q->SetCharged(925.f, 1600.f, 1.5f);
 
-		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, true, false, (kCollidesWithNothing));
-		W->SetSkillshot(0.25, 0, 1450, 725);		
+		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, (kCollidesWithNothing));
 
-		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, (kCollidesWithNothing));
-		E->SetSkillshot(0.25, 0, 3200, 800);		
+		E = GPluginSDK->CreateSpell2(kSlotE, kCircleCast, false, true, (kCollidesWithYasuoWall));
+		E->SetSkillshot(0.25f, 200.f, 1000.f, 925.f);
 
-		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, true, false, (kCollidesWithYasuoWall));
-		R->SetSkillshot(0.5, 250, 850, 2750);		
-	}	
+		R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, true, true, (kCollidesWithYasuoWall | kCollidesWithHeroes));
+		R->SetSkillshot(0.25f, 50.f, 1850.f, 1075.f);
+	}
+
+	static int PredicChange()
+	{
+		if (Predic->GetInteger() == 0)
+		{
+			return mypredic = kHitChanceMedium;
+		}
+		if (Predic->GetInteger() == 1)
+		{
+			return mypredic = kHitChanceHigh;
+		}
+		if (Predic->GetInteger() == 2)
+		{
+			return mypredic = kHitChanceVeryHigh;
+		}
+
+		return mypredic = kHitChanceLow;
+	}
+
+	static void Drawing()
+	{
+		if (DrawReady->Enabled())
+		{
+			if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range()); }
+			if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
+			if (R->IsReady() && DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range()); }
+
+		}
+		else
+		{
+			if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range()); }
+			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
+			if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range()); }
+		}
+	}
 
 	static void Automatic()
 	{
-		
+
 	}
 
 	static void Combo()
@@ -54,10 +99,6 @@ public:
 	{
 	}
 
-	static void Drawing()
-	{
-	}
-
 	static void OnGapcloser(GapCloserSpell const& args)
 	{
 
@@ -65,35 +106,22 @@ public:
 
 	static void OnAfterAttack(IUnit* source, IUnit* target)
 	{
-		
+
 	}
 
 	static void OnProcessSpell(CastedSpell const& Args)
-	{		
-		
+	{
+
 	}
 
 	static void OnCreateObject(IUnit* Source)
 	{
-		if (Source->IsMissile() && GMissileData->GetCaster(Source)->GetNetworkId() == GEntityList->Player()->GetNetworkId())
-		{
-			if (strstr(GMissileData->GetName(Source), "RocketGrabMissile"))
-			{
-				SkillMissiles.Add(Source);
-				QMissile = Source;
-			}
 
-			//GUtility->LogConsole("Skill: %s - Speed: %f / Range: %f / Radius: %f ", GMissileData->GetName(Source), GMissileData->GetSpeed(Source), GMissileData->GetRange(Source), GMissileData->GetRadius(Source));
-		}
 
 	}
 
 	static void OnDeleteObject(IUnit* Source)
 	{
-		if (strstr(GMissileData->GetName(Source), "RocketGrabMissile"))
-		{
-			SkillMissiles.RemoveAll([&](IUnit* i) {return i->GetNetworkId() == Source->GetNetworkId(); });
-			QMissile = nullptr;
-		}
+
 	}
 };

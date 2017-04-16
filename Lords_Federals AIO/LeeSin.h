@@ -1415,42 +1415,47 @@ public:
 	static Vec3 GetInsecPos(IUnit* target, bool under = false)
 	{
 		GetTarget = target;
+		AliadoPos = nullptr;
+		TorrePos = nullptr;
+		AllySoloPos = nullptr;
 
 		SArray<IUnit*> sAliados = SArray<IUnit*>(GEntityList->GetAllHeros(true, false)).Where([](IUnit* Aliados) {return Aliados != nullptr && Aliados != GEntityList->Player() &&
-			!Aliados->IsDead() && Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) < 2500 && CountAlly(Aliados->GetPosition(), 800) >= 2 &&
-			GetDistanceVectors(GetTarget->GetPosition(), Aliados->GetPosition()) > 500; });
+			!Aliados->IsDead() && Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) < 2500 && CountAlly(Aliados->GetPosition(), 600) >= 2 &&
+			GetDistanceVectors(GetTarget->GetPosition(), Aliados->GetPosition()) > 500; }).OrderBy<float>([&](IUnit* x) {return GetDistanceVectors(x->GetPosition(), GetTarget->GetPosition()); });;
 
 		SArray<IUnit*> sTorres = SArray<IUnit*>(GEntityList->GetAllTurrets(true, false)).Where([](IUnit* Torres) {return Torres != nullptr && Torres->GetHealth() > 1 &&
-			Torres->IsVisible() && GetDistance(GEntityList->Player(), Torres) < 2500; });
+			Torres->IsVisible() && GetDistance(GEntityList->Player(), Torres) < 2500; }).OrderBy<float>([&](IUnit* x) {return GetDistanceVectors(x->GetPosition(), GetTarget->GetPosition()); });;
 
 		SArray<IUnit*> sAliado = SArray<IUnit*>(GEntityList->GetAllHeros(true, false)).Where([](IUnit* Aliados) {return Aliados != nullptr && Aliados != GEntityList->Player() &&
-			!Aliados->IsDead() && Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) < 2500; });
+			!Aliados->IsDead() && Aliados->IsVisible() && GetDistance(GEntityList->Player(), Aliados) < 2500; }).OrderBy<float>([&](IUnit* x) {return GetDistanceVectors(x->GetPosition(), GetTarget->GetPosition()); });;
 
-		if (sAliados.Any())
+		for (auto xally : sAliados.ToVector())
 		{
-			AliadoPos = sAliados.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GetTarget->GetPosition()); });
-		}
-
-		if (sTorres.Any())
-		{
-			TorrePos = sTorres.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GetTarget->GetPosition()); });
-		}
-
-		if (sAliado.Any())
-		{
-			AllySoloPos = sAliado.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GetTarget->GetPosition()); });
-		}
-
-		if (TorrePos == nullptr && AliadoPos == nullptr && AllySoloPos == nullptr && ClickPOS == Vec3(0,0,0))
-		{
-			if (GUtility->IsPositionUnderTurret(GEntityList->Player()->GetPosition(), false, true))
+			if (xally != nullptr && !xally->IsDead() && xally->IsVisible() && CountAlly(xally->GetPosition(), 600) >= 2 && GetDistance(GEntityList->Player(), xally) < 2500)
 			{
-				InsecST = GEntityList->GetTeamNexus()->GetPosition();
-			}
-			else
+				AliadoPos = xally;
+			 }
+		}
+
+		for (auto xtower : sTorres.ToVector())
+		{
+			if (xtower != nullptr && xtower->GetHealth() > 1 && xtower->IsVisible())
 			{
-				InsecST = GEntityList->Player()->GetPosition();
+				TorrePos = xtower;
 			}
+		}
+
+		for (auto xAllies : sAliado.ToVector())
+		{
+			if (xAllies != nullptr && !xAllies->IsDead() && xAllies->IsVisible())
+			{
+				AllySoloPos = xAllies;
+			}
+		}		
+
+		if (TorrePos == nullptr && AliadoPos == nullptr && AllySoloPos == nullptr && ClickPOS == Vec3(0, 0, 0))
+		{
+			InsecST = GEntityList->Player()->GetPosition();			
 		}
 		else
 		{
@@ -1471,19 +1476,23 @@ public:
 				{
 					if (clickInsec->Enabled() && ClickPOS != Vec3(0, 0, 0))
 					{
-						InsecST = ClickPOS;
+						InsecST = ClickPOS;						
 					}
 					else if (AliadoPos != nullptr)
 					{
-						InsecST = AliadoPos->GetPosition();
+						auto pos = AliadoPos->GetPosition() + (GetTarget->GetPosition() - AliadoPos->GetPosition()).VectorNormalize() * (GOrbwalking->GetAutoAttackRange(AliadoPos) + AliadoPos->BoundingRadius()) / 2;
+						
+						InsecST = pos;						
 					}
 					else if (TorrePos != nullptr)
 					{
-						InsecST = TorrePos->ServerPosition();
+						InsecST = TorrePos->ServerPosition();						
 					}
 					else
 					{
-						InsecST = AllySoloPos->GetPosition();
+						auto pos = AllySoloPos->GetPosition() + (GetTarget->GetPosition() - AllySoloPos->GetPosition()).VectorNormalize() * (GOrbwalking->GetAutoAttackRange(AllySoloPos) + AllySoloPos->BoundingRadius()) / 2;
+
+						InsecST = pos;						
 					}
 				}
 
@@ -2548,6 +2557,7 @@ public:
 				if (ClickPOS == Vec3(0, 0, 0))
 				{
 					ClickPOS = GGame->CursorPosition();
+					GUtility->LogConsole("Vec3(%ff,%ff,%ff,", GGame->CursorPosition().x, GGame->CursorPosition().y, GGame->CursorPosition().z);
 					LastClick = GGame->TickCount() + ClickExpire->GetInteger();					
 				}
 				else

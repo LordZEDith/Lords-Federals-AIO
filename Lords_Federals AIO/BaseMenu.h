@@ -1,6 +1,7 @@
 #pragma once
 #include "PluginSDK.h"
 #include "Template.h"
+#include "Geometry.h"
 #include <list>
 #include <map>
 
@@ -36,6 +37,7 @@ IMenu* WMenu;
 IMenu* EMenu;
 IMenu* EMenuGap;
 IMenu* RMenu;
+IMenu* RMenu2;
 IMenu* Miscs;
 IMenu* Drawings;
 IMenu* Drawingss;
@@ -44,6 +46,7 @@ IMenu* Jump2Settings;
 IMenu* FarmMenu;
 IMenu* FleeMode;
 IMenu* WhiteList;
+IMenu* WhiteListHarass;
 
 IMenu* MainMenu;
 IMenu* HarassSettings;
@@ -182,6 +185,13 @@ IMenuOption* QAfterAA;
 IMenuOption* QAntiMelee;
 IMenuOption* QCancelAnimation;
 IMenuOption* AimMissile;
+IMenuOption* FastQ;
+
+IMenuOption* QMaxRange;
+IMenuOption* QAlways;
+IMenuOption* HarassQmin;
+IMenuOption* EAlways;
+IMenuOption* HarassEmin;
 
 IMenuOption* ComboW;
 IMenuOption* HarassW;
@@ -241,6 +251,7 @@ IMenuOption* EUnderTowerAttack;
 IMenuOption* IgniteKS;
 IMenuOption* EOrder;
 IMenuOption* PushDistance;
+IMenuOption* EPassive;
 
 IMenuOption* ComboR;
 IMenuOption* ComboRKill;
@@ -272,6 +283,8 @@ IMenuOption* RBlock;
 IMenuOption* rCount;
 IMenuOption* RMode;
 IMenuOption* RPush;
+IMenuOption* REnemyRange;
+IMenuOption* RAllysRange;
 
 //Dash
 IMenuOption* EnemyCheck;

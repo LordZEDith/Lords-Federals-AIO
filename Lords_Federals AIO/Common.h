@@ -130,11 +130,6 @@ static bool CheckIsWard(IUnit* minion)
 	return false;
 }
 
-Vec3& Extend(Vec3 from, Vec3 to, float distance)
-{
-	return from + distance * (to - from).VectorNormalize();
-}
-
 float GetDistancePos(Vec3 from, Vec3 to)
 {
 	float x1 = from.x;
@@ -1004,3 +999,101 @@ static float Distance(Vec2 point, Vec2 start, Vec2 End, bool onlyOnSegment)
 	}
 	return FLT_MAX;
 }
+
+inline bool IsValidTarget(IUnit* target, float range = 100000, Vec3 RangeCheckFrom = GEntityList->Player()->GetPosition())
+{
+	return target != nullptr && GEntityList->Player()->IsValidTarget(target, range) && GetDistanceVectors(target->GetPosition(), RangeCheckFrom) <= range;
+}
+
+inline SArray<IUnit*> EnemyMinions(float range = 100000, Vec3 RangeCheckFrom = GEntityList->Player()->GetPosition())
+{
+	return SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([&](IUnit* i) {return IsValidTarget(i, range, RangeCheckFrom); });
+}
+inline SArray<IUnit*> NeutralMinions(float range = 100000, Vec3 RangeCheckFrom = GEntityList->Player()->GetPosition())
+{
+	return SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([&](IUnit* i) {return IsValidTarget(i, range, RangeCheckFrom); });
+}
+inline SArray<IUnit*> ValidEnemies(float range = 100000, Vec3 RangeCheckFrom = GEntityList->Player()->GetPosition())
+{
+	return SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([&](IUnit* i) {return IsValidTarget(i, range, RangeCheckFrom); });
+}
+
+// Credits: Malachite
+FarmLocation FindBestLineCastPosition(vector<Vec3> RangeCheckFroms, float range, float castrange, float radius, bool Minions, bool Heroes)
+{
+	FarmLocation result;
+	result.HitCount = 0;
+	for (Vec3 RangeCheckFrom : RangeCheckFroms)
+	{
+		auto minions = EnemyMinions(range, RangeCheckFrom);
+		auto heroes = ValidEnemies(range, RangeCheckFrom);
+		auto castminions = EnemyMinions(castrange, RangeCheckFrom);
+		auto castheroes = ValidEnemies(castrange, RangeCheckFrom);
+		SArray<IUnit*> targets;
+		SArray<IUnit*> casttargets;
+		if (Minions)
+		{
+			targets.AddRange(minions);
+			casttargets.AddRange(castminions);
+		}
+		if (Heroes)
+		{
+			targets.AddRange(heroes);
+			casttargets.AddRange(castheroes);
+		}
+		for (auto target : casttargets.ToVector())
+		{
+			Vec3 endpos = Extend(RangeCheckFrom, target->GetPosition(), range);
+			int count = targets.Where([&](IUnit* i)
+			{ return Distance(i->GetPosition(), Extend(RangeCheckFrom, endpos, -radius / 2), Extend(endpos, RangeCheckFrom, -radius / 2), true) <= radius / 2 + i->BoundingRadius(); }).Count();
+			if (count > result.HitCount)
+			{
+				result.HitCount = count;
+				result.CastPosition = endpos;
+				result.CastPositionFrom = RangeCheckFrom;
+				result.CastOnUnit = target;
+			}
+		}
+	}
+	return result;
+}
+
+FarmLocation FindBestLineCastPositionNeutral(vector<Vec3> RangeCheckFroms, float range, float castrange, float radius, bool Minions, bool Heroes)
+{
+	FarmLocation result;
+	result.HitCount = 0;
+	for (Vec3 RangeCheckFrom : RangeCheckFroms)
+	{
+		auto minions = NeutralMinions(range, RangeCheckFrom);
+		auto heroes = ValidEnemies(range, RangeCheckFrom);
+		auto castminions = NeutralMinions(castrange, RangeCheckFrom);
+		auto castheroes = ValidEnemies(castrange, RangeCheckFrom);
+		SArray<IUnit*> targets;
+		SArray<IUnit*> casttargets;
+		if (Minions)
+		{
+			targets.AddRange(minions);
+			casttargets.AddRange(castminions);
+		}
+		if (Heroes)
+		{
+			targets.AddRange(heroes);
+			casttargets.AddRange(castheroes);
+		}
+		for (auto target : casttargets.ToVector())
+		{
+			Vec3 endpos = Extend(RangeCheckFrom, target->GetPosition(), range);
+			int count = targets.Where([&](IUnit* i)
+			{ return Distance(i->GetPosition(), Extend(RangeCheckFrom, endpos, -radius / 2), Extend(endpos, RangeCheckFrom, -radius / 2), true) <= radius / 2 + i->BoundingRadius(); }).Count();
+			if (count > result.HitCount)
+			{
+				result.HitCount = count;
+				result.CastPosition = endpos;
+				result.CastPositionFrom = RangeCheckFrom;
+				result.CastOnUnit = target;
+			}
+		}
+	}
+	return result;
+}
+

@@ -247,7 +247,7 @@ public:
 						R->CastOnTarget(target, PredicChange());						
 					}
 
-					if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && target->IsValidTarget(GEntityList->Player(), W->Range()) && ComboR && GDamage->GetAutoAttackDamage(GEntityList->Player(), target, false) * 5 + rDmg + GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotW) > target->GetHealth() && target->HasBuffOfType(BUFF_Slow))
+					if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && target->IsValidTarget(GEntityList->Player(), R->Range()) && ComboR->Enabled() && GDamage->GetAutoAttackDamage(GEntityList->Player(), target, false) * 5 + rDmg + GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotW) > target->GetHealth() && target->HasBuffOfType(BUFF_Slow))
 					{
 						R->CastOnTarget(target, PredicChange());						
 					}

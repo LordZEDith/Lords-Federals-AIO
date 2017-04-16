@@ -92,9 +92,7 @@ public:
 				{
 					putTrinket = false;
 				}
-			}
-
-			GGame->PrintChat(Args.Name_);
+			}			
 		}		
 	}
 
