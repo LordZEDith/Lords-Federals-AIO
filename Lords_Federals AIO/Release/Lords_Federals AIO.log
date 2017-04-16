@@ -2,122 +2,138 @@
 c:\users\docum\lords-federals-aio\lords_federals aio\Vector3.h(228): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Color.h(20): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Color.h(25): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(25): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(30): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(35): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(40): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(44): warning C4305: '*=': truncation from 'double' to 'float'
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(47): warning C4305: '*=': truncation from 'double' to 'float'
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(51): warning C4244: '*=': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(54): warning C4244: '*=': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(57): warning C4244: '*=': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(60): warning C4244: '*=': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(63): warning C4244: '*=': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(67): warning C4305: '*=': truncation from 'double' to 'float'
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(73): warning C4305: '*=': truncation from 'double' to 'float'
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(76): warning C4305: '*=': truncation from 'double' to 'float'
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(231): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(562): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(26): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(31): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(36): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(41): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(45): warning C4305: '*=': truncation from 'double' to 'float'
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(48): warning C4305: '*=': truncation from 'double' to 'float'
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(52): warning C4244: '*=': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(55): warning C4244: '*=': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(58): warning C4244: '*=': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(61): warning C4244: '*=': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(64): warning C4244: '*=': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(68): warning C4305: '*=': truncation from 'double' to 'float'
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(74): warning C4305: '*=': truncation from 'double' to 'float'
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(77): warning C4305: '*=': truncation from 'double' to 'float'
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(232): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(617): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
 c:\users\docum\lords-federals-aio\lords_federals aio\Varus.h(170): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
 c:\users\docum\lords-federals-aio\lords_federals aio\Varus.h(183): warning C4806: '==': unsafe operation: no value of type 'bool' promoted to type 'eOrbwalkingMode' can equal the given constant
-c:\users\docum\lords-federals-aio\lords_federals aio\Draven.h(256): warning C4804: '>': unsafe use of type 'bool' in operation
-c:\users\docum\lords-federals-aio\lords_federals aio\Ashe.h(323): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Ezreal.h(183): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Ezreal.h(206): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Ezreal.h(218): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Ezreal.h(444): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\zTristana.h(211): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\zTristana.h(219): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\zTristana.h(289): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\zTristana.h(383): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\zTristana.h(391): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\zTristana.h(410): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Caitlyn.h(202): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Vayne.h(218): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Vayne.h(471): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Vayne.h(586): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Vayne.h(659): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(310): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(363): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(410): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(422): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(458): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(526): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(104): warning C4244: 'return': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(474): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(487): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(502): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(522): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(580): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Champions.h(23): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-c:\users\docum\lords-federals-aio\lords_federals aio\Olaf.h(515): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Olaf.h(581): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Nocturne.h(73): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Nocturne.h(285): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Hecarim.h(127): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(583): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(584): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(585): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(586): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(587): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(588): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(589): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(595): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(600): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(605): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(610): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(615): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(620): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(626): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(631): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(639): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(644): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(649): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(654): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(659): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(664): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(676): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(681): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(685): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(690): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(695): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(703): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(708): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(712): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(717): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(722): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(729): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Draven.h(224): warning C4804: '>': unsafe use of type 'bool' in operation
+c:\users\docum\lords-federals-aio\lords_federals aio\Ashe.h(311): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Ezreal.h(198): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Ezreal.h(221): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Ezreal.h(236): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Ezreal.h(523): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Ezreal.h(528): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Ezreal.h(536): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\zTristana.h(215): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\zTristana.h(223): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\zTristana.h(299): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\zTristana.h(390): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\zTristana.h(398): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\zTristana.h(417): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Caitlyn.h(251): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Caitlyn.h(293): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Caitlyn.h(811): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Polygons.h(9): warning C4005: 'M_PI': macro redefinition
-  c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(6): note: see previous definition of 'M_PI'
+  c:\users\docum\lords-federals-aio\lords_federals aio\Common.h(7): note: see previous definition of 'M_PI'
 c:\users\docum\lords-federals-aio\lords_federals aio\Polygons.h(135): warning C4244: 'argument': conversion from 'ClipperLib::cInt' to 'const float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Polygons.h(477): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Polygons.h(477): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Polygons.h(581): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Polygons.h(589): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(586): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(630): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(862): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(863): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(982): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(1004): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(2316): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Vayne.h(169): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Vayne.h(309): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Vayne.h(584): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Vayne.h(719): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Vayne.h(834): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(310): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(363): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(407): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(419): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(457): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(527): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Geometry.h(64): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(109): warning C4244: 'return': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(513): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(526): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(541): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(561): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(619): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(863): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Syndra.h(126): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Syndra.h(247): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Syndra.h(253): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Syndra.h(335): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Champions.h(24): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+c:\users\docum\lords-federals-aio\lords_federals aio\Olaf.h(427): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Olaf.h(512): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Olaf.h(578): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Nocturne.h(73): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Nocturne.h(278): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Hecarim.h(127): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(589): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(590): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(591): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(592): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(593): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(594): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(595): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(601): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(606): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(611): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(616): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(621): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(626): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(632): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(637): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(645): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(650): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(655): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(660): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(665): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(670): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(682): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(687): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(691): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(696): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(701): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(709): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(714): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(718): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(723): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(728): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Elise.h(735): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(620): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(671): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(844): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(857): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(938): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(939): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(1055): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(1077): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\LeeSin.h(2601): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Khazix.h(326): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Khazix.h(621): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Khazix.h(633): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Khazix.h(640): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Khazix.h(652): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Gragas.h(63): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\docum\lords-federals-aio\lords_federals aio\Gragas.h(323): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Gragas.h(347): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Galio.h(317): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Galio.h(329): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Ivern.h(296): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Ivern.h(515): warning C4305: 'argument': truncation from 'double' to 'const float'
-c:\users\docum\lords-federals-aio\lords_federals aio\Ivern.h(519): warning C4305: 'argument': truncation from 'double' to 'const float'
-c:\users\docum\lords-federals-aio\lords_federals aio\Ivern.h(527): warning C4305: 'argument': truncation from 'double' to 'const float'
-c:\users\docum\lords-federals-aio\lords_federals aio\Ivern.h(541): warning C4305: 'argument': truncation from 'double' to 'const float'
-c:\users\docum\lords-federals-aio\lords_federals aio\Ivern.h(545): warning C4305: 'argument': truncation from 'double' to 'const float'
-c:\users\docum\lords-federals-aio\lords_federals aio\Ivern.h(553): warning C4305: 'argument': truncation from 'double' to 'const float'
-c:\users\docum\lords-federals-aio\lords_federals aio\Kindred.h(108): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\DrMundo.h(306): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Gragas.h(327): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Gragas.h(351): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Galio.h(315): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Galio.h(327): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Ivern.h(294): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Ivern.h(502): warning C4305: 'argument': truncation from 'double' to 'const float'
+c:\users\docum\lords-federals-aio\lords_federals aio\Ivern.h(506): warning C4305: 'argument': truncation from 'double' to 'const float'
+c:\users\docum\lords-federals-aio\lords_federals aio\Ivern.h(514): warning C4305: 'argument': truncation from 'double' to 'const float'
+c:\users\docum\lords-federals-aio\lords_federals aio\Ivern.h(528): warning C4305: 'argument': truncation from 'double' to 'const float'
+c:\users\docum\lords-federals-aio\lords_federals aio\Ivern.h(532): warning C4305: 'argument': truncation from 'double' to 'const float'
+c:\users\docum\lords-federals-aio\lords_federals aio\Ivern.h(540): warning C4305: 'argument': truncation from 'double' to 'const float'
+c:\users\docum\lords-federals-aio\lords_federals aio\Kindred.h(115): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\DrMundo.h(172): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\DrMundo.h(283): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\DrMundo.h(322): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Maokai.h(98): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Maokai.h(103): warning C4804: '>=': unsafe use of type 'bool' in operation
 c:\users\docum\lords-federals-aio\lords_federals aio\Maokai.h(108): warning C4804: '<': unsafe use of type 'bool' in operation
@@ -128,103 +144,37 @@ c:\users\docum\lords-federals-aio\lords_federals aio\Rumble.h(100): warning C430
 c:\users\docum\lords-federals-aio\lords_federals aio\Rumble.h(103): warning C4305: 'argument': truncation from 'double' to 'float'
 c:\users\docum\lords-federals-aio\lords_federals aio\Rumble.h(142): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Rumble.h(264): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Rumble.h(499): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(75): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(77): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(79): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(81): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(147): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(154): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(170): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(253): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(254): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(255): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(274): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(290): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(299): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Rumble.h(506): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(113): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(115): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(117): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(119): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(200): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(207): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(223): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(304): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(305): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(306): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(323): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(362): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Renekton.h(483): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Trundle.h(109): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Jax.h(288): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Jax.h(343): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Jax.h(340): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Gnar.h(483): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Gnar.h(521): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Gnar.h(537): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Champions.h(52): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+c:\users\docum\lords-federals-aio\lords_federals aio\Champions.h(53): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 c:\users\docum\lords-federals-aio\lords_federals aio\AutoSmite.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-c:\users\docum\lords-federals-aio\lords_federals aio\AutoSmite.h(287): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\AutoSmite.h(337): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\AutoSmite.h(298): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\AutoSmite.h(348): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Toxic.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\type_traits(1468): warning C4244: 'return': conversion from 'int' to 'float', possible loss of data
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\functional(213): note: see reference to function template instantiation '_Rx std::_Invoke_ret<_Rx,_Callable&,_Ty>(std::_Forced<_Rx,false>,_Callable &,_Ty &&)' being compiled
-          with
-          [
-              _Rx=float,
-              _Callable=_Decayed,
-              _Ty=IUnit *
-          ]
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\functional(211): note: while compiling class template member function 'float std::_Func_impl<_Decayed,_Alloc,_Ret,T>::_Do_call(T &&)'
-          with
-          [
-              _Alloc=std::allocator<int>,
-              _Ret=float,
-              T=IUnit *
-          ]
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\functional(137): note: see reference to class template instantiation 'std::_Func_impl<_Decayed,_Alloc,_Ret,T>' being compiled
-          with
-          [
-              _Alloc=std::allocator<int>,
-              _Ret=float,
-              T=IUnit *
-          ]
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\functional(348): note: see reference to class template instantiation 'std::_Is_large<_Myimpl>' being compiled
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\functional(327): note: see reference to function template instantiation 'void std::_Func_class<_Ret,T>::_Reset_alloc<_Ty,std::allocator<int>>(_Fx &&,const _Alloc &)' being compiled
-          with
-          [
-              _Ret=float,
-              T=IUnit *,
-              _Ty=Vayne::FocusTargetW::<lambda_6f7575a3ddfd8eea86af172a7825ac17>,
-              _Fx=Vayne::FocusTargetW::<lambda_6f7575a3ddfd8eea86af172a7825ac17>,
-              _Alloc=std::allocator<int>
-          ]
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\functional(327): note: see reference to function template instantiation 'void std::_Func_class<_Ret,T>::_Reset_alloc<_Ty,std::allocator<int>>(_Fx &&,const _Alloc &)' being compiled
-          with
-          [
-              _Ret=float,
-              T=IUnit *,
-              _Ty=Vayne::FocusTargetW::<lambda_6f7575a3ddfd8eea86af172a7825ac17>,
-              _Fx=Vayne::FocusTargetW::<lambda_6f7575a3ddfd8eea86af172a7825ac17>,
-              _Alloc=std::allocator<int>
-          ]
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\functional(498): note: see reference to function template instantiation 'void std::_Func_class<_Ret,T>::_Reset<Vayne::FocusTargetW::<lambda_6f7575a3ddfd8eea86af172a7825ac17>>(_Fx &&)' being compiled
-          with
-          [
-              _Ret=float,
-              T=IUnit *,
-              _Fx=Vayne::FocusTargetW::<lambda_6f7575a3ddfd8eea86af172a7825ac17>
-          ]
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\functional(498): note: see reference to function template instantiation 'void std::_Func_class<_Ret,T>::_Reset<Vayne::FocusTargetW::<lambda_6f7575a3ddfd8eea86af172a7825ac17>>(_Fx &&)' being compiled
-          with
-          [
-              _Ret=float,
-              T=IUnit *,
-              _Fx=Vayne::FocusTargetW::<lambda_6f7575a3ddfd8eea86af172a7825ac17>
-          ]
-  c:\users\docum\lords-federals-aio\lords_federals aio\Vayne.h(191): note: see reference to function template instantiation 'std::function<float (T)>::function<Vayne::FocusTargetW::<lambda_6f7575a3ddfd8eea86af172a7825ac17>,int,void>(_Fx)' being compiled
-          with
-          [
-              T=IUnit *,
-              _Fx=Vayne::FocusTargetW::<lambda_6f7575a3ddfd8eea86af172a7825ac17>
-          ]
-  c:\users\docum\lords-federals-aio\lords_federals aio\Vayne.h(191): note: see reference to function template instantiation 'std::function<float (T)>::function<Vayne::FocusTargetW::<lambda_6f7575a3ddfd8eea86af172a7825ac17>,int,void>(_Fx)' being compiled
-          with
-          [
-              T=IUnit *,
-              _Fx=Vayne::FocusTargetW::<lambda_6f7575a3ddfd8eea86af172a7825ac17>
-          ]
+c:\users\docum\lords-federals-aio\lords_federals aio\Trinket.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
      Creating library C:\Users\docum\Lords-Federals-AIO\Lords_Federals AIO\Release\Lords_Federals AIO.lib and object C:\Users\docum\Lords-Federals-AIO\Lords_Federals AIO\Release\Lords_Federals AIO.exp
   Generating code
-  1 of 6679 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+  0 of 10181 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   Lords_Federals AIO.vcxproj -> C:\Users\docum\Lords-Federals-AIO\Lords_Federals AIO\Release\Lords_Federals AIO.dll
   Lords_Federals AIO.vcxproj -> C:\Users\docum\Lords-Federals-AIO\Lords_Federals AIO\Release\Lords_Federals AIO.pdb (Full PDB)

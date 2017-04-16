@@ -7,7 +7,7 @@
 class Syndra
 {
 public:
-
+	 
 	static void InitializeMenu()
 	{
 		MainMenu = GPluginSDK->AddMenu("Lords & Federals Syndra");

@@ -3,11 +3,15 @@
 #include "Color.h"
 #include "Champions.h"
 #include "AutoSmite.h"
+#include <unordered_map>
 #include "SkinsChange.h"
 #include "Toxic.h"
 #include "Version Checker.h"
 #include "Trinket.h"
-
+unordered_map<int, float>Xerath::Timers;
+std::vector<Vec3>Xerath::path_;
+float Xerath::lastQ;
+float Xerath::lastR;
 #pragma region Events
 PLUGIN_EVENT(void) OnOrbwalkBeforeAttack(IUnit* Target)
 {

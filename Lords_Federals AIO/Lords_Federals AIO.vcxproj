@@ -168,6 +168,7 @@
     <ClInclude Include="Elise.h" />
     <ClInclude Include="Ezreal.h" />
     <ClInclude Include="Galio.h" />
+    <ClInclude Include="Geometry.h" />
     <ClInclude Include="Gnar.h" />
     <ClInclude Include="Gragas.h" />
     <ClInclude Include="Ivern.h" />

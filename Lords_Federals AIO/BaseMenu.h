@@ -4,6 +4,7 @@
 #include <list>
 #include <map>
 
+
 SArray<IUnit*> IvernBush;
 
 ISpell2* Q;
@@ -783,10 +784,17 @@ Vec3 sendQHere(0, 0, 0);
 float Wtime = 0, Wtime2 = 0;
 float QMANA, WMANA, EMANA, RMANA;
 
+static float qCasted, wCasted, eCasted;
+
 IUnit* RMissile;
 IUnit* WMissile;
 IUnit* WMissile2;
 
+
+
+//static int  qMana = 70 + (GEntityList->Player()->GetSpellLevel(kSlotQ) * 10);
+//static int  wMana = 60 + (GEntityList->Player()->GetSpellLevel(kSlotW) * 10);
+//static int  eMana = 55 + (GEntityList->Player()->GetSpellLevel(kSlotE) * 5);
 
 
 IMenu*dsettings, *csettings, *Hsettings, *Lcsettings, *Msettings;
@@ -799,6 +807,7 @@ IMenuOption* useq, *usew, *usee, *user, *userindanger, *furyMode;
 IMenuOption* useqH, *usewH, *useCH, *donteqwebtower;
 //Misc Setting
 IMenuOption* useHydra;
+
 
 ISpell2* Ignites;
 

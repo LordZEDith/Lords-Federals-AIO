@@ -1,11 +1,16 @@
 #pragma once
 #include "PluginSDK.h"
 #include "BaseMenu.h"
+#include <unordered_map>
+#include "Geometry.h"
 
 class Xerath
 {
 public:
 
+	static unordered_map<int, float>Timers;
+	static std::vector<Vec3> path_;
+	
 	static void  InitializeMenu()
 	{
 		MainMenu = GPluginSDK->AddMenu("Lords & Federals Xerath");
@@ -62,7 +67,7 @@ public:
 
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			Predic = fedMiscSettings->AddSelection("E Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
+			Predic = fedMiscSettings->AddSelection("Prediction", 0, std::vector<std::string>({"Custom Pred", "zFederaL & Lords Beta Pred" }));
 			EGapCloser = fedMiscSettings->CheckBox("Automatically E GapCloser", true);
 			EInterrupter = fedMiscSettings->CheckBox("Automatically E Interrupt Spell", true);
 			CCedQ = fedMiscSettings->CheckBox("Auto Q When Enemies Cant Move", true);
@@ -103,7 +108,7 @@ public:
 	{
 		return 2000 + GEntityList->Player()->GetSpellLevel(kSlotR) * 1200;
 	}
-
+    
 	static bool IsCastingR()
 	{
 		if (GEntityList->Player()->HasBuff("XerathLocusOfPower2") || LastSpellName == "XerathLocusOfPower2" && GGame->TickCount() - LastSpellTime < 500)
@@ -210,13 +215,13 @@ public:
 		{
 			if (R->IsReady())
 			{
-				LogicUltimate();
+				RCast();
 			}
 		}
 
 	}
 
-	static void CastQ()
+	static void CastQ(Vec3 predpos)
 	{
 		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
@@ -227,26 +232,61 @@ public:
 				{
 					if (Q->IsCharging())
 					{
+
 						Q->FindTarget(SpellDamage);
 						{
 							if (GetEnemiesInRange(Q->Range()) >= 1)
 							{
-								Vec3 pred;
-								GPrediction->GetFutureUnitPosition(target, 0.15f, true, pred);		
-								//GPrediction->SimulateMissile(GEntityList->Player()->ServerPosition(), target, 1000000000, 95.f, 1550, 0.6f, kCollidesWithNothing, pred);
-				     			Q->CastOnPosition(pred);
+								if (Predic->GetInteger() == 0)
+								{
+									Vec3 pred;
+									GPrediction->GetFutureUnitPosition(target, 0.15f, true, pred);		
+									GPrediction->SimulateMissile(GEntityList->Player()->ServerPosition(), target, 1000000000, 95.f, 1550, 0.6f, kCollidesWithNothing, pred);
+									Q->CastOnPosition(pred);
+								}
+								if (Predic->GetInteger() == 1)
+								{
+									Q->CastOnPosition(predpos);
+								}
 							}
 						}
 					}
-					else if (Q->IsReady())
+					else if (Q->IsReady() && GGame->Time() > wCasted + 0.35f && GGame->Time() > eCasted + 0.35f && Q->IsReady() && GGame->Time() > lastQ + 1.5f)
 					{
-						Q->StartCharging();
+						auto enemy = GTargetSelector->FindTarget(QuickestKill, SpellDamage, 1400);
+						if (enemy->IsValidTarget())
+						{
+							Q->StartCharging();
+							lastQ = GGame->Time();
+						}
 					}
 				}
+					
 			}
 
 		}
-	}	
+	}
+
+	static void CastW(Vec3 predpos)
+	{
+		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, W->Range());
+		if (ComboW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && !Q->IsCharging())
+		{
+			if (Predic->GetInteger() == 0)
+			{
+				Vec3 pred;
+				GPrediction->GetFutureUnitPosition(target, 0.2f, true, pred);
+				W->CastOnPosition(pred);
+			}
+			if (Predic->GetInteger() == 1)
+			{
+				W->CastOnPosition(predpos);
+			}
+			//Vec3 pred;
+			//GPrediction->GetFutureUnitPosition(target, 0.2f, true, pred);
+			W->CastOnPosition(predpos);
+		}
+	}
 
 	static void Automatic()
 	{		
@@ -258,7 +298,8 @@ public:
 			{
 				if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()) && GHealthPrediction->GetKSDamage(target, kSlotQ, Q->GetDelay(), false) > target->GetHealth())
 				{
-					CastQ();
+					//CastQ();
+					QCast();
 					return;
 				}
 
@@ -280,12 +321,14 @@ public:
 
 			if (AutoHarass->Enabled() && Q->IsReady() && HarassMana->GetInteger() < GEntityList->Player()->ManaPercent() && CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), Q->Range()))
 			{
-				CastQ();
+				//CastQ();
+				QCast();
 			}
 
 			if (CCedQ->Enabled() && target->IsHero() && target->IsValidTarget(GEntityList->Player(), Q->Range() - 50) && Q->IsReady() && !CanMove(target) && !target->IsDead() && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > Q->ManaCost())
 			{
-				CastQ();
+				//CastQ();
+				QCast();
 			}
 		}
 	}
@@ -300,25 +343,20 @@ public:
 		{
 			if (CheckShielded(target) && CheckShield->Enabled())
 			{
-				E->CastOnTarget(target, PredicChange());
+				E->CastOnTarget(target, kHitChanceHigh);
 
 			}
 			else
 			{
-				E->CastOnTarget(target, PredicChange());
+				E->CastOnTarget(target, kHitChanceHigh);
 			}
 		}
 
-		if (ComboW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()) && !Q->IsCharging())
-		{
-			Vec3 pred;
-			GPrediction->GetFutureUnitPosition(target, 0.2f, true, pred);
-			W->CastOnPosition(pred);
-		}
-
+		WCast();
 		if (ComboQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), 1550))
 		{
-			CastQ();
+			//CastQ();
+			QCast();
 		}
 	}
 
@@ -332,12 +370,13 @@ public:
 
 		if (HarassQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), Q->Range()))
 		{
-			CastQ();
+			//CastQ();
+			QCast();
 		}
 
 		if (HarassW->Enabled() && W->IsReady() && target->IsValidTarget(GEntityList->Player(), W->Range()))
 		{
-			W->CastOnTarget(target, PredicChange());
+			W->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
 
@@ -606,7 +645,7 @@ public:
 		if (EGapCloser->Enabled() && E->IsReady() && !args.IsTargeted && GetDistanceVectors(GEntityList->Player()->GetPosition(), args.EndPosition) < E->Range() && !Q->IsCharging())
 
 		{
-			E->CastOnTarget(args.Source, PredicChange());
+			E->CastOnTarget(args.Source, kHitChanceHigh);
 		}
 	}
 
@@ -614,7 +653,7 @@ public:
 	{
 		if (EInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Source) < E->Range() && !Q->IsCharging())
 		{
-			E->CastOnTarget(Args.Source, PredicChange());
+			E->CastOnTarget(Args.Source, kHitChanceHigh);
 		}
 	}
 
@@ -623,18 +662,274 @@ public:
 		if (Args.Caster_ == GEntityList->Player())
 		{
 			LastSpellName = Args.Name_;
-			if(LastSpellName == "XerathLocusOfPower2")
+			if (LastSpellName == "XerathLocusOfPower2")
 			{
 				LastSpellTime = GGame->TickCount();
-			}	
+			}
 
 			if (strstr(Args.Name_, "XerathLocusPulse"))
 			{
-				RCastSpell = GGame->Time();				
-				Rposition = Args.EndPosition_;				
+				RCastSpell = GGame->Time();
+				Rposition = Args.EndPosition_;
 			}
-			
+			if (Args.Caster_ == GEntityList->Player())
+			{
+				if (GSpellData->GetSlot(Args.Data_) == kSlotQ && GGame->Time() > lastQ + 0.2f)
+				{
+					lastQ = GGame->Time();
+				}
+			}
 		}
 	}
+	static float lastQ;
+	static bool QCast()
+	{
+		int range = 750 + (int)((GGame->Time() - lastQ) * 433);
+		if (range > 1500)
+		{
+			range = 1500;
+		}
+		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, 1500);
+		if (!target->IsValidTarget())
+			return false;
+		int eId = target->GetNetworkId();
+		Vec2 targetpos = target->GetPosition().To2D();
+		float targetspeed = target->MovementSpeed();
+		path_ = target->GetWaypointList();
+		int length = path_.size() /*GetAvgPathLenght(target)*/;
+		Vec3 predpos = Vec3(0, 0, 0);
 
+		if (length > 1)
+		{
+			float zedtime = targetspeed * (GGame->Time() - (Timers[eId]) + (GGame->Latency() * 0.001f));
+			float dis = 0.0f;
+			for (int i = 0; i < length - 1; i++)
+			{
+				Vec2 path1 = path_[i].To2D();
+				Vec2 path2 = path_[i + 1].To2D();
+				dis += path1.DistanceTo(path2);
+				if (dis >= zedtime)
+				{
+					float tarpath = Distance(targetpos, path2);
+					float tarspeed = targetspeed * 0.5f;
+					if (tarpath >= tarspeed)
+					{
+						predpos = To3D((targetpos + ((path2 - targetpos).VectorNormalize() * tarspeed)));
+						break;
+					}
+					if (i + 1 == length - 1)
+					{
+						predpos = To3D((targetpos + ((path2 - targetpos).VectorNormalize() * tarpath)));
+						break;
+					}
+					for (int j = i + 1; j < length - 1; j++)
+					{
+						Vec2 vec2path = path_[j].To2D();
+						Vec2 vec2path2 = path_[j + 1].To2D();
+						tarspeed -= tarpath;
+						tarpath = vec2path.DistanceTo(vec2path2);
+
+						if (tarpath >= tarspeed)
+						{
+							predpos = To3D((vec2path + ((vec2path2 - vec2path).VectorNormalize() * tarspeed)));
+							break;
+						}
+						if (j + 1 == length - 1)
+						{
+							predpos = To3D((vec2path + ((vec2path2 - vec2path).VectorNormalize() * tarpath)));
+							break;
+						}
+					}
+					break;
+				}
+				if (i + 1 == length - 1)
+				{
+					predpos = To3D((path1 + ((path2 - path1).VectorNormalize() * path1.DistanceTo(path2))));
+					break;
+				}
+			}
+		}
+		else
+		{
+			predpos = target->GetPosition();
+		}
+		float dist = predpos.DistanceTo((GEntityList->Player()->GetPosition()));
+		if (dist > 1300)
+			range += 150;
+		if (predpos == Vec3(0, 0, 0) || dist > range - 150)
+			return false;
+		CastQ(predpos);
+		qCasted = GGame->Time();
+		return true;
+
+
+	}
+	
+	static bool ECast()
+	{
+		if (!E->IsReady() || GGame->Time() < qCasted + 0.35f || GGame->Time() < wCasted + 0.35f)
+			return false;
+		auto enemy = GTargetSelector->FindTarget(QuickestKill, SpellDamage, 1050);
+		if (!enemy->IsValidTarget())
+			return false;
+		if (!E->CastOnTarget(enemy))
+			return false;
+		eCasted = GGame->Time(); 
+		GGame->IssueOrder(GEntityList->Player(), kMoveTo, GGame->CursorPosition());
+		return true;
+	}
+
+	static bool WCast()
+	{
+		if (!W->IsReady() || GGame->Time() < qCasted + 0.35f || GGame->Time() < eCasted + 0.35f)
+			return false;
+		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, 1100);
+		if (!target->IsValidTarget())
+			return false;
+		int eId = target->GetNetworkId();
+		Vec2 targetpos = target->GetPosition().To2D();
+		float targetspeed = target->MovementSpeed();
+		path_ = target->GetWaypointList();
+		int length = path_.size() /*GetAvgPathLenght(target)*/;
+		Vec3 predpos = Vec3(0, 0, 0);
+
+		if (length > 1)
+		{
+			float zedtime = targetspeed * (GGame->Time() - (Timers[eId]) + (GGame->Latency() * 0.001f));
+			float dis = 0.0f;
+			for (int i = 0; i < length - 1; i++)
+			{
+				Vec2 path1 = path_[i].To2D();
+				Vec2 path2 = path_[i + 1].To2D();
+				dis += path1.DistanceTo(path2);
+				if (dis >= zedtime)
+				{
+					float tarpath = Distance(targetpos, path2);
+					float tarspeed = targetspeed * 0.5f;
+					if (tarpath >= tarspeed)
+					{
+						predpos = To3D((targetpos + ((path2 - targetpos).VectorNormalize() * tarspeed)));
+						break;
+					}
+					if (i + 1 == length - 1)
+					{
+						predpos = To3D((targetpos + ((path2 - targetpos).VectorNormalize() * tarpath)));
+						break;
+					}
+					for (int j = i + 1; j < length - 1; j++)
+					{
+						Vec2 vec2path = path_[j].To2D();
+						Vec2 vec2path2 = path_[j + 1].To2D();
+						tarspeed -= tarpath;
+						tarpath = vec2path.DistanceTo(vec2path2);
+
+						if (tarpath >= tarspeed)
+						{
+							predpos = To3D((vec2path + ((vec2path2 - vec2path).VectorNormalize() * tarspeed)));
+							break;
+						}
+						if (j + 1 == length - 1)
+						{
+							predpos = To3D((vec2path + ((vec2path2 - vec2path).VectorNormalize() * tarpath)));
+							break;
+						}
+					}
+					break;
+				}
+				if (i + 1 == length - 1)
+				{
+					predpos = To3D((path1 + ((path2 - path1).VectorNormalize() * path1.DistanceTo(path2))));
+					break;
+				}
+			}
+		}
+		else
+		{
+			predpos = target->GetPosition();
+		}
+		 
+		if (predpos == Vec3(0, 0, 0) ||Distance(predpos,GEntityList->Player()->GetPosition()) > 1100)
+			return false;
+		CastW(predpos);
+		wCasted = GGame->Time();
+		return true;
+	}
+	static float lastR;
+	static bool RCast()
+	{
+		if (!R->IsReady() || GGame->Time() < lastR * 0.8f)
+			return false;
+		int range = (2200 + (GEntityList->Player()->GetSpellLevel(kSlotR) * 1320));
+		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, range);
+		if (!target->IsValidTarget())
+			return false;
+		int eId = target->GetNetworkId();
+		Vec2 targetpos = target->GetPosition().To2D();
+		float targetspeed = target->MovementSpeed();
+		path_ = target->GetWaypointList();
+		int length = path_.size() /*GetAvgPathLenght(target)*/;
+		Vec3 predpos = Vec3(0, 0, 0);
+
+		if (length > 1)
+		{
+			float zedtime = targetspeed * (GGame->Time() - (Timers[eId]) + (GGame->Latency() * 0.001f));
+			float dis = 0.0f;
+			for (int i = 0; i < length - 1; i++)
+			{
+				Vec2 path1 = path_[i].To2D();
+				Vec2 path2 = path_[i + 1].To2D();
+				dis += path1.DistanceTo(path2);
+				if (dis >= zedtime)
+				{
+					float tarpath = Distance(targetpos, path2);
+					float tarspeed = targetspeed * 0.5f;
+					if (tarpath >= tarspeed)
+					{
+						predpos = To3D((targetpos + ((path2 - targetpos).VectorNormalize() * tarspeed)));
+						break;
+					}
+					if (i + 1 == length - 1)
+					{
+						predpos = To3D((targetpos + ((path2 - targetpos).VectorNormalize() * tarpath)));
+						break;
+					}
+					for (int j = i + 1; j < length - 1; j++)
+					{
+						Vec2 vec2path = path_[j].To2D();
+						Vec2 vec2path2 = path_[j + 1].To2D();
+						tarspeed -= tarpath;
+						tarpath = vec2path.DistanceTo(vec2path2);
+
+						if (tarpath >= tarspeed)
+						{
+							predpos = To3D((vec2path + ((vec2path2 - vec2path).VectorNormalize() * tarspeed)));
+							break;
+						}
+						if (j + 1 == length - 1)
+						{
+							predpos = To3D((vec2path + ((vec2path2 - vec2path).VectorNormalize() * tarpath)));
+							break;
+						}
+					}
+					break;
+				}
+				if (i + 1 == length - 1)
+				{
+					predpos = To3D((path1 + (path2 - path1).VectorNormalize() * Distance(path1,path2)));
+					break;
+				}
+			}
+		}
+		else
+		{
+			predpos = target->GetPosition();
+		}
+		if (predpos == Vec3(0, 0, 0) || predpos.DistanceTo(GEntityList->Player()->GetPosition()) > range)
+			return false;
+		//LogicUltimate(predpos);
+		lastR = GGame->Time();
+		return true;
+	}
+
+	
 };

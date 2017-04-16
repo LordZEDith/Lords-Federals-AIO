@@ -249,6 +249,9 @@
     <ClInclude Include="Points.h">
       <Filter>Header Files\Custom/Common</Filter>
     </ClInclude>
+    <ClInclude Include="Geometry.h">
+      <Filter>Header Files\Custom/Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">
