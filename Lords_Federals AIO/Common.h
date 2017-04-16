@@ -1097,3 +1097,67 @@ FarmLocation FindBestLineCastPositionNeutral(vector<Vec3> RangeCheckFroms, float
 	return result;
 }
 
+struct EnemyData
+{
+	bool is_stopped_;
+	std::vector<Vec2> last_waypoint_;
+	uint32_t last_waypoint_tick_;
+	uint32_t stop_tick_;
+	float avg_tick_;
+	float avg_path_lenght_;
+	uint32_t count_;
+	uint32_t last_aa_tick_;
+	uint32_t last_windup_tick_;
+	bool is_windup_checked_;
+	uint32_t orbwalk_count_;
+	float avg_orbwalk_time_;
+	float last_angle_diff_;
+	UnitDash last_dash_info_;
+
+	EnemyData()
+		: is_stopped_(false)
+		, last_waypoint_tick_(0)
+		, stop_tick_(0)
+		, avg_tick_(0.0f)
+		, avg_path_lenght_(0.0f)
+		, count_(0)
+		, last_aa_tick_(0)
+		, last_windup_tick_(0)
+		, is_windup_checked_(false)
+		, orbwalk_count_(0)
+		, avg_orbwalk_time_(0.0f)
+		, last_angle_diff_(0.0f)
+	{
+
+	}
+
+	EnemyData(const std::vector<Vec2>& wp)
+		: last_waypoint_(wp)
+		, is_stopped_(false)
+		, last_waypoint_tick_(0)
+		, stop_tick_(0)
+		, avg_tick_(0.0f)
+		, avg_path_lenght_(0.0f)
+		, count_(0)
+		, last_aa_tick_(0)
+		, last_windup_tick_(0)
+		, is_windup_checked_(false)
+		, orbwalk_count_(0)
+		, avg_orbwalk_time_(0.0f)
+		, last_angle_diff_(0.0f)
+	{
+
+	}
+};
+
+Vec3 To3D(Vec2 p)
+{
+	return Vec3(p.x, 0, p.y);
+}
+
+std::map<uint32_t, EnemyData> g_EnemyInfo;
+
+inline float GetAvgPathLenght(IUnit *hero)
+{
+	return g_EnemyInfo[hero->GetNetworkId()].avg_path_lenght_;
+}

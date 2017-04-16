@@ -68,7 +68,7 @@ public:
 			CCedQ = fedMiscSettings->CheckBox("Auto Q When Enemies Cant Move", true);
 			CheckShield = fedMiscSettings->CheckBox("No Stun (BlackShield, Banshee)", true);
 			PingLoc = fedMiscSettings->CheckBox("Ping Killable", true);
-			RPingR = fedMiscSettings->CheckBox("Only Ping When Enemy is in Ult Range", true );
+			RPingR = fedMiscSettings->CheckBox("Only Ping When Enemy is in Ult Range", true);
 			PingR = fedMiscSettings->AddFloat("Ping if x Ults Kill", 0, 5, 3);
 		}
 
@@ -84,7 +84,7 @@ public:
 			//DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
 		}
 	}
-	 
+
 	void static InitializeSpells()
 	{
 		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, false, false, kCollidesWithNothing); //Tahnks to Malachite :)
@@ -94,7 +94,7 @@ public:
 		W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, true, kCollidesWithYasuoWall);
 		W->SetSkillshot(0.4f, 125, std::numeric_limits<float>::infinity(), 1100);
 		E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, false, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
-		E->SetSkillshot(0.f, 60, 1400, 1050);	
+		E->SetSkillshot(0.f, 60, 1400, 1050);
 		R = GPluginSDK->CreateSpell2(kSlotR, kCircleCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 		R->SetSkillshot(0.4f, 130, std::numeric_limits<float>::infinity(), 3520);// 4840 , 6160
 	}
@@ -232,9 +232,9 @@ public:
 							if (GetEnemiesInRange(Q->Range()) >= 1)
 							{
 								Vec3 pred;
-								GPrediction->GetFutureUnitPosition(target, 0.15f, true, pred);		
+								GPrediction->GetFutureUnitPosition(target, 0.15f, true, pred);
 								//GPrediction->SimulateMissile(GEntityList->Player()->ServerPosition(), target, 1000000000, 95.f, 1550, 0.6f, kCollidesWithNothing, pred);
-				     			Q->CastOnPosition(pred);
+								Q->CastOnPosition(pred);
 							}
 						}
 					}
@@ -246,10 +246,10 @@ public:
 			}
 
 		}
-	}	
+	}
 
 	static void Automatic()
-	{		
+	{
 		for (auto target : GEntityList->GetAllHeros(false, true))
 		{
 			if (!CheckTarget(target)) continue;
@@ -462,9 +462,9 @@ public:
 				if (PingLoc->Enabled())
 				{
 					auto ComboDamage = GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotR);
-					if ( R->IsReady())
+					if (R->IsReady())
 					{
-						if (target->GetHealth() < ComboDamage * PingR->GetFloat() && !RPingR->Enabled() )
+						if (target->GetHealth() < ComboDamage * PingR->GetFloat() && !RPingR->Enabled())
 						{
 							if (GGame->Time() - LastPingTime2 >= 1)
 							{
@@ -530,24 +530,24 @@ public:
 				{
 					if (!Q->IsCharging())
 					{
-						Q->StartCharging();						
+						Q->StartCharging();
 					}
 
 					if (Q->IsCharging() && Q->GetChargePercent() >= 90)
-					{						
-							Q->CastOnPosition(posQ);							
+					{
+						Q->CastOnPosition(posQ);
 					}
 				}
 				else if (hitQ >= 1 && MinionsQ->GetInteger() < 3)
 				{
 					if (!Q->IsCharging())
 					{
-						Q->StartCharging();						
+						Q->StartCharging();
 					}
 
 					if (Q->IsCharging() && Q->GetChargePercent() >= 90)
 					{
-						Q->CastOnPosition(posQ);						
+						Q->CastOnPosition(posQ);
 					}
 				}
 				else
@@ -563,14 +563,14 @@ public:
 		if (DrawReady->Enabled())
 		{
 			if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range()); }
-			if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }	
+			if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
 			if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }
 		}
 		else
 		{
 			if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range()); }
-			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }	
-			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }			 
+			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
+			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }
 		}
 
 		if (IsCastingR() && DrawEA->Enabled())
@@ -582,7 +582,7 @@ public:
 		}
 		if (DrawR->Enabled() && !DrawReady->Enabled())
 		{
-			
+
 			GRender->DrawCircle(GEntityList->Player()->GetPosition(), RealRange(), Vec4(255, 255, 0, 255));
 		}
 		if (DrawR->Enabled() && DrawReady->Enabled() && R->IsReady())
@@ -590,13 +590,13 @@ public:
 
 			GRender->DrawCircle(GEntityList->Player()->GetPosition(), RealRange(), Vec4(255, 255, 0, 255));
 		}
-		if(DrawR2->Enabled() && !DrawReady->Enabled())
+		if (DrawR2->Enabled() && !DrawReady->Enabled())
 		{
-				DrawCircleMinimap(GRender,GGame, GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), RealRange());
+			DrawCircleMinimap(GRender, GGame, GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), RealRange());
 		}
 		if (DrawR2->Enabled() && DrawReady->Enabled() && R->IsReady())
 		{
-		
+
 			DrawCircleMinimap(GRender, GGame, GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), RealRange());
 		}
 	}
@@ -623,17 +623,17 @@ public:
 		if (Args.Caster_ == GEntityList->Player())
 		{
 			LastSpellName = Args.Name_;
-			if(LastSpellName == "XerathLocusOfPower2")
+			if (LastSpellName == "XerathLocusOfPower2")
 			{
 				LastSpellTime = GGame->TickCount();
-			}	
+			}
 
 			if (strstr(Args.Name_, "XerathLocusPulse"))
 			{
-				RCastSpell = GGame->Time();				
-				Rposition = Args.EndPosition_;				
+				RCastSpell = GGame->Time();
+				Rposition = Args.EndPosition_;
 			}
-			
+
 		}
 	}
 

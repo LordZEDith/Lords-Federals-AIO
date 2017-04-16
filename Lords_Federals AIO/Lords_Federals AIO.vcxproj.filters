@@ -251,9 +251,9 @@
     </ClInclude>
     <ClInclude Include="zVarus.h">
       <Filter>Header Files\Champions\ADC</Filter>
-    </ClInclude>
+    </ClInclude>    
     <ClInclude Include="Geometry.h">
-      <Filter>Header Files\SDK</Filter>
+      <Filter>Header Files\Custom/Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

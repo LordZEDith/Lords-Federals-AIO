@@ -1,3 +1,4 @@
+#pragma once
 #include "Template.h"
 #include "cmath"
 #include <map>
@@ -52,7 +53,8 @@ inline Vec3 RotateAround(Vec3 pointToRotate3D, Vec3 centerPoint3D, float angleIn
 {
 	auto angleInRadians = AngleToRadian(angleInDegree);
 	double cosTheta = cos(angleInRadians);
-	double sinTheta = cos(angleInRadians);
+	double sinTheta = sin(angleInRadians);
+
 	Vec2 pointToRotate = ToVec2(pointToRotate3D);
 	Vec2 centerPoint = ToVec2(centerPoint3D);
 	Vec2 vec2Return
@@ -100,6 +102,7 @@ inline float Distance(Vec2 from, Vec2 to)
 {
 	return (from - to).Length();
 }
+
 //dich chuyen ex- vector tend
 inline Vec3 Extend(Vec3 from, Vec3 to, float distance)
 {
@@ -107,6 +110,7 @@ inline Vec3 Extend(Vec3 from, Vec3 to, float distance)
 	auto direction = (to - from).VectorNormalize();
 	return from + direction * realDistance;
 }
+
 inline SArray<Vec3> GetCircleCircleIntersections(Vec3 center1, Vec3 center2, float radius1, float radius2)
 {
 	SArray<Vec3> result;

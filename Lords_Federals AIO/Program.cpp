@@ -3,11 +3,11 @@
 #include "Color.h"
 #include "Champions.h"
 #include "AutoSmite.h"
+#include <unordered_map>
 #include "SkinsChange.h"
 #include "Toxic.h"
 #include "Version Checker.h"
 #include "Trinket.h"
-
 #pragma region Events
 PLUGIN_EVENT(void) OnOrbwalkBeforeAttack(IUnit* Target)
 {
