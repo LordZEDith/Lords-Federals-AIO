@@ -55,14 +55,12 @@ c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(407): warning C4244: 
 c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(419): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(457): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Lux.h(527): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Geometry.h(64): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(109): warning C4244: 'return': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(513): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(526): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(541): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(561): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(619): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(863): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(104): warning C4244: 'return': conversion from 'int' to 'float', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(474): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(487): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(502): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(522): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\docum\lords-federals-aio\lords_federals aio\Xerath.h(580): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Syndra.h(126): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Syndra.h(247): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
 c:\users\docum\lords-federals-aio\lords_federals aio\Syndra.h(253): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
@@ -172,9 +170,9 @@ c:\users\docum\lords-federals-aio\lords_federals aio\Toxic.h(3): warning C4067: 
 c:\users\docum\lords-federals-aio\lords_federals aio\Trinket.h(3): warning C4067: unexpected tokens following preprocessor directive - expected a newline
      Creating library C:\Users\docum\Lords-Federals-AIO\Lords_Federals AIO\Release\Lords_Federals AIO.lib and object C:\Users\docum\Lords-Federals-AIO\Lords_Federals AIO\Release\Lords_Federals AIO.exp
   Generating code
-  0 of 10181 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+  87 of 9892 functions ( 0.9%) were compiled, the rest were copied from previous compilation.
+    3 functions were new in current compilation
+    560 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   Lords_Federals AIO.vcxproj -> C:\Users\docum\Lords-Federals-AIO\Lords_Federals AIO\Release\Lords_Federals AIO.dll
   Lords_Federals AIO.vcxproj -> C:\Users\docum\Lords-Federals-AIO\Lords_Federals AIO\Release\Lords_Federals AIO.pdb (Full PDB)
