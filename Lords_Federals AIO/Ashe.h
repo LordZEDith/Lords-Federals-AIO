@@ -237,23 +237,26 @@ public:
 		{
 			for (auto target : GEntityList->GetAllHeros(false, true))
 			{
-				if (target->IsValidTarget(GEntityList->Player(), 2000) && ValidUlt(target) && R->IsReady())
+				if (CheckTarget(target))
 				{
-					auto delay = R->GetDelay() + GetDistance(GEntityList->Player(), target) / R->Speed();
-					auto rDmg = GHealthPrediction->GetKSDamage(target, kSlotR, delay, false);
+					if (ValidUlt(target) && R->IsReady())
+					{
+						auto delay = R->GetDelay() + GetDistance(GEntityList->Player(), target) / R->Speed();
+						auto rDmg = GHealthPrediction->GetKSDamage(target, kSlotR, delay, false);
 
-					if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && CountEnemy(target->GetPosition(), 250) >= 2 && UltEnemies->Enabled() && target->IsValidTarget(GEntityList->Player(), 2000))
-					{
-						R->CastOnTarget(target, PredicChange());						
-					}
+						if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && CountEnemy(target->GetPosition(), 250) >= 2 && UltEnemies->Enabled() && target->IsValidTarget(GEntityList->Player(), RMax->GetFloat()))
+						{
+							R->CastOnTarget(target, PredicChange());
+						}
 
-					if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && target->IsValidTarget(GEntityList->Player(), R->Range()) && ComboR->Enabled() && GDamage->GetAutoAttackDamage(GEntityList->Player(), target, false) * 5 + rDmg + GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotW) > target->GetHealth() && target->HasBuffOfType(BUFF_Slow))
-					{
-						R->CastOnTarget(target, PredicChange());						
-					}
-					if (Killsteal->Enabled() && KillstealR->Enabled() && rDmg > target->GetHealth() && CountAlly(target->GetPosition(), 600) == 0 && GetDistance(GEntityList->Player(), target) > 1000)
-					{
-						R->CastOnTarget(target, PredicChange());						
+						if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && target->IsValidTarget(GEntityList->Player(), RMax->GetFloat()) && ComboR->Enabled() && GDamage->GetAutoAttackDamage(GEntityList->Player(), target, false) * 5 + rDmg + GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotW) > target->GetHealth() && target->HasBuffOfType(BUFF_Slow))
+						{
+							R->CastOnTarget(target, PredicChange());
+						}
+						if (Killsteal->Enabled() && KillstealR->Enabled() && rDmg > target->GetHealth() && CountAlly(target->GetPosition(), 600) == 0 && GetDistance(GEntityList->Player(), target) > 1000 && target->IsValidTarget(GEntityList->Player(), RMax->GetFloat()))
+						{
+							R->CastOnTarget(target, PredicChange());
+						}
 					}
 				}
 			}
@@ -336,7 +339,10 @@ public:
 	{
 		if (RInterrupter->Enabled() && GetDistance(GEntityList->Player(), Args.Source) < 1800 && R->IsReady())
 		{
-			R->CastOnTarget(Args.Source, PredicChange());
+			if (Args.Source->IsValidTarget(GEntityList->Player(), RMax->GetFloat()))
+			{
+				R->CastOnTarget(Args.Source, PredicChange());
+			}
 		}
 	}
 

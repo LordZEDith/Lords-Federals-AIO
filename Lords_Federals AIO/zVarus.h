@@ -188,12 +188,12 @@ public:
 		AutoKillsteal();		
 	}
 
-	static int GetPassiveCount(IUnit* target)
+	static int WPassiveCount(IUnit* target)
 	{
 		return target->GetBuffCount("varuswdebuff");
 	}
 
-	static float GetBuffQEnd()
+	static float BuffQEnd()
 	{
 		if (GEntityList->Player()->HasBuff("VarusQ"))
 		{
@@ -223,7 +223,7 @@ public:
 		}
 	}
 
-	static int GetQCollisionsCount(IUnit* target)
+	static int CollidQCount(IUnit* target)
 	{
 		auto pred = FindBestLineCastPosition(vector<Vec3>{ GEntityList->Player()->GetPosition() }, GetDistance(GEntityList->Player(), target), 1600, Q->Radius(), true, true);
 
@@ -299,7 +299,7 @@ public:
 			dlevel += extra;
 		}
 
-		auto damage = (((target->GetMaxHealth() * checkBase) + GEntityList->Player()->TotalMagicDamage())) * GetPassiveCount(target);
+		auto damage = (((target->GetMaxHealth() * checkBase) + GEntityList->Player()->TotalMagicDamage())) * WPassiveCount(target);
 
 		return (GDamage->CalcMagicDamage(GEntityList->Player(), target, damage) + dlevel) * 1.06;
 	}
@@ -349,7 +349,7 @@ public:
 
 	static bool QIsKillable(IUnit* target, int collisions)
 	{
-		if (GetPassiveCount(target) > 0)
+		if (WPassiveCount(target) > 0)
 		{
 			return target->GetHealth() + target->HPRegenRate() / 2.f < + GetWDamage(target) + GetQDamage(target, collisions);
 		}
@@ -361,7 +361,7 @@ public:
 
 	static bool EisKillable(IUnit* target)
 	{
-		if (GetPassiveCount(target) > 0)
+		if (WPassiveCount(target) > 0)
 		{
 			return target->GetHealth() + target->HPRegenRate() / 2.f < +GetWDamage(target) + GetEDamage(target);
 		}
@@ -373,7 +373,7 @@ public:
 
 	static bool RisKillable(IUnit* target)
 	{
-		if (GetPassiveCount(target) > 0)
+		if (WPassiveCount(target) > 0)
 		{
 			return target->GetHealth() + target->HPRegenRate() / 2.f < +GetWDamage(target) + GetRDamage(target);
 		}
@@ -389,8 +389,8 @@ public:
 		{
 			if (Q->IsCharging() || ComboQA->Enabled()
 				/*|| GetDistance(GEntityList->Player(), target) > GEntityList->Player()->GetRealAutoAttackRange(target) * 1.2f*/
-				|| (GetPassiveCount(target) >= QEnemies1->GetInteger() &&  LastETick + 1000 < GGame->TickCount() || GEntityList->Player()->GetSpellLevel(kSlotW) == 0 )
-				|| target->GetHealth() < GetQDamage(target, GetQCollisionsCount(target)))
+				|| (WPassiveCount(target) >= QEnemies1->GetInteger() &&  LastETick + 1000 < GGame->TickCount() || GEntityList->Player()->GetSpellLevel(kSlotW) == 0 )
+				|| target->GetHealth() < GetQDamage(target, CollidQCount(target)))
 			{
 				if (!Q->IsCharging() /*&& target->IsValidTarget(GEntityList->Player(), 1500)*/)
 				{
@@ -406,7 +406,7 @@ public:
 						if (target->IsValidTarget(GEntityList->Player(), Q->Range()))
 						{
 							if (!ComboQA->Enabled() && LastETick + 200 < GGame->TickCount() ||
-								target->GetHealth() < GetQDamage(target, GetQCollisionsCount(target)))
+								target->GetHealth() < GetQDamage(target, CollidQCount(target)))
 							{
 								Q->CastOnTarget(target, PredicChange());
 							}
@@ -427,8 +427,8 @@ public:
 		{
 			if (Q->IsCharging() || QAlways->Enabled()
 				/*|| GetDistance(GEntityList->Player(), target) > GEntityList->Player()->GetRealAutoAttackRange(target) * 1.2f*/
-				|| (GetPassiveCount(target) >= HarassQmin->GetInteger() && LastETick + 1000 < GGame->TickCount() || GEntityList->Player()->GetSpellLevel(kSlotW) == 0)
-				|| target->GetHealth() < GetQDamage(target, GetQCollisionsCount(target)))
+				|| (WPassiveCount(target) >= HarassQmin->GetInteger() && LastETick + 1000 < GGame->TickCount() || GEntityList->Player()->GetSpellLevel(kSlotW) == 0)
+				|| target->GetHealth() < GetQDamage(target, CollidQCount(target)))
 			{
 				if (!Q->IsCharging() /*&& target->IsValidTarget(GEntityList->Player(), 1500)*/)
 				{
@@ -444,7 +444,7 @@ public:
 						if (target->IsValidTarget(GEntityList->Player(), Q->Range()))
 						{
 							if (!QAlways->Enabled() && LastETick + 200 < GGame->TickCount() ||
-								target->GetHealth() < GetQDamage(target, GetQCollisionsCount(target)))
+								target->GetHealth() < GetQDamage(target, CollidQCount(target)))
 							{
 								Q->CastOnTarget(target, PredicChange());
 							}
@@ -464,7 +464,7 @@ public:
 		if (ComboE->Enabled() && E->IsReady() && !Q->IsCharging())
 		{
 			if (ComboE2->Enabled()
-				|| (GetPassiveCount(target) >= EPassive->GetInteger() && LastQTick + 1000 < GGame->TickCount() || GEntityList->Player()->GetSpellLevel(kSlotW) == 0)
+				|| (WPassiveCount(target) >= EPassive->GetInteger() && LastQTick + 1000 < GGame->TickCount() || GEntityList->Player()->GetSpellLevel(kSlotW) == 0)
 				|| target->GetHealth() < GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotE))
 			{
 				if (target->IsValidTarget(GEntityList->Player(), E->Range()))
@@ -480,7 +480,7 @@ public:
 		if (HarassE->Enabled() && E->IsReady() && !Q->IsCharging())
 		{
 			if (EAlways->Enabled()
-				|| (GetPassiveCount(target) >= HarassEmin->GetInteger() && LastQTick + 1000 < GGame->TickCount() || GEntityList->Player()->GetSpellLevel(kSlotW) == 0)
+				|| (WPassiveCount(target) >= HarassEmin->GetInteger() && LastQTick + 1000 < GGame->TickCount() || GEntityList->Player()->GetSpellLevel(kSlotW) == 0)
 				|| target->GetHealth() < GDamage->GetSpellDamage(GEntityList->Player(), target, kSlotE))
 			{
 				if (target->IsValidTarget(GEntityList->Player(), E->Range()) && ChampionUse[target->GetNetworkId()]->Enabled())
@@ -541,7 +541,7 @@ public:
 
 			if (Q->IsReady() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), R->Range()) && GEntityList->Player()->GetMana() > Q->ManaCost() + E->ManaCost() + R->ManaCost())
 			{
-				auto damageCombo = GetRDamage(target) + GetQDamage(target, GetQCollisionsCount(target)) + GetEDamage(target) + GetWDamage(target) + ((GDamage->GetAutoAttackDamage(GEntityList->Player(), target, false) * 1.188) * 2);
+				auto damageCombo = GetRDamage(target) + GetQDamage(target, CollidQCount(target)) + GetEDamage(target) + GetWDamage(target) + ((GDamage->GetAutoAttackDamage(GEntityList->Player(), target, false) * 1.188) * 2);
 
 				if (damageCombo > target->GetHealth())
 				{
@@ -606,7 +606,7 @@ public:
 						R->CastOnTarget(target, PredicChange());
 					}
 
-					if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), 1500) && QIsKillable(target, GetQCollisionsCount(target)))
+					if (KillstealQ->Enabled() && Q->IsReady() && target->IsValidTarget(GEntityList->Player(), 1500) && QIsKillable(target, CollidQCount(target)))
 					{
 						if (!Q->IsCharging())
 						{

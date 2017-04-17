@@ -353,6 +353,7 @@ public:
 		return false;
 	}
 
+	// oktw
 	static Vec3 PosQ(bool asap = false, IUnit* target = nullptr)
 	{
 		int Mode = ComboQH->GetInteger();
@@ -393,6 +394,7 @@ public:
 				}
 			}
 		}
+		//mode2 Credits: oktw
 		else if (Mode == 2)
 		{
 			auto points = CirclePoints(15, Q->Range(), pPos);
@@ -438,7 +440,7 @@ public:
 		}
 		else
 		{			
-			// lord Gosu
+			// Credits: Gosu
 			auto after = GEntityList->Player()->GetPosition() + (GGame->CursorPosition() - GEntityList->Player()->GetPosition()).VectorNormalize() * 300;
 			auto disafter = pow((after - target->GetPosition()).Length(), 2);
 
@@ -528,17 +530,16 @@ public:
 
 	static bool IsCondemable1(IUnit* target, Vec3 from, int PushDistance, bool CondemnCurrent)
 	{
-		if (target == nullptr || !target->IsValidTarget(GEntityList->Player(), RangeE->GetFloat())
-			|| target->IsDead() || target->IsDashing()
-			|| !CheckShielded(target)
-			|| target->HasBuffOfType(BUFF_SpellImmunity)
+		if (!CheckTarget(target) || !target->IsValidTarget(GEntityList->Player(), RangeE->GetFloat()) || target->IsDashing() || !CheckShielded(target)
 			|| (!target->IsHero() && !target->IsJungleCreep()))
+		{
 			return false;
+		}
 
 		AdvPredictionOutput prediction_output;
 		E->RunPrediction(target, false, kCollidesWithYasuoWall, &prediction_output);
 
-		// VHR
+		// Credits: VHR
 		if (prediction_output.HitChance >= kHitChanceHigh)
 		{
 			auto checks = static_cast<float>(ceil(PushDistance / 30));
@@ -564,17 +565,16 @@ public:
 
 	static bool IsCondemable2(IUnit* target, Vec3 from, int PushDistance, bool CondemnCurrent)
 	{
-		if (target == nullptr || !target->IsValidTarget(GEntityList->Player(), RangeE->GetFloat())
-			|| target->IsDead() || target->IsDashing()
-			|| !CheckShielded(target)
-			|| target->HasBuffOfType(BUFF_SpellImmunity)
+		if (!CheckTarget(target) || !target->IsValidTarget(GEntityList->Player(), RangeE->GetFloat()) || target->IsDashing() || !CheckShielded(target)
 			|| (!target->IsHero() && !target->IsJungleCreep()))
+		{
 			return false;
+		}
 
 		AdvPredictionOutput prediction_output;
 		E->RunPrediction(target, false, kCollidesWithYasuoWall, &prediction_output);
 
-		// Shine
+		// Credits: Shine
 		if (prediction_output.HitChance >= kHitChanceHigh)
 		{
 			auto pushDirection = (prediction_output.TargetPosition - from).VectorNormalize();

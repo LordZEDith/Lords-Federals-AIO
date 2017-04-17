@@ -83,6 +83,7 @@ public:
 		}
 	}
 
+	//thx Rembrandt to keytoogle
 	static void KeyPressSmite()
 	{
 		if (FoundSmite)
@@ -92,8 +93,7 @@ public:
 			if (keystate < 0)
 			{
 				if (smiteKeyWasDown == false)
-				{
-					//toggle smite
+				{					
 					if (SmiteActive->GetInteger() == 0)
 					{
 						SmiteActive->UpdateInteger(1);

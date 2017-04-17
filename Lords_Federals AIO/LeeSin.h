@@ -2550,19 +2550,21 @@ public:
 	{
 		keystate2 = GetAsyncKeyState(ClickKeyPos->GetInteger());
 
-		if (keystate2 < 0)
+		if (keystate2 < 0 && LastPress < GGame->TickCount())
 		{
 			if (harassKeyWasDown == false)
 			{				
 				if (ClickPOS == Vec3(0, 0, 0))
 				{
 					ClickPOS = GGame->CursorPosition();
-					GUtility->LogConsole("Vec3(%ff,%ff,%ff,", GGame->CursorPosition().x, GGame->CursorPosition().y, GGame->CursorPosition().z);
-					LastClick = GGame->TickCount() + ClickExpire->GetInteger();					
+					//GUtility->LogConsole("Vec3(%ff,%ff,%ff,", GGame->CursorPosition().x, GGame->CursorPosition().y, GGame->CursorPosition().z);
+					LastClick = GGame->TickCount() + ClickExpire->GetInteger();	
+					LastPress = GGame->TickCount() + 300;
 				}
 				else
 				{
 					ClickPOS = Vec3(0, 0, 0);
+					LastPress = GGame->TickCount() + 300;
 				}
 
 				harassKeyWasDown = true;
