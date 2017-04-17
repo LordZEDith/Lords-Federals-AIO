@@ -197,6 +197,8 @@ public:
 				{
 					if (checkRrange(target) && KillstealR->Enabled() && R->IsReady() && target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && GHealthPrediction->GetKSDamage(target, kSlotR, R->GetDelay(), false) > target->GetHealth())
 					{
+						if (inUnderTower->Enabled() && IsUnderTurret(GEntityList->Player())) { return; }
+
 						R->CastOnTarget(target, PredicChange());
 					}
 
@@ -220,6 +222,8 @@ public:
 				{
 					if (target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && !CanMove(target) && !target->IsDead() && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > R->ManaCost())
 					{
+						if (inUnderTower->Enabled() && IsUnderTurret(GEntityList->Player())) { return; }
+
 						R->CastOnTarget(target, PredicChange());
 					}
 
@@ -233,9 +237,16 @@ public:
 					}
 				}
 
-				if (UltEnemies->GetInteger() > 0 && R->IsReady() && target->IsValidTarget(GEntityList->Player(), RMax->GetInteger()) && !target->IsInvulnerable() && GEntityList->Player()->GetMana() > R->ManaCost())
-				{
-					R->CastOnTargetAoE(target, UltEnemies->GetInteger(), PredicChange());
+				if (UltEnemies->GetInteger() > 0 && R->IsReady() && GEntityList->Player()->GetMana() > R->ManaCost())
+				{					
+					auto pred = FindBestLineCastPosition(vector<Vec3>{ GEntityList->Player()->GetPosition() }, 2000, RMax->GetInteger(), R->Radius(), false, true);
+
+					if (inUnderTower->Enabled() && IsUnderTurret(GEntityList->Player())) { return; }
+
+					if (pred.HitCount >= UltEnemies->GetInteger())
+					{
+						R->CastOnPosition(pred.CastPosition);
+					}
 				}
 			}
 		}
