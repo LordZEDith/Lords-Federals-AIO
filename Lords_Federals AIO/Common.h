@@ -1152,7 +1152,7 @@ struct EnemyData
 
 Vec3 To3D(Vec2 p)
 {
-	return Vec3(p.x, 0, p.y);
+	return Vec3(p.x, GNavMesh->GetHeightForPoint(p), p.y);
 }
 
 std::map<uint32_t, EnemyData> g_EnemyInfo;
