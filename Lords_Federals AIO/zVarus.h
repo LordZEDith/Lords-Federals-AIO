@@ -210,7 +210,7 @@ public:
 		if (ComboA->Enabled())
 		{
 			SArray<IUnit*> enemy = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* m) {return m != nullptr &&
-				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())) &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(m)) &&
 				m->HasBuff("varuswdebuff"); }).OrderBy<float>([&](IUnit* x) {return GetDistanceVectors(x->GetPosition(), GEntityList->Player()->GetPosition()); });;
 
 			for (auto x: enemy.ToVector())

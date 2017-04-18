@@ -165,7 +165,7 @@ public:
 		{
 			if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && hero->IsValidTarget() && GEntityList->Player()->GetMana() > R->ManaCost() + E->ManaCost())
 			{
-				if (GetDistance(GEntityList->Player(), hero) > GOrbwalking->GetAutoAttackRange(GEntityList->Player()))
+				if (GetDistance(GEntityList->Player(), hero) > GEntityList->Player()->GetRealAutoAttackRange(hero))
 				{
 					E->CastOnTarget(hero, kHitChanceHigh);
 				}
@@ -200,7 +200,7 @@ public:
 				{
 					auto damage = GHealthPrediction->GetKSDamage(hero, kSlotE, E->GetDelay(), false);
 
-					if (damage > hero->GetHealth() && GetDistance(GEntityList->Player(), hero) > GOrbwalking->GetAutoAttackRange(GEntityList->Player()))
+					if (damage > hero->GetHealth() && GetDistance(GEntityList->Player(), hero) > GEntityList->Player()->GetRealAutoAttackRange(hero))
 					{
 						E->CastOnTarget(hero, kHitChanceHigh);
 					}
@@ -244,12 +244,12 @@ public:
 
 		if (AutoUlt->Enabled() && TargetR->HealthPercent() < HealthR->GetInteger())
 		{
-			if (ComboRKill->Enabled() && rdamage > TargetR->GetHealth() && GetDistance(GEntityList->Player(), TargetR) > GOrbwalking->GetAutoAttackRange(GEntityList->Player()))
+			if (ComboRKill->Enabled() && rdamage > TargetR->GetHealth() && GetDistance(GEntityList->Player(), TargetR) > GEntityList->Player()->GetRealAutoAttackRange(TargetR))
 			{
 				R->CastOnTarget(TargetR, kHitChanceHigh);
 			}
 
-			else if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && ComboR->Enabled() && GetDistance(GEntityList->Player(), TargetR) < GOrbwalking->GetAutoAttackRange(GEntityList->Player()) &&
+			else if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && ComboR->Enabled() && GetDistance(GEntityList->Player(), TargetR) < GEntityList->Player()->GetRealAutoAttackRange(TargetR) &&
 				(autodamage * 2) + (rdamage * 2) > TargetR->GetHealth())
 			{
 				R->CastOnTarget(TargetR, kHitChanceHigh);

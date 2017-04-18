@@ -436,7 +436,7 @@ public:
 						auto damage = GHealthPrediction->GetKSDamage(minion, kSlotE, E->GetDelay(), false);
 
 						if (minion->IsCreep() && damage > minion->GetHealth() && minion->IsValidTarget(GEntityList->Player(), R->Range()) &&
-							GetDistance(GEntityList->Player(), minion) > GOrbwalking->GetAutoAttackRange(GEntityList->Player()) + 50 )
+							GetDistance(GEntityList->Player(), minion) > GEntityList->Player()->GetRealAutoAttackRange(minion) + 50 )
 						{
 							GOrbwalking->ResetAA();
 							E->CastOnTarget(minion);
@@ -714,7 +714,7 @@ public:
 			{
 				if (!CheckTarget(target)) return;
 
-				if (target->IsMelee() && GetDistance(GEntityList->Player(), target) < 300  && target->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())))
+				if (target->IsMelee() && GetDistance(GEntityList->Player(), target) < 300  && target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(target)))
 				{					
 					auto dashpos = GEntityList->Player()->ServerPosition();
 					auto extend = dashpos.Extend(target->GetPosition(), -E->Range());					

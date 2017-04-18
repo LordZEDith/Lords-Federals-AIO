@@ -1480,7 +1480,7 @@ public:
 					}
 					else if (AliadoPos != nullptr)
 					{
-						auto pos = AliadoPos->GetPosition() + (GetTarget->GetPosition() - AliadoPos->GetPosition()).VectorNormalize() * (GOrbwalking->GetAutoAttackRange(AliadoPos) + AliadoPos->BoundingRadius()) / 2;
+						auto pos = AliadoPos->GetPosition() + (GetTarget->GetPosition() - AliadoPos->GetPosition()).VectorNormalize() * (AliadoPos->GetRealAutoAttackRange(GEntityList->Player()) + AliadoPos->BoundingRadius()) / 2;
 						
 						InsecST = pos;						
 					}
@@ -1490,7 +1490,7 @@ public:
 					}
 					else
 					{
-						auto pos = AllySoloPos->GetPosition() + (GetTarget->GetPosition() - AllySoloPos->GetPosition()).VectorNormalize() * (GOrbwalking->GetAutoAttackRange(AllySoloPos) + AllySoloPos->BoundingRadius()) / 2;
+						auto pos = AllySoloPos->GetPosition() + (GetTarget->GetPosition() - AllySoloPos->GetPosition()).VectorNormalize() * (AllySoloPos->GetRealAutoAttackRange(GEntityList->Player()) + AllySoloPos->BoundingRadius()) / 2;
 
 						InsecST = pos;						
 					}

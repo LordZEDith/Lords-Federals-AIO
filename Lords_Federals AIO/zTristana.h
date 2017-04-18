@@ -137,7 +137,7 @@ public:
 
 			if (Q->IsReady() && QEnemies->Enabled())
 			{
-				if (CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())))
+				if (CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(target)))
 				{
 					if (!E->IsReady() && target->HasBuff("tristanaechargesound"))
 					{
@@ -147,7 +147,7 @@ public:
 			}
 			else if (Q->IsReady() && !QEnemies->Enabled())
 			{				
-				if (CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())))
+				if (CheckTarget(target) && target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(target)))
 				{
 					Q->CastOnPlayer();
 				}
@@ -327,7 +327,7 @@ public:
 			{
 				if (!CheckTarget(enemy)) return;
 
-				if (GetDistance(GEntityList->Player(), enemy) <= GOrbwalking->GetAutoAttackRange(GEntityList->Player()) && enemy->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())) &&
+				if (GetDistance(GEntityList->Player(), enemy) <= GEntityList->Player()->GetRealAutoAttackRange(enemy) && enemy->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(enemy)) &&
 					enemy->HasBuff("tristanaechargesound") && enemy->IsEnemy(GEntityList->Player()))
 				{
 					GTargetSelector->SetOverrideFocusedTarget(enemy);
@@ -335,7 +335,7 @@ public:
 			}
 			
 			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, true, false)).Where([](IUnit* m) {return m != nullptr &&
-				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())) && m->IsCreep() && !strstr(m->GetObjectName(), "WardCorpse") && m->HasBuff("tristanaechargesound"); });
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(m)) && m->IsCreep() && !strstr(m->GetObjectName(), "WardCorpse") && m->HasBuff("tristanaechargesound"); });
 
 			if (Minion.Any())
 			{
@@ -352,7 +352,7 @@ public:
 			for (auto tower : GEntityList->GetAllTurrets(false, true))
 			{
 
-				if (!tower->IsDead() && tower->GetHealth() > 100 && tower->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())) && tower->IsVisible())
+				if (!tower->IsDead() && tower->GetHealth() > 100 && tower->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(tower)) && tower->IsVisible())
 				{
 					E->CastOnUnit(tower);
 				}
@@ -464,7 +464,7 @@ public:
 		{
 			for (auto target : GEntityList->GetAllHeros(false, true))
 			{				
-				if (target->IsMelee() && GetDistance(GEntityList->Player(), target) < 300 && !target->IsDead() && target->IsValidTarget(GEntityList->Player(), GOrbwalking->GetAutoAttackRange(GEntityList->Player())))
+				if (target->IsMelee() && GetDistance(GEntityList->Player(), target) < 300 && !target->IsDead() && target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(target)))
 				{
 					auto dashpos = GEntityList->Player()->ServerPosition();
 					auto extend = dashpos.Extend(target->GetPosition(), -W->Range());

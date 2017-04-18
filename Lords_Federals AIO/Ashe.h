@@ -205,7 +205,7 @@ public:
 					{
 						if (GEntityList->Player()->ManaPercent() > LaneClearMana->GetInteger() &&
 							CountMinions(Minion->GetPosition(), 400) >= MinionsW->GetInteger() &&
-							GetDistance(GEntityList->Player(), Minion) >= GOrbwalking->GetAutoAttackRange(GEntityList->Player()))
+							GetDistance(GEntityList->Player(), Minion) >= GEntityList->Player()->GetRealAutoAttackRange(Minion))
 						{
 							W->CastOnUnit(Minion);							
 						}
