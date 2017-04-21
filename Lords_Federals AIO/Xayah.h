@@ -32,11 +32,20 @@ public:
 			hPassiveStacks = HarassSettings->AddInteger("Min E Feather Stacks", 1, 10, 3);
 			HarassMana = HarassSettings->AddInteger("Minimum MP% to Harass", 1, 100, 60);
 		}
+
+		JungleClearSettings = MainMenu->AddMenu("JungleClear Settings");
+		{
+			JungleQ = JungleClearSettings->CheckBox("Use Q in Jungle", true);
+			JungleW = JungleClearSettings->CheckBox("Use W in Jungle", true);
+			JungleE = JungleClearSettings->CheckBox("Use E in Jungle", true);
+			jPassiveStacks = JungleClearSettings->AddInteger("Min E Feather Stacks", 1, 10, 5);
+			JungleMana = JungleClearSettings->AddInteger("Min Mana to Jungle", 1, 100, 30);
+		}
 		
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
 			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
-			cMode = fedMiscSettings->AddSelection("E Mode Active", 0, std::vector<std::string>({ "Automatic", "Combo/Harass Key" }));
+			cMode = fedMiscSettings->AddSelection("E Mode Active", 1, std::vector<std::string>({ "Automatic", "Combo/Harass Key" }));
 			//ComboAA = fedMiscSettings->AddInteger("Cast Spell When x Feathers", 0, 3, 0);
 		}
 		
@@ -44,9 +53,8 @@ public:
 		{
 			DrawReady = DrawingSettings->CheckBox("Draw Only Ready Spells", true);
 			DrawQ = DrawingSettings->CheckBox("Draw Q", true);
-			DrawW = DrawingSettings->CheckBox("Draw W", true);			
-			DrawR = DrawingSettings->CheckBox("Draw R", false);
-			DrawAxe = DrawingSettings->CheckBox("Draw Feathers", true);
+			DrawW = DrawingSettings->CheckBox("Draw W", false);			
+			DrawR = DrawingSettings->CheckBox("Draw R", false);			
 			DrawNear = DrawingSettings->CheckBox("Draw Feathers Rect", true);
 			DrawEA = DrawingSettings->CheckBox("Possible Feathers Return", true);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
@@ -90,16 +98,16 @@ public:
 	{
 		if (DrawReady->Enabled())
 		{
-			if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range()); }
-			if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }			
-			if (R->IsReady() && DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range()); }
+			if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(138, 43, 226, 255), Q->Range()); }
+			if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(138, 43, 226, 255), W->Range()); }
+			if (R->IsReady() && DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(138, 43, 226, 255), R->Range()); }
 
 		}
 		else
 		{
-			if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range()); }
-			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }			
-			if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range()); }
+			if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(138, 43, 226, 255), Q->Range()); }
+			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(138, 43, 226, 255), W->Range()); }
+			if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(138, 43, 226, 255), R->Range()); }
 		}
 
 		for (auto Feather : GEntityList->GetAllUnits())
@@ -108,11 +116,11 @@ public:
 			{
 				auto cRect = Geometry::Rectangle(Feather->GetPosition().To2D(), GEntityList->Player()->GetPosition().To2D(), 85);
 
-				for (auto Target : GEntityList->GetAllHeros(false, true))
+				for (auto Target : GEntityList->GetAllUnitsOfTypes(std::vector<eGameObjectClassId>({ kAIHeroClient, kobj_AI_Minion, kNeutralMinionCamp })))
 				{
-					if (Target != nullptr)
+					if (Target != nullptr && Target->GetTeam() != GEntityList->Player()->GetTeam())
 					{
-						if (cRect.IsInside(Target))
+						if (cRect.IsInside(Target) && Target->IsVisible() && !Target->IsDead())
 						{
 							auto nf = false;
 							for (auto f : XayahReturn.ToVector())
@@ -140,7 +148,7 @@ public:
 			}
 		}
 
-		if (DrawAxe->Enabled())
+		if (DrawNear->Enabled())
 		{
 			Vec2 mypos;
 			Vec2 fPos;
@@ -150,40 +158,39 @@ public:
 			{
 				if (Feather != nullptr && Feather->GetTeam() == GEntityList->Player()->GetTeam() && !Feather->IsDead() && std::string(Feather->GetObjectName()) == "Feather")
 				{
-					GGame->Projection(Feather->GetPosition(), &fPos);
-					GRender->DrawOutlinedCircle(Feather->GetPosition(), Vec4(255, 255, 0, 255), 60);
+					GGame->Projection(Feather->GetPosition(), &fPos);					
 
-					//GRender->DrawLine(mypos, fPos, Vec4(255, 255, 0, 255));
-					
-					if (DrawNear->Enabled())
+					//GRender->DrawLine(mypos, fPos, Vec4(255, 255, 0, 255));					
+
+					auto cRectx = Geometry::Rectangle(Feather->GetPosition().To2D(), GEntityList->Player()->GetPosition().To2D(), 85);
+
+					if (XayahReturn.Count() > 0)
 					{
-						auto cRectx = Geometry::Rectangle(Feather->GetPosition().To2D(), GEntityList->Player()->GetPosition().To2D(), 85);
+						auto check = false;
 
-						if (XayahReturn.Count() > 0)
+						for (auto fx : XayahReturn.ToVector())
 						{
-							auto check = false;
+							if (fx.Source == Feather)
+							{
+								check = true;
+							}
+						}
 
-							for (auto fx : XayahReturn.ToVector())
-							{
-								if (fx.Source == Feather)
-								{
-									check = true;
-								}
-							}
-
-							if (check)
-							{
-								cRectx.Draw(Vec4(0, 255, 0, 255), 10);
-							}
-							else
-							{
-								cRectx.Draw(Vec4(255, 255, 100, 255), 10);
-							}
+						if (check)
+						{
+							cRectx.Draw(Vec4(138, 43, 226, 255), 10);
+							GRender->DrawOutlinedCircle(Feather->GetPosition(), Vec4(138, 43, 226, 255), 60);
 						}
 						else
 						{
-							cRectx.Draw(Vec4(255, 255, 100, 255), 10);
+							cRectx.Draw(Vec4(128, 128, 128, 255), 10);
+							GRender->DrawOutlinedCircle(Feather->GetPosition(), Vec4(128, 128, 128, 255), 60);
 						}
+					}
+					else
+					{
+						cRectx.Draw(Vec4(128, 128, 128, 255), 10);
+						GRender->DrawOutlinedCircle(Feather->GetPosition(), Vec4(128, 128, 128, 255), 60);
 					}
 				}
 			}			
@@ -191,28 +198,48 @@ public:
 
 		if (DrawEA->Enabled())
 		{
-			for (auto Target : GEntityList->GetAllHeros(false, true))
+			for (auto Target : GEntityList->GetAllUnitsOfTypes(std::vector<eGameObjectClassId>({ kAIHeroClient, kobj_AI_Minion, kNeutralMinionCamp })))
 			{
 				GetTargetDraw = nullptr;
 
-				if (Target != nullptr)
+				if (Target != nullptr && Target->GetTeam() != GEntityList->Player()->GetTeam())
 				{
 					GetTargetDraw = Target;
 					SArray<XayahFeathers> fed = XayahReturn.Where([](XayahFeathers m) {return m.Target == GetTargetDraw; });
 
 					if (fed.Count() > 0)
 					{
-						Vec2 pos;
-						GGame->Projection(Target->GetPosition(), &pos);
-
-						static auto messageTimer = GRender->CreateFontW("Impact", 30.f, kFontWeightNormal);
-						messageTimer->SetLocationFlags(kFontLocationCenter);
-						messageTimer->SetOutline(true);
-
-						if (XayahReturn.Count() > 0)
+						if (GetTargetDraw->IsHero())
 						{
-							messageTimer->SetColor(Vec4(0, 255, 0, 255));
-							messageTimer->Render(pos.x, pos.y, "Feather Back: %i", fed.Count());
+							Vec2 pos;
+							GGame->Projection(Target->GetPosition(), &pos);
+
+							static auto messageTimer = GRender->CreateFontW("Impact", 30.f, kFontWeightNormal);
+							messageTimer->SetLocationFlags(kFontLocationCenter);
+							messageTimer->SetOutline(true);
+
+							if (XayahReturn.Count() > 0)
+							{
+								messageTimer->SetColor(Vec4(0, 255, 0, 255));
+								messageTimer->Render(pos.x, pos.y, "Feather Back: %i", fed.Count());
+							}
+						}
+						else
+						{
+							Vec2 LifePos;
+							if (GetTargetDraw->GetHPBarPosition(LifePos))
+							{
+								static auto messageTimer = GRender->CreateFontW("Comic Sans", 12.f, kFontWeightNormal);
+								messageTimer->SetLocationFlags(kFontLocationCenterVertical);
+								messageTimer->SetOutline(true);
+
+								if (XayahReturn.Count() > 0)
+								{
+									messageTimer->SetColor(Vec4(211, 211, 211, 255));
+									messageTimer->Render(LifePos.x, LifePos.y - 3, "Feather Back: %i", fed.Count());
+								}
+
+							}
 						}
 					}
 				}
@@ -403,7 +430,7 @@ public:
 				if (CheckTarget(tar))
 				{
 					GUtility->LogConsole("Dano: %f", Damage(tar));
-					if(GetEDamage(tar) >= tar->GetHealth())
+					if(GetEDamage(tar) >= tar->GetHealth() && !tar->IsDashing())
 					{
 						E->CastOnPlayer();
 					}
@@ -431,7 +458,7 @@ public:
 			LastSpellTick = GGame->TickCount();
 		}
 
-		if (ComboE->Enabled() && cMode->GetInteger() == 1 && E->IsReady() && CountPossiblesFeathers(Target) >= PassiveStacks->GetInteger())
+		if (ComboE->Enabled() && cMode->GetInteger() == 1 && E->IsReady() && CountPossiblesFeathers(Target) >= PassiveStacks->GetInteger() && !Target->IsDashing())
 		{
 			if ( GetFeatherBuffCount() == 0 || CountPossiblesFeathers(Target) >= PassiveStacks->GetInteger())
 			{
@@ -476,7 +503,7 @@ public:
 			LastSpellTick = GGame->TickCount();
 		}
 
-		if (HarassE->Enabled() && cMode->GetInteger() == 1 && E->IsReady() && CountPossiblesFeathers(Target) >= hPassiveStacks->GetInteger())
+		if (HarassE->Enabled() && cMode->GetInteger() == 1 && E->IsReady() && CountPossiblesFeathers(Target) >= hPassiveStacks->GetInteger() && !Target->IsDashing())
 		{
 			if (GetFeatherBuffCount() == 0 || CountPossiblesFeathers(Target) >= hPassiveStacks->GetInteger())
 			{
@@ -492,6 +519,42 @@ public:
 
 	static void JungleClear()
 	{
+		if (JungleMana->GetInteger() < GEntityList->Player()->ManaPercent())
+		{
+			SArray<IUnit*> Minion = SArray<IUnit*>(GEntityList->GetAllMinions(false, false, true)).Where([](IUnit* m) {return m != nullptr &&
+				!m->IsDead() && m->IsVisible() && m->IsValidTarget(GEntityList->Player(), Q->Range()) && m->IsJungleCreep() && !strstr(m->GetObjectName(), "WardCorpse"); });
+
+			if (Minion.Any())
+			{
+				auto jMonster = Minion.MinOrDefault<float>([](IUnit* i) {return GetDistanceVectors(i->GetPosition(), GGame->CursorPosition()); });
+
+				if (JungleQ->Enabled() && Q->IsReady() && !FoundMinions(Q->Range()) && FoundMinionsNeutral(Q->Range()))
+				{
+					auto pred = FindBestLineCastPositionNeutral(vector<Vec3>{ GEntityList->Player()->GetPosition() }, 600, Q->Range(), Q->Radius(), true, false);
+
+					if (pred.HitCount > 1)
+					{
+						if (GetDistanceVectors(GEntityList->Player()->GetPosition(), pred.CastPosition) <= Q->Range())
+						{
+							Q->CastOnPosition(pred.CastPosition);
+						}
+					}
+					else
+					{
+						if (CheckTarget(jMonster) && jMonster->IsValidTarget(GEntityList->Player(), Q->Range()))
+						{
+							Q->CastOnUnit(jMonster);
+						}
+					}
+				}
+
+				if (JungleE->Enabled() && E->IsReady() && CountPossiblesFeathers(jMonster) >= jPassiveStacks->GetInteger()
+					&& jMonster->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(jMonster)))
+				{
+					E->CastOnPlayer();
+				}
+			}
+		}
 	}
 
 	static void LaneClear()
@@ -505,35 +568,41 @@ public:
 
 	static void OnAfterAttack(IUnit* Source, IUnit* Target)
 	{
-		if (!CheckTarget(Target)) return;
-
-		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		if (CheckTarget(Target) && GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
-			if (ComboW->GetInteger() == 1 && W->IsReady() && Target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(Target)) && GGame->TickCount() - LastSpellTick > 300)
+			if (Target->IsHero() && ComboW->GetInteger() == 1 && W->IsReady() && Target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(Target)) && GGame->TickCount() - LastSpellTick > 300)
 			{
 				W->CastOnPlayer();
 				LastSpellTick = GGame->TickCount();
 			}
 
-			if (ComboQ->GetInteger() == 1 && Q->IsReady() && Target->IsValidTarget(GEntityList->Player(), Q->Range()) && GGame->TickCount() - LastSpellTick > 300)
+			if (Target->IsHero() && ComboQ->GetInteger() == 1 && Q->IsReady() && Target->IsValidTarget(GEntityList->Player(), Q->Range()) && GGame->TickCount() - LastSpellTick > 300)
 			{
 				Q->CastOnTarget(Target, PredicChange());
 				LastSpellTick = GGame->TickCount();
 			}
 		}
 
-		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed && GEntityList->Player()->ManaPercent() >= HarassMana->GetInteger())
+		if (CheckTarget(Target) && GOrbwalking->GetOrbwalkingMode() == kModeMixed && GEntityList->Player()->ManaPercent() >= HarassMana->GetInteger())
 		{
-			if (HarassW->GetInteger() == 1 && W->IsReady() && Target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(Target)) && GGame->TickCount() - LastSpellTick > 300)
+			if (Target->IsHero() && HarassW->GetInteger() == 1 && W->IsReady() && Target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(Target)) && GGame->TickCount() - LastSpellTick > 300)
 			{
 				W->CastOnPlayer();
 				LastSpellTick = GGame->TickCount();
 			}
 
-			if (HarassQ->GetInteger() == 1 && Q->IsReady() && Target->IsValidTarget(GEntityList->Player(), Q->Range()) && GGame->TickCount() - LastSpellTick > 300)
+			if (Target->IsHero() && HarassQ->GetInteger() == 1 && Q->IsReady() && Target->IsValidTarget(GEntityList->Player(), Q->Range()) && GGame->TickCount() - LastSpellTick > 300)
 			{
 				Q->CastOnTarget(Target, PredicChange());
 				LastSpellTick = GGame->TickCount();
+			}
+		}
+
+		if (CheckTarget(Target) && Target->IsJungleCreep() && GOrbwalking->GetOrbwalkingMode() == kModeLaneClear && GEntityList->Player()->ManaPercent() >= JungleMana->GetInteger())
+		{
+			if (JungleW->Enabled() && W->IsReady() && GetFeatherBuffCount() <= 2)
+			{
+				W->CastOnPlayer();
 			}
 		}
 	}
