@@ -20,8 +20,9 @@ public:
 			ComboE = ComboSettings->CheckBox("Use E", false);
 			ComboE2 = ComboSettings->CheckBox("Use E KS!", true);
 			ComboEA = ComboSettings->AddInteger("E Damage Reduction", 0, 100, 0);
-			PassiveStacks = ComboSettings->AddInteger("Min E Feather Stacks", 1, 10, 3);
-			ComboR = ComboSettings->CheckBox("Use R", true);
+			PassiveStacks = ComboSettings->AddInteger("Min E Feather Stacks", 1, 10, 3);			
+			SemiManualKey = ComboSettings->AddKey("Semi Manual Cast R key", 71);
+			RMode = ComboSettings->AddSelection("R Semi Manual Mode", 1, std::vector<std::string>({ "Target Selector", "Nearest Mouse" }));
 		}
 
 		HarassSettings = MainMenu->AddMenu("Harass Settings");
@@ -38,7 +39,7 @@ public:
 			JungleQ = JungleClearSettings->CheckBox("Use Q in Jungle", true);
 			JungleW = JungleClearSettings->CheckBox("Use W in Jungle", true);
 			JungleE = JungleClearSettings->CheckBox("Use E in Jungle", true);
-			jPassiveStacks = JungleClearSettings->AddInteger("Min E Feather Stacks", 1, 10, 5);
+			jPassiveStacks = JungleClearSettings->AddInteger("Min E Feather Stacks", 0, 12, 5);
 			JungleMana = JungleClearSettings->AddInteger("Min Mana to Jungle", 1, 100, 30);
 		}
 		
@@ -46,6 +47,7 @@ public:
 		{
 			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
 			cMode = fedMiscSettings->AddSelection("E Mode Active", 1, std::vector<std::string>({ "Automatic", "Combo/Harass Key" }));
+			SaveMana = fedMiscSettings->CheckBox("Save Mana to Cast E", true);
 			//ComboAA = fedMiscSettings->AddInteger("Cast Spell When x Feathers", 0, 3, 0);
 		}
 		
@@ -55,11 +57,11 @@ public:
 			DrawQ = DrawingSettings->CheckBox("Draw Q", true);
 			DrawW = DrawingSettings->CheckBox("Draw W", false);			
 			DrawR = DrawingSettings->CheckBox("Draw R", false);			
-			DrawNear = DrawingSettings->CheckBox("Draw Feathers Rect", true);
-			DrawEA = DrawingSettings->CheckBox("Possible Feathers Return", true);
+			DrawNear = DrawingSettings->AddSelection("Draw Feathers", 1, std::vector<std::string>({ "Disable", "Rectangle", "Line" }));
+			DrawColor = DrawingSettings->AddColor("Draws Color", 138, 43, 226, 255);
+			DrawEA = DrawingSettings->AddSelection("Possible Feathers Return", 1, std::vector<std::string>({ "Disable", "Mode Small", "Mode Big" }));			
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
 		}
-
 	}
 
 	static void LoadSpells()
@@ -96,18 +98,20 @@ public:
 
 	static void Drawing()
 	{
+		Vec4 MyColor;
+		DrawColor->GetColor(&MyColor);
+		
 		if (DrawReady->Enabled())
 		{
-			if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(138, 43, 226, 255), Q->Range()); }
-			if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(138, 43, 226, 255), W->Range()); }
-			if (R->IsReady() && DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(138, 43, 226, 255), R->Range()); }
-
+			if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), MyColor, Q->Range()); }
+			if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), MyColor, W->Range()); }
+			if (R->IsReady() && DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), MyColor, R->Range()); }
 		}
 		else
 		{
-			if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(138, 43, 226, 255), Q->Range()); }
-			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(138, 43, 226, 255), W->Range()); }
-			if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(138, 43, 226, 255), R->Range()); }
+			if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), MyColor, Q->Range()); }
+			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), MyColor, W->Range()); }
+			if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), MyColor, R->Range()); }
 		}
 
 		for (auto Feather : GEntityList->GetAllUnits())
@@ -148,7 +152,7 @@ public:
 			}
 		}
 
-		if (DrawNear->Enabled())
+		if (DrawNear->GetInteger() > 0)
 		{
 			Vec2 mypos;
 			Vec2 fPos;
@@ -178,25 +182,46 @@ public:
 
 						if (check)
 						{
-							cRectx.Draw(Vec4(138, 43, 226, 255), 10);
-							GRender->DrawOutlinedCircle(Feather->GetPosition(), Vec4(138, 43, 226, 255), 60);
+							if (DrawNear->GetInteger() == 1)
+							{
+								cRectx.Draw(MyColor, 10);
+							}
+							else
+							{
+								GRender->DrawLine(mypos, fPos, MyColor);
+							}
+							GRender->DrawOutlinedCircle(Feather->GetPosition(), MyColor, 60);
 						}
 						else
 						{
-							cRectx.Draw(Vec4(128, 128, 128, 255), 10);
+							if (DrawNear->GetInteger() == 1)
+							{
+								cRectx.Draw(Vec4(128, 128, 128, 255), 10);
+							}
+							else
+							{
+								GRender->DrawLine(mypos, fPos, Vec4(128, 128, 128, 255));
+							}							
 							GRender->DrawOutlinedCircle(Feather->GetPosition(), Vec4(128, 128, 128, 255), 60);
 						}
 					}
 					else
 					{
-						cRectx.Draw(Vec4(128, 128, 128, 255), 10);
+						if (DrawNear->GetInteger() == 1)
+						{
+							cRectx.Draw(Vec4(128, 128, 128, 255), 10);
+						}
+						else
+						{
+							GRender->DrawLine(mypos, fPos, Vec4(128, 128, 128, 255));
+						}
 						GRender->DrawOutlinedCircle(Feather->GetPosition(), Vec4(128, 128, 128, 255), 60);
 					}
 				}
 			}			
 		}
 
-		if (DrawEA->Enabled())
+		if (DrawEA->GetInteger() > 0)
 		{
 			for (auto Target : GEntityList->GetAllUnitsOfTypes(std::vector<eGameObjectClassId>({ kAIHeroClient, kobj_AI_Minion, kNeutralMinionCamp })))
 			{
@@ -209,19 +234,35 @@ public:
 
 					if (fed.Count() > 0)
 					{
+						Vec2 pos;
+
 						if (GetTargetDraw->IsHero())
 						{
-							Vec2 pos;
-							GGame->Projection(Target->GetPosition(), &pos);
-
-							static auto messageTimer = GRender->CreateFontW("Impact", 30.f, kFontWeightNormal);
-							messageTimer->SetLocationFlags(kFontLocationCenter);
-							messageTimer->SetOutline(true);
-
-							if (XayahReturn.Count() > 0)
+							if (GetTargetDraw->GetHPBarPosition(pos) && DrawEA->GetInteger() == 1)
 							{
-								messageTimer->SetColor(Vec4(0, 255, 0, 255));
-								messageTimer->Render(pos.x, pos.y, "Feather Back: %i", fed.Count());
+								static auto messageTimer = GRender->CreateFontW("Comic Sans", 16.f, kFontWeightNormal);
+								messageTimer->SetLocationFlags(kFontLocationCenterVertical);
+								messageTimer->SetOutline(true);
+
+								if (XayahReturn.Count() > 0)
+								{
+									messageTimer->SetColor(Vec4(255, 255, 0, 255));
+									messageTimer->Render(pos.x + 10, pos.y, "Feather Back: %i", fed.Count());
+								}
+							}
+							else if (DrawEA->GetInteger() == 2)
+							{								
+								GGame->Projection(Target->GetPosition(), &pos);
+
+								static auto messageTimer = GRender->CreateFontW("Impact", 30.f, kFontWeightNormal);
+								messageTimer->SetLocationFlags(kFontLocationCenter);
+								messageTimer->SetOutline(true);
+
+								if (XayahReturn.Count() > 0)
+								{
+									messageTimer->SetColor(Vec4(0, 255, 0, 255));
+									messageTimer->Render(pos.x, pos.y, "Feather Back: %i", fed.Count());
+								}
 							}
 						}
 						else
@@ -312,7 +353,8 @@ public:
 	{
 		auto line = CountPossiblesFeathers(target);
 		float EDamage[5] = { 50, 60, 70, 80, 90 };
-		auto damage = EDamage[GEntityList->Player()->GetSpellLevel(kSlotE) - 1]* 1.05 + (GEntityList->Player()->BonusDamage()* 0.635) /*+ (GEntityList->Player()->CritDamageMultiplier()* 0.5)*/;
+		auto damage = EDamage[GEntityList->Player()->GetSpellLevel(kSlotE) - 1]* 1.05 + (GEntityList->Player()->BonusDamage()* 0.635);
+		auto dcrit = (GEntityList->Player()->Crit() * 0.49);
 		
 		if (line == 0)
 		{
@@ -320,47 +362,67 @@ public:
 		}
 		if(line == 1)
 		{
-		return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, damage);
+		return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, damage + (dcrit * damage));
 		}
 		if(line == 2)
 		{
-			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, damage + damage*0.9);
+			auto dano = damage + damage*0.9;
+			auto danocalc = dano + (dano * dcrit);
+			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, danocalc);
 		}
 		if(line == 3)
 		{
-			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, damage + damage*0.9 + damage*0.8);
+			auto dano = damage + damage*0.9 + damage*0.8;
+			auto danocalc = dano + (dano * dcrit);
+			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, danocalc);
 		}
 		if(line == 4)
 		{
-			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, damage + damage*0.9 + damage*0.8 + damage*0.7);
+			auto dano = damage + damage*0.9 + damage*0.8 + damage*0.7;
+			auto danocalc = dano + (dano * dcrit);
+			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, danocalc);
 		}
 		if (line == 5)
 		{
-			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6);
+			auto dano = damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6;
+			auto danocalc = dano + (dano * dcrit);
+			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, danocalc);
 		}
 		if (line == 6)
 		{
-			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5);
+			auto dano = damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5;
+			auto danocalc = dano + (dano * dcrit);
+			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, danocalc);
 		}
 		if (line == 7)
 		{
-			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5 + damage*0.4);
+			auto dano = damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5 + damage*0.4;
+			auto danocalc = dano + (dano * dcrit);
+			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, danocalc);
 		}
 		if (line == 8)
 		{
-			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5 + damage*0.4 + damage*0.3);
+			auto dano = damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5 + damage*0.4 + damage*0.3;
+			auto danocalc = dano + (dano * dcrit);
+			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, danocalc);
 		}
 		if (line == 9)
 		{
-			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5 + damage*0.4 + damage*0.3 + damage*0.2);
+			auto dano = damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5 + damage*0.4 + damage*0.3 + damage*0.2;
+			auto danocalc = dano + (dano * dcrit);
+			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, danocalc);
 		}
 		if (line == 10)
 		{
-			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5 + damage*0.4 + damage*0.3 + damage*0.2 + damage*0.1);
+			auto dano = damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5 + damage*0.4 + damage*0.3 + damage*0.2 + damage*0.1;
+			auto danocalc = dano + (dano * dcrit);
+			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, danocalc);
 		}
 		if (line >= 11)
 		{
-			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5 + damage*0.4 + damage*0.3 + damage*0.2 + damage*0.1 + ((line - 10)*(damage*0.1)));
+			auto dano = damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5 + damage*0.4 + damage*0.3 + damage*0.2 + damage*0.1 + ((line - 10)*(damage*0.1));
+			auto danocalc = dano + (dano * dcrit);
+			return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, danocalc);
 		}			
 	}
 
@@ -421,7 +483,7 @@ public:
 		return damage;
 	}
 
-	void XayahE()
+	static void XayahE()
 	{
 		if (ComboE2->Enabled() && E->IsReady())
 		{
@@ -429,16 +491,48 @@ public:
 			{
 				if (CheckTarget(tar))
 				{
-					GUtility->LogConsole("Dano: %f", Damage(tar));
+					GUtility->LogConsole("Dano: %f, Critico? %f, My Critic? %f", Damage(tar), tar->Crit(), GEntityList->Player()->Crit());
 					if(GetEDamage(tar) >= tar->GetHealth() && !tar->IsDashing())
 					{
 						E->CastOnPlayer();
 					}
 				}
-			}
+			}			
 		}
 	}
 
+	static void KSJungle()
+	{
+		if (JungleE->Enabled() && E->IsReady())
+		{
+			for (auto jm : GEntityList->GetAllMinions(false, false, true))
+			{
+				if (CheckTarget(jm))
+				{
+					if (strstr(jm->GetObjectName(), "Dragon") ||
+						strstr(jm->GetObjectName(), "Baron") ||
+						strstr(jm->GetObjectName(), "Gromp") ||
+						strstr(jm->GetObjectName(), "Crab") ||
+						strstr(jm->GetObjectName(), "Razorbeak3") ||
+						strstr(jm->GetObjectName(), "Razorbeak9") ||
+						strstr(jm->GetObjectName(), "SRU_Krug11") ||
+						strstr(jm->GetObjectName(), "SRU_Krug5") ||
+						strstr(jm->GetObjectName(), "SRU_Murkwolf2") ||
+						strstr(jm->GetObjectName(), "Red") ||
+						strstr(jm->GetObjectName(), "Blue") ||
+						strstr(jm->GetObjectName(), "RiftHerald"))
+					{
+						GUtility->LogConsole("Dano Neutral: %f | DanoAA: %f", Damage(jm), GDamage->GetAutoAttackDamage(GEntityList->Player(), jm, false));
+						
+						if (Damage(jm) > jm->GetHealth() && GDamage->GetAutoAttackDamage(GEntityList->Player(), jm, false) < jm->GetHealth())
+						{
+							E->CastOnPlayer();
+						}
+					}
+				}
+			}
+		}
+	}
 
 	static void Combo()
 	{
@@ -448,12 +542,16 @@ public:
 
 		if (ComboW->GetInteger() == 2 && W->IsReady() && Target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(Target)) && GGame->TickCount() - LastSpellTick > 300)
 		{
+			if (SaveMana->Enabled() && GEntityList->Player()->GetMana() <= E->ManaCost() + W->ManaCost()) return;
+
 			W->CastOnPlayer();
 			LastSpellTick = GGame->TickCount();
 		}
 
 		if (ComboQ->GetInteger() == 2 && Q->IsReady() && Target->IsValidTarget(GEntityList->Player(), Q->Range()) && GGame->TickCount() - LastSpellTick > 300)
 		{
+			if (SaveMana->Enabled() && GEntityList->Player()->GetMana() <= E->ManaCost() + Q->ManaCost()) return;
+
 			Q->CastOnTarget(Target, PredicChange());
 			LastSpellTick = GGame->TickCount();
 		}
@@ -493,12 +591,16 @@ public:
 
 		if (HarassQ->GetInteger() == 2 && Q->IsReady() && Target->IsValidTarget(GEntityList->Player(), Q->Range()) && GGame->TickCount() - LastSpellTick > 300)
 		{
+			if (SaveMana->Enabled() && GEntityList->Player()->GetMana() <= E->ManaCost() + Q->ManaCost()) return;
+
 			Q->CastOnTarget(Target, PredicChange());
 			LastSpellTick = GGame->TickCount();
 		}
 		
 		if (HarassW->GetInteger() == 2 && W->IsReady() && Target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(Target)) && GGame->TickCount() - LastSpellTick > 300)
 		{
+			if (SaveMana->Enabled() && GEntityList->Player()->GetMana() <= E->ManaCost() + W->ManaCost()) return;
+
 			W->CastOnPlayer();
 			LastSpellTick = GGame->TickCount();
 		}
@@ -536,6 +638,7 @@ public:
 					{
 						if (GetDistanceVectors(GEntityList->Player()->GetPosition(), pred.CastPosition) <= Q->Range())
 						{
+							if (SaveMana->Enabled() && GEntityList->Player()->GetMana() <= E->ManaCost() + Q->ManaCost()) return;
 							Q->CastOnPosition(pred.CastPosition);
 						}
 					}
@@ -543,12 +646,13 @@ public:
 					{
 						if (CheckTarget(jMonster) && jMonster->IsValidTarget(GEntityList->Player(), Q->Range()))
 						{
+							if (SaveMana->Enabled() && GEntityList->Player()->GetMana() <= E->ManaCost() + Q->ManaCost()) return;
 							Q->CastOnUnit(jMonster);
 						}
 					}
 				}
 
-				if (JungleE->Enabled() && E->IsReady() && CountPossiblesFeathers(jMonster) >= jPassiveStacks->GetInteger()
+				if (JungleE->Enabled() && E->IsReady() && jPassiveStacks->GetInteger() > 0 && CountPossiblesFeathers(jMonster) >= jPassiveStacks->GetInteger()
 					&& jMonster->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(jMonster)))
 				{
 					E->CastOnPlayer();
@@ -572,12 +676,14 @@ public:
 		{
 			if (Target->IsHero() && ComboW->GetInteger() == 1 && W->IsReady() && Target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(Target)) && GGame->TickCount() - LastSpellTick > 300)
 			{
+				if (SaveMana->Enabled() && GEntityList->Player()->GetMana() <= E->ManaCost() + W->ManaCost()) return;
 				W->CastOnPlayer();
 				LastSpellTick = GGame->TickCount();
 			}
 
 			if (Target->IsHero() && ComboQ->GetInteger() == 1 && Q->IsReady() && Target->IsValidTarget(GEntityList->Player(), Q->Range()) && GGame->TickCount() - LastSpellTick > 300)
 			{
+				if (SaveMana->Enabled() && GEntityList->Player()->GetMana() <= E->ManaCost() + Q->ManaCost()) return;
 				Q->CastOnTarget(Target, PredicChange());
 				LastSpellTick = GGame->TickCount();
 			}
@@ -587,12 +693,14 @@ public:
 		{
 			if (Target->IsHero() && HarassW->GetInteger() == 1 && W->IsReady() && Target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(Target)) && GGame->TickCount() - LastSpellTick > 300)
 			{
+				if (SaveMana->Enabled() && GEntityList->Player()->GetMana() <= E->ManaCost() + W->ManaCost()) return;
 				W->CastOnPlayer();
 				LastSpellTick = GGame->TickCount();
 			}
 
 			if (Target->IsHero() && HarassQ->GetInteger() == 1 && Q->IsReady() && Target->IsValidTarget(GEntityList->Player(), Q->Range()) && GGame->TickCount() - LastSpellTick > 300)
 			{
+				if (SaveMana->Enabled() && GEntityList->Player()->GetMana() <= E->ManaCost() + Q->ManaCost()) return;
 				Q->CastOnTarget(Target, PredicChange());
 				LastSpellTick = GGame->TickCount();
 			}
@@ -602,6 +710,7 @@ public:
 		{
 			if (JungleW->Enabled() && W->IsReady() && GetFeatherBuffCount() <= 2)
 			{
+				if (SaveMana->Enabled() && GEntityList->Player()->GetMana() <= E->ManaCost() + W->ManaCost()) return;
 				W->CastOnPlayer();
 			}
 		}
@@ -620,5 +729,47 @@ public:
 	static void OnDeleteObject(IUnit* Source)
 	{
 		
+	}
+
+	static void SemiManualR()
+	{
+		if (IsKeyDown(SemiManualKey))
+		{
+			//GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
+
+			if (!R->IsReady())
+			{
+				return;
+			}
+
+			IUnit* TargetR = nullptr;
+
+			if (RMode->GetInteger() == 0)
+			{
+				TargetR = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R->Range());
+			}
+			else
+			{
+				SArray<IUnit*> rtarget = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* m) {return m != nullptr &&
+					!m->IsDead() && m->IsVisible()
+					&& m->IsValidTarget(GEntityList->Player(), R->Range()); }).OrderBy<float>([&](IUnit* x) {return GetDistanceVectors(x->GetPosition(), GGame->CursorPosition()); });
+
+				if (rtarget.Any())
+				{
+					for (auto x : rtarget.ToVector())
+					{
+						if (GetDistance(GEntityList->Player(), x) <= R->Range() && GetDistanceVectors(GGame->CursorPosition(), x->GetPosition()) <= 500)
+						{
+							TargetR = x;
+						}
+					}
+				}
+			}
+
+			if (CheckTarget(TargetR) && CheckShielded(TargetR) && TargetR->IsValidTarget(GEntityList->Player(), R->Range()))
+			{
+				R->CastOnTarget(TargetR, PredicChange());
+			}
+		}
 	}
 };

@@ -327,6 +327,7 @@ IMenuOption* WMinions;
 IMenuOption* DrawPetStatus;
 IMenuOption* DrawECustom;
 IMenuOption* DrawCaitSpots;
+IMenuOption* DrawColor;
 
 IMenuOption* HealthPercent;
 IMenuOption* FarmMana;
