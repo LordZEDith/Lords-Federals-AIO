@@ -15,7 +15,8 @@ public:
 			EmoteOnKill = EmoteSpam->CheckBox("After Kill", true);
 			EmoteOnAssis = EmoteSpam->CheckBox("After Assist", false);
 			EmoteOnDeath = EmoteSpam->CheckBox("After Death", false);
-			EmoteNearDead = EmoteSpam->CheckBox("Near Dead Bodies", false);			
+			EmoteNearDead = EmoteSpam->CheckBox("Near Dead Bodies", false);	
+			Debug = EmoteSpam->CheckBox("Debug", false);
 		}
 
 		/*GameChat = GameEvents->AddMenu("Start & End");
@@ -40,6 +41,21 @@ public:
 		}*/
 	}
 
+	static void OpenDebug()
+	{
+		eCounterStrike = false;
+
+		if (Debug->Enabled() && !eCounterStrike)
+		{
+			GUtility->CreateDebugConsole();
+			eCounterStrike = true;
+		}
+		else
+		{
+			//GUtility->DestroyDebugConsole();
+		}
+	}
+
 	static void SendEmote()
 	{
 		if (GGame->TickCount() - LastEmoteSpam > Random(6000, 12000))
@@ -55,6 +71,8 @@ public:
 
 	static void SpamEmote()
 	{
+		OpenDebug();
+
 		if (GGame->IsChatOpen()) return;
 
 		if (EmoteNearDead->Enabled())
