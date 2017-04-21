@@ -171,6 +171,7 @@
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="Gnar.h" />
     <ClInclude Include="Gragas.h" />
+    <ClInclude Include="HpBarIndicator.h" />
     <ClInclude Include="Ivern.h" />
     <ClInclude Include="Jax.h" />
     <ClInclude Include="Khazix.h" />

@@ -258,6 +258,9 @@
     <ClInclude Include="Xayah.h">
       <Filter>Header Files\Champions\ADC</Filter>
     </ClInclude>
+    <ClInclude Include="HpBarIndicator.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Program.cpp">
