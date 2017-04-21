@@ -516,14 +516,7 @@ public:
 		FocusTargetW();
 		UseUltimate();
 		putWardAfterStun();
-		CheckKindredR();
-
-		auto Hero = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range() + 130);
-
-		if (Hero != nullptr)
-		{
-			GUtility->LogConsole("Dano E: %f, Dano W: %f, Dano E: %f", GetEDamage(Hero), GDamage->GetSpellDamage(GEntityList->Player(), Hero, kSlotW), GDamage->GetSpellDamage(GEntityList->Player(), Hero, kSlotE));
-		}
+		CheckKindredR();		
 
 		if (IsKeyDown(SemiManualKey) || IsKeyDown(zzRot))
 		{
