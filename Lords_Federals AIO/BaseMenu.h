@@ -614,6 +614,7 @@ bool EQcastNow = false;
 bool CheckAttack = false;
 
 IMenuOption* PassiveStacks;
+IMenuOption* hPassiveStacks;
 IMenuOption* jPassiveStacks;
 IMenuOption* lPassiveStacks;
 IMenuOption* StartComboKey;

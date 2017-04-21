@@ -4567,6 +4567,8 @@ public:
 			return;
 		}
 
+		Xayah().AutoE();
+
 		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
 			Xayah().Combo();

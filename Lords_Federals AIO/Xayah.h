@@ -10,20 +10,30 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Xayah");
-
+		MainMenu = GPluginSDK->AddMenu("Lords & Federals Xayah");		
+		
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{
 			ComboQ = ComboSettings->AddSelection("Use Q Mode", 2, std::vector<std::string>({ "Disable", "After AA", "Always" }));
 			ComboW = ComboSettings->AddSelection("Use W Mode", 1, std::vector<std::string>({ "Disable", "After AA", "Always" }));
-			ComboE = ComboSettings->AddSelection("Use E Mode", 1, std::vector<std::string>({ "Disable", "Automatic", "Combo Key" }));
+			ComboE = ComboSettings->CheckBox("Use E", true);
 			PassiveStacks = ComboSettings->AddInteger("Min E Feather Stacks", 1, 10, 3);
 			ComboR = ComboSettings->CheckBox("Use R", true);
+		}
+
+		HarassSettings = MainMenu->AddMenu("Harass Settings");
+		{
+			HarassQ = HarassSettings->AddSelection("Use Q Mode", 2, std::vector<std::string>({ "Disable", "After AA", "Always" }));
+			HarassW = HarassSettings->AddSelection("Use W Mode", 1, std::vector<std::string>({ "Disable", "After AA", "Always" }));
+			HarassE = HarassSettings->CheckBox("Use E", true);
+			hPassiveStacks = HarassSettings->AddInteger("Min E Feather Stacks", 1, 10, 3);
+			HarassMana = HarassSettings->AddInteger("Minimum MP% to Harass", 1, 100, 60);
 		}
 		
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));			
+			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
+			cMode = fedMiscSettings->AddSelection("E Mode Active", 0, std::vector<std::string>({ "Automatic", "Combo/Harass Key" }));
 		}
 		
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
@@ -254,8 +264,7 @@ public:
 
 	static void Automatic()
 	{
-		DeleteFeathersCheck();
-		AutoE();
+		DeleteFeathersCheck();		
 	}
 
 	static void Combo()
@@ -282,7 +291,7 @@ public:
 			}
 		}
 
-		if (ComboE->GetInteger() == 2 && E->IsReady() && CountPossiblesFeathers(Target) >= PassiveStacks->GetInteger())
+		if (ComboE->Enabled() && cMode->GetInteger() == 1 && E->IsReady() && CountPossiblesFeathers(Target) >= PassiveStacks->GetInteger())
 		{
 			if (GetFeatherBuffCount() == 0 || CountPossiblesFeathers(Target) >= 3)
 			{
@@ -294,13 +303,13 @@ public:
 
 	static void AutoE()
 	{		
-		if (ComboE->GetInteger() == 1 && E->IsReady())
+		if (cMode->GetInteger() == 0 && E->IsReady())
 		{
-			for (auto Target : GEntityList->GetAllHeros(false, true))
+			for (auto eTarget : GEntityList->GetAllHeros(false, true))
 			{
-				if (CheckTarget(Target))
+				if (CheckTarget(eTarget))
 				{
-					if (CountPossiblesFeathers(Target) >= PassiveStacks->GetInteger() && CountPossiblesFeathers(Target) >= 3)
+					if (CountPossiblesFeathers(eTarget) >= PassiveStacks->GetInteger() && CountPossiblesFeathers(eTarget) >= 3)
 					{
 						E->CastOnPlayer();
 					}
@@ -311,6 +320,36 @@ public:
 
 	static void Harass()
 	{
+		auto Target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+
+		if (!CheckTarget(Target) || GEntityList->Player()->ManaPercent() < HarassMana->GetInteger()) return;
+
+		if (HarassQ->GetInteger() == 2 && Q->IsReady() && Target->IsValidTarget(GEntityList->Player(), Q->Range()) && GGame->TickCount() - LastSpellTick > 300)
+		{
+			if (GetFeatherBuffCount() == 0)
+			{
+				Q->CastOnTarget(Target, PredicChange());
+				LastSpellTick = GGame->TickCount();
+			}
+		}
+		
+		if (HarassW->GetInteger() == 2 && W->IsReady() && Target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(Target)) && GGame->TickCount() - LastSpellTick > 300)
+		{
+			if (GetFeatherBuffCount() == 0)
+			{
+				W->CastOnPlayer();
+				LastSpellTick = GGame->TickCount();
+			}
+		}		
+
+		if (HarassE->Enabled() && cMode->GetInteger() == 1 && E->IsReady() && CountPossiblesFeathers(Target) >= hPassiveStacks->GetInteger())
+		{
+			if (GetFeatherBuffCount() == 0 || CountPossiblesFeathers(Target) >= 3)
+			{
+				E->CastOnPlayer();
+				LastSpellTick = GGame->TickCount();
+			}
+		}
 	}
 
 	static void LastHit()
@@ -346,6 +385,27 @@ public:
 			}
 
 			if (ComboQ->GetInteger() == 1 && Q->IsReady() && Target->IsValidTarget(GEntityList->Player(), Q->Range()) && GGame->TickCount() - LastSpellTick > 300)
+			{
+				if (GetFeatherBuffCount() == 0)
+				{
+					Q->CastOnTarget(Target, PredicChange());
+					LastSpellTick = GGame->TickCount();
+				}
+			}
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed && GEntityList->Player()->ManaPercent() >= HarassMana->GetInteger())
+		{
+			if (HarassW->GetInteger() == 1 && W->IsReady() && Target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(Target)) && GGame->TickCount() - LastSpellTick > 300)
+			{
+				if (GetFeatherBuffCount() == 0)
+				{
+					W->CastOnPlayer();
+					LastSpellTick = GGame->TickCount();
+				}
+			}
+
+			if (HarassQ->GetInteger() == 1 && Q->IsReady() && Target->IsValidTarget(GEntityList->Player(), Q->Range()) && GGame->TickCount() - LastSpellTick > 300)
 			{
 				if (GetFeatherBuffCount() == 0)
 				{
