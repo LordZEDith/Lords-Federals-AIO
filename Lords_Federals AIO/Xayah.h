@@ -16,7 +16,9 @@ public:
 		{
 			ComboQ = ComboSettings->AddSelection("Use Q Mode", 2, std::vector<std::string>({ "Disable", "After AA", "Always" }));
 			ComboW = ComboSettings->AddSelection("Use W Mode", 1, std::vector<std::string>({ "Disable", "After AA", "Always" }));
-			ComboE = ComboSettings->CheckBox("Use E", true);
+			ComboE = ComboSettings->CheckBox("Use E", false);
+			ComboE2 = ComboSettings->CheckBox("Use E KS", true);
+			ComboEA = ComboSettings->AddInteger("E Damage Reduction", 0, 100, 0);
 			PassiveStacks = ComboSettings->AddInteger("Min E Feather Stacks", 1, 10, 3);
 			ComboR = ComboSettings->CheckBox("Use R", true);
 		}
@@ -25,7 +27,7 @@ public:
 		{
 			HarassQ = HarassSettings->AddSelection("Use Q Mode", 2, std::vector<std::string>({ "Disable", "After AA", "Always" }));
 			HarassW = HarassSettings->AddSelection("Use W Mode", 1, std::vector<std::string>({ "Disable", "After AA", "Always" }));
-			HarassE = HarassSettings->CheckBox("Use E", true);
+			HarassE = HarassSettings->CheckBox("Use E", false);
 			hPassiveStacks = HarassSettings->AddInteger("Min E Feather Stacks", 1, 10, 3);
 			HarassMana = HarassSettings->AddInteger("Minimum MP% to Harass", 1, 100, 60);
 		}
@@ -34,6 +36,7 @@ public:
 		{
 			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
 			cMode = fedMiscSettings->AddSelection("E Mode Active", 0, std::vector<std::string>({ "Automatic", "Combo/Harass Key" }));
+			ComboAA = fedMiscSettings->AddInteger("Cast Spell When x Feathers", 0, 3, 0);
 		}
 		
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
@@ -267,6 +270,135 @@ public:
 		DeleteFeathersCheck();		
 	}
 
+	static float Damage(IUnit* target)
+	{
+		auto line = CountPossiblesFeathers(target);
+		float EDamage[5] = { 50.0,60.0,70.0,80.0,90.0 };
+		auto damage = EDamage[GEntityList->Player()->GetLevel()] + (GEntityList->Player()->BonusDamage()* 0.6) + (GEntityList->Player()->CritDamageMultiplier()* 0.5);
+		if(line == 1)
+		{
+		return damage;
+		}
+		if(line == 2)
+		{
+			return damage + damage*0.9;
+		}
+		if(line == 3)
+		{
+			return damage + damage*0.9 + damage*0.8;
+		}
+		if(line == 4)
+		{
+			return damage + damage*0.9 + damage*0.8 + damage*0.7;
+		}
+		if (line == 5)
+		{
+			return damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6;
+		}
+		if (line == 6)
+		{
+			return damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5;
+		}
+		if (line == 7)
+		{
+			return damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5 + damage*0.4;
+		}
+		if (line == 8)
+		{
+			return damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5 + damage*0.4 + damage*0.3;
+		}
+		if (line == 9)
+		{
+			return damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5 + damage*0.4 + damage*0.3 + damage*0.2;
+		}
+		if (line == 10)
+		{
+			return damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5 + damage*0.4 + damage*0.3 + damage*0.2 + damage*0.1;
+		}
+		if (line >= 11)
+		{
+			return damage + damage*0.9 + damage*0.8 + damage*0.7 + damage*0.6 + damage*0.5 + damage*0.4 + damage*0.3 + damage*0.2 + damage*0.1 + ((line - 10)*(damage*0.1));
+		}
+
+		return GDamage->CalcPhysicalDamage(GEntityList->Player(), target, damage);
+			
+	}
+
+	static float GetEDamage(IUnit* target)
+	{
+		auto damage = Damage(target);
+
+		if (target->HasBuff("FerociousHowl"))
+			damage *= 1.f - std::vector<float>{ .5f, .6f, .7f }[target->GetSpellLevel(kSlotR) - 1];
+
+		if (target->HasBuff("meditate"))
+			damage *= 1.f - std::vector<float>{ .5f, .55f, .6f, .65f, .7f }[target->GetSpellLevel(kSlotW) - 1];
+
+		if (target->HasBuff("Tantrum"))
+			damage -= std::vector<float>{ 2, 4, 6, 8, 10}[target->GetSpellLevel(kSlotE) - 1];
+
+		if (GEntityList->Player()->HasBuff("summonerexhaust"))
+			damage *= 0.6f;
+
+		if (std::string(target->GetBaseSkinName()) == "SRU_Baron" && GEntityList->Player()->HasBuff("barontarget"))
+			damage *= 0.5f;
+
+		if (target->HasBuff("MoltenShield"))
+			damage *= std::vector<float>{ 16.f, 22.f, 28.f, 34.f, 40.f }[target->GetSpellBook()->GetLevel(kSlotE) - 1];
+
+		if (target->HasBuff("braumeshieldbuff"))
+			damage *= 1.f - (0.275f + 0.025f * target->GetSpellLevel(kSlotE));
+
+		if (target->HasBuff("BraumShieldRaise"))
+			damage *= std::vector<float>{ .3f, .325f, .35f, .375f, .4f }[target->GetSpellBook()->GetLevel(kSlotE) - 1];
+
+		if (target->HasBuff("GarenW"))
+			damage *= 0.7f;
+
+		if (target->HasBuff("MaokaiUlt"))
+			damage *= 0.8f;
+
+		if (target->HasBuff("GragasWSelf"))
+			damage *= 1.f - (0.08f + 0.02f * target->GetSpellLevel(kSlotW));
+
+		if (target->HasBuff("urgotswapdef"))
+			damage *= 1.f - (0.2f + 0.1f * target->GetSpellLevel(kSlotR));
+
+		if (GEntityList->Player()->HasBuff("urgotentropypassive"))
+			damage *= 0.85;
+
+		if (GEntityList->Player()->HasBuff("itemphantomdancerdebuff") && target->HasItemId(3046))
+			damage *= 0.88f;
+
+		if (target->HasBuff("Mastery6263"))
+			damage *= 0.96f;
+
+		if (target->HasBuff("MasteryWardenOfTheDawn"))
+			damage *= 1.f - 0.06f * target->GetBuffCount("MasteryWardenOfTheDawn");
+
+		damage -= ComboEA->GetInteger();
+
+		return damage;
+	}
+
+	void XayahE()
+	{
+		if (ComboE2->Enabled() && E->IsReady())
+		{
+			for (auto tar : GEntityList->GetAllHeros(false, true))
+			{
+				if (CheckTarget(tar))
+				{
+					if(GetEDamage(tar) >= tar->GetHealth())
+					{
+						E->CastOnPlayer();
+					}
+				}
+			}
+		}
+	}
+
+
 	static void Combo()
 	{
 		auto Target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
@@ -275,7 +407,7 @@ public:
 
 		if (ComboW->GetInteger() == 2 && W->IsReady() && Target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(Target)) && GGame->TickCount() - LastSpellTick > 300)
 		{
-			if (GetFeatherBuffCount() == 0)
+			if (GetFeatherBuffCount() == ComboAA->GetInteger())
 			{
 				W->CastOnPlayer();
 				LastSpellTick = GGame->TickCount();
@@ -284,7 +416,7 @@ public:
 
 		if (ComboQ->GetInteger() == 2 && Q->IsReady() && Target->IsValidTarget(GEntityList->Player(), Q->Range()) && GGame->TickCount() - LastSpellTick > 300)
 		{
-			if (GetFeatherBuffCount() == 0)
+			if (GetFeatherBuffCount() == ComboAA->GetInteger())
 			{
 				Q->CastOnTarget(Target, PredicChange());
 				LastSpellTick = GGame->TickCount();
@@ -293,7 +425,7 @@ public:
 
 		if (ComboE->Enabled() && cMode->GetInteger() == 1 && E->IsReady() && CountPossiblesFeathers(Target) >= PassiveStacks->GetInteger())
 		{
-			if (GetFeatherBuffCount() == 0 || CountPossiblesFeathers(Target) >= 3)
+			if ( GetFeatherBuffCount() == 0 || CountPossiblesFeathers(Target) >= PassiveStacks->GetInteger())
 			{
 				E->CastOnPlayer();
 				LastSpellTick = GGame->TickCount();
@@ -326,7 +458,7 @@ public:
 
 		if (HarassQ->GetInteger() == 2 && Q->IsReady() && Target->IsValidTarget(GEntityList->Player(), Q->Range()) && GGame->TickCount() - LastSpellTick > 300)
 		{
-			if (GetFeatherBuffCount() == 0)
+			if (GetFeatherBuffCount() == ComboAA->GetInteger())
 			{
 				Q->CastOnTarget(Target, PredicChange());
 				LastSpellTick = GGame->TickCount();
@@ -335,7 +467,7 @@ public:
 		
 		if (HarassW->GetInteger() == 2 && W->IsReady() && Target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(Target)) && GGame->TickCount() - LastSpellTick > 300)
 		{
-			if (GetFeatherBuffCount() == 0)
+			if (GetFeatherBuffCount() == ComboAA->GetInteger())
 			{
 				W->CastOnPlayer();
 				LastSpellTick = GGame->TickCount();
@@ -344,7 +476,7 @@ public:
 
 		if (HarassE->Enabled() && cMode->GetInteger() == 1 && E->IsReady() && CountPossiblesFeathers(Target) >= hPassiveStacks->GetInteger())
 		{
-			if (GetFeatherBuffCount() == 0 || CountPossiblesFeathers(Target) >= 3)
+			if (GetFeatherBuffCount() == 0 || CountPossiblesFeathers(Target) >= hPassiveStacks->GetInteger())
 			{
 				E->CastOnPlayer();
 				LastSpellTick = GGame->TickCount();
@@ -377,7 +509,7 @@ public:
 		{
 			if (ComboW->GetInteger() == 1 && W->IsReady() && Target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(Target)) && GGame->TickCount() - LastSpellTick > 300)
 			{
-				if (GetFeatherBuffCount() == 0)
+				if (GetFeatherBuffCount() == ComboAA->GetInteger())
 				{
 					W->CastOnPlayer();
 					LastSpellTick = GGame->TickCount();
@@ -386,7 +518,7 @@ public:
 
 			if (ComboQ->GetInteger() == 1 && Q->IsReady() && Target->IsValidTarget(GEntityList->Player(), Q->Range()) && GGame->TickCount() - LastSpellTick > 300)
 			{
-				if (GetFeatherBuffCount() == 0)
+				if (GetFeatherBuffCount() == ComboAA->GetInteger())
 				{
 					Q->CastOnTarget(Target, PredicChange());
 					LastSpellTick = GGame->TickCount();
@@ -398,7 +530,7 @@ public:
 		{
 			if (HarassW->GetInteger() == 1 && W->IsReady() && Target->IsValidTarget(GEntityList->Player(), GEntityList->Player()->GetRealAutoAttackRange(Target)) && GGame->TickCount() - LastSpellTick > 300)
 			{
-				if (GetFeatherBuffCount() == 0)
+				if (GetFeatherBuffCount() == ComboAA->GetInteger())
 				{
 					W->CastOnPlayer();
 					LastSpellTick = GGame->TickCount();
@@ -407,7 +539,7 @@ public:
 
 			if (HarassQ->GetInteger() == 1 && Q->IsReady() && Target->IsValidTarget(GEntityList->Player(), Q->Range()) && GGame->TickCount() - LastSpellTick > 300)
 			{
-				if (GetFeatherBuffCount() == 0)
+				if (GetFeatherBuffCount() == ComboAA->GetInteger())
 				{
 					Q->CastOnTarget(Target, PredicChange());
 					LastSpellTick = GGame->TickCount();

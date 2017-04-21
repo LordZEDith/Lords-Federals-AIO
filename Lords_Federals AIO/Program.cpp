@@ -4561,6 +4561,7 @@ public:
 	virtual void OnGameUpdate() override
 	{
 		Trinket().AutoTrinket();
+	
 
 		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
 		{
@@ -4568,6 +4569,7 @@ public:
 		}
 
 		Xayah().AutoE();
+		Xayah().XayahE();
 
 		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
