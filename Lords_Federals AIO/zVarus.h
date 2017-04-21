@@ -133,7 +133,7 @@ public:
 	static void LoadSpells()
 	{
 		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, (kCollidesWithYasuoWall | kCollidesWithHeroes | kCollidesWithMinions));
-		Q->SetSkillshot(0.25f, 60.f, 1850.f, 925.f);
+		Q->SetSkillshot(0.25f, 70.f, 1800.f, 925.f);
 		Q->SetCharged(925.f, 1600.f, 1.5f);		
 
 		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, (kCollidesWithNothing));		
@@ -383,6 +383,13 @@ public:
 		}
 	}
 
+	static void CastSpellQPosition(IUnit* target)
+	{
+		Vec3 pred;
+		GPrediction->GetFutureUnitPosition(target, 0.15f, true, pred);
+		Q->CastOnPosition(pred);
+	}
+
 	static void CastSpellQCombo(IUnit* target)
 	{
 		if (Q->IsReady() && ComboQ->Enabled())
@@ -408,11 +415,25 @@ public:
 							if (!ComboQA->Enabled() && LastETick + 200 < GGame->TickCount() ||
 								target->GetHealth() < GetQDamage(target, CollidQCount(target)))
 							{
-								Q->CastOnTarget(target, PredicChange());
+								if (BuffQEnd() > 1)
+								{
+									Q->CastOnTarget(target, PredicChange());
+								}
+								else
+								{
+									CastSpellQPosition(target);
+								}
 							}
 							else
 							{
-								Q->CastOnTarget(target, PredicChange());
+								if (BuffQEnd() > 1)
+								{
+									Q->CastOnTarget(target, PredicChange());
+								}
+								else
+								{
+									CastSpellQPosition(target);
+								}
 							}
 						}
 					}							
@@ -420,6 +441,7 @@ public:
 			}
 		}
 	}
+
 
 	static void CastSpellQHarass(IUnit* target)
 	{
@@ -446,11 +468,25 @@ public:
 							if (!QAlways->Enabled() && LastETick + 200 < GGame->TickCount() ||
 								target->GetHealth() < GetQDamage(target, CollidQCount(target)))
 							{
-								Q->CastOnTarget(target, PredicChange());
+								if (BuffQEnd() > 1)
+								{
+									Q->CastOnTarget(target, PredicChange());
+								}
+								else
+								{
+									CastSpellQPosition(target);
+								}
 							}
 							else
 							{
-								Q->CastOnTarget(target, PredicChange());
+								if (BuffQEnd() > 1)
+								{
+									Q->CastOnTarget(target, PredicChange());
+								}
+								else
+								{
+									CastSpellQPosition(target);
+								}
 							}
 						}
 					}
@@ -541,7 +577,7 @@ public:
 
 			if (Q->IsReady() && E->IsReady() && target->IsValidTarget(GEntityList->Player(), R->Range()) && GEntityList->Player()->GetMana() > Q->ManaCost() + E->ManaCost() + R->ManaCost())
 			{
-				auto damageCombo = GetRDamage(target) + GetQDamage(target, CollidQCount(target)) + GetEDamage(target) + GetWDamage(target) + ((GDamage->GetAutoAttackDamage(GEntityList->Player(), target, false) * 1.188) * 2);
+				auto damageCombo = GetRDamage(target) + GetQDamage(target, CollidQCount(target)) + GetEDamage(target) + GetWDamage(target) + ((GDamage->GetAutoAttackDamage(GEntityList->Player(), target, false) * 1.188) * 3);
 
 				if (damageCombo > target->GetHealth())
 				{
@@ -557,7 +593,7 @@ public:
 		{
 			GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
 
-			if (!R->IsReady() || !Q->IsCharging())
+			if (!R->IsReady() || Q->IsCharging())
 			{
 				return;
 			}
@@ -571,7 +607,7 @@ public:
 			else
 			{
 				SArray<IUnit*> rtarget = SArray<IUnit*>(GEntityList->GetAllHeros(false, true)).Where([](IUnit* m) {return m != nullptr &&
-					!m->IsDead() && m->IsVisible() && MenuDontUlt[m->GetNetworkId()]->Enabled() 
+					!m->IsDead() && m->IsVisible() && MenuDontUlt[m->GetNetworkId()]->Enabled()
 					&& m->IsValidTarget(GEntityList->Player(), R->Range()); }).OrderBy<float>([&](IUnit* x) {return GetDistanceVectors(x->GetPosition(), GGame->CursorPosition()); });
 
 				if (rtarget.Any())
@@ -581,14 +617,14 @@ public:
 						if (GetDistance(GEntityList->Player(), x) <= R->Range() && GetDistanceVectors(GGame->CursorPosition(), x->GetPosition()) <= 350)
 						{
 							TargetR = x;
-
-							if (TargetR->IsValidTarget(GEntityList->Player(), R->Range()) && !TargetR->IsInvulnerable() && MenuDontUlt[TargetR->GetNetworkId()]->Enabled())
-							{
-								R->CastOnTarget(TargetR, PredicChange());
-							}
 						}
 					}
 				}
+			}
+
+			if (CheckTarget(TargetR) && CheckShielded(TargetR) && TargetR->IsValidTarget(GEntityList->Player(), R->Range()) && MenuDontUlt[TargetR->GetNetworkId()]->Enabled())
+			{
+				R->CastOnTarget(TargetR, PredicChange());
 			}
 		}
 	}
@@ -654,11 +690,7 @@ public:
 			CastSpellQHarass(target);
 			CastSpellEHarass(target);
 		}
-	}
-
-	static void LastHit()
-	{
-	}
+	}		
 
 	static void JungleClear()
 	{
@@ -736,7 +768,7 @@ public:
 
 	static void LaneClear()
 	{
-		auto pred = FindBestLineCastPosition(vector<Vec3>{ GEntityList->Player()->GetPosition() }, 1600, 1600, Q->Radius(), true, true);
+		auto pred = FindBestLineCastPosition(vector<Vec3>{ GEntityList->Player()->GetPosition() }, 1600, 1600, Q->Radius(), true, false);
 
 		if (FoundMinions(1600) && !FoundMinionsNeutral(1600))
 		{

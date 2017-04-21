@@ -102,7 +102,7 @@ public:
 		RMenu = MainMenu->AddMenu("Ultimate Settings");
 		{
 			ComboR = RMenu->CheckBox("Use R KS", true);
-			kickBehind = RMenu->CheckBox("Use Kick Behind (Beta)", false);
+			kickBehind = RMenu->AddSelection("Use Kick Behind (Beta) ->", 0, std::vector<std::string>({ "Disable", "Automatic", "Combo Key" }));			
 			kickHit = RMenu->AddInteger("If Hit Enemy Behind (Beta)", 0, 5, 3);
 			kickKill = RMenu->CheckBox("If Kill Enemy Behind (Beta)", true);
 			UseWardgap = RMenu->CheckBox("Use Ward", true);
@@ -2209,7 +2209,7 @@ public:
 
 	static void KickBehind()
 	{
-		if (kickBehind->Enabled())
+		if (kickBehind->GetInteger() == 1 || kickBehind->GetInteger() == 2 && GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
 			if (kickHit->GetInteger() > 0)
 			{

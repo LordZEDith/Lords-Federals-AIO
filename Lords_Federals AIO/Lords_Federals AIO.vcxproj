@@ -213,6 +213,7 @@
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Version Checker.h" />
     <ClInclude Include="Warwick.h" />
+    <ClInclude Include="Xayah.h" />
     <ClInclude Include="Xerath.h" />
     <ClInclude Include="Ziggs.h" />
     <ClInclude Include="zTristana.h" />

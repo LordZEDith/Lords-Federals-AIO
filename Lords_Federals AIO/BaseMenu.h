@@ -523,12 +523,20 @@ IUnit* QMissile;
 IUnit* EMissile;
 IUnit* CheckQKillable;
 
+struct XayahFeathers
+{	
+	IUnit* Source;
+	IUnit* Target;	
+};
+
 //std::vector<IUnit*> axeList;
 std::list<IUnit*> axeListTeste;
 SArray<IUnit*> DravenAxes;
 SArray<IUnit*> SkillMissiles;
 SArray<IUnit*> SyndraOrbs;
 SArray<IUnit*> SyndraOrbsIddle;
+
+SArray<XayahFeathers> XayahReturn;
 SArray<Vec3> Retorno;
 std::map<int, IMenuOption*> MenuDontUlt;
 std::map<int, IMenuOption*> ChampionUse;

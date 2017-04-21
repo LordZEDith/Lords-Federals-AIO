@@ -98,7 +98,7 @@ public:
 
 	static void AutoBuyTrinket()
 	{
-		if (StartTrinket->GetInteger() != 0 && !TrinketY->IsOwned() && !TrinketR->IsOwned())
+		if (StartTrinket->GetInteger() != 0 && !TrinketY->IsOwned() && !TrinketR->IsOwned() && !TrinketB->IsOwned() && !TrinketROracle->IsOwned())
 		{
 			if (StartTrinket->GetInteger() == 1)
 			{

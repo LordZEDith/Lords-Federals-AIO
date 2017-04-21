@@ -503,12 +503,27 @@ public:
 		return false;
 	}
 
+	static float GetEDamage(IUnit* target)
+	{
+		float baseE[5] = { 45, 80, 115, 150, 185 };
+		auto checkBase = baseE[GEntityList->Player()->GetSpellLevel(kSlotE) - 1];
+
+		return (0.52 * checkBase) + GDamage->CalcPhysicalDamage(GEntityList->Player(), target, 0.5 * GEntityList->Player()->BonusDamage());
+	}
+
 	static void Automatic()
 	{
 		FocusTargetW();
 		UseUltimate();
 		putWardAfterStun();
 		CheckKindredR();
+
+		auto Hero = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range() + 130);
+
+		if (Hero != nullptr)
+		{
+			GUtility->LogConsole("Dano E: %f, Dano W: %f, Dano E: %f", GetEDamage(Hero), GDamage->GetSpellDamage(GEntityList->Player(), Hero, kSlotW), GDamage->GetSpellDamage(GEntityList->Player(), Hero, kSlotE));
+		}
 
 		if (IsKeyDown(SemiManualKey) || IsKeyDown(zzRot))
 		{
@@ -536,7 +551,7 @@ public:
 			{
 				if (CheckTarget(Hero) && CheckShielded(Hero))
 				{
-					if (E->IsReady() && Wdmg(Hero) + GDamage->GetSpellDamage(GEntityList->Player(), Hero, kSlotE) > Hero->GetHealth() + (Hero->HPRegenRate() * 2) + 10 && PassiveWCount(Hero) == 2)
+					if (E->IsReady() && GDamage->GetSpellDamage(GEntityList->Player(), Hero, kSlotW) + GetEDamage(Hero) > Hero->GetHealth() + (Hero->HPRegenRate() / 2.f) && PassiveWCount(Hero) == 2)
 					{
 						E->CastOnUnit(Hero);						
 					}
@@ -783,7 +798,7 @@ public:
 			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), RangeE->GetFloat()); }
 		}
 
-		DrawCondemn();		
+		DrawCondemn();			
 	}
 
 	static void OnGapcloser(GapCloserSpell const& args)

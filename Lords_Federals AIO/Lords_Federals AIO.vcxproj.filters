@@ -251,9 +251,12 @@
     </ClInclude>
     <ClInclude Include="zVarus.h">
       <Filter>Header Files\Champions\ADC</Filter>
-    </ClInclude>    
+    </ClInclude>
     <ClInclude Include="Geometry.h">
       <Filter>Header Files\Custom/Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Xayah.h">
+      <Filter>Header Files\Champions\ADC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

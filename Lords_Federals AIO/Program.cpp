@@ -4535,6 +4535,117 @@ public:
 	}
 };
 
+class cXayah : public IChampion
+{
+public:
+	virtual void OnLoad() override
+	{
+		//Message().ADCLaneSeries();
+		//Message().ChampionLoadMessage();
+		Xayah().InitializeMenu();
+		Xayah().LoadSpells();
+		AutoSmite().SpellsSmite();
+		AutoSmite().MenuSmite();
+		//Skins().Menu();
+		Toxic().MenuToxic();
+		Trinket().SpellsTrinket();
+		Trinket().MenuTrinket();
+	}
+
+	virtual void OnRender() override
+	{
+		Xayah().Drawing();
+
+	}
+
+	virtual void OnGameUpdate() override
+	{
+		Trinket().AutoTrinket();
+
+		if (GEntityList->Player()->IsDead() || GEntityList->Player()->IsRecalling() || GGame->IsChatOpen() || GGame->IsScoreboardOpen() || GGame->IsShopOpen())
+		{
+			return;
+		}
+
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		{
+			Xayah().Combo();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		{
+			Xayah().Harass();
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		{
+			Xayah().LaneClear();
+			Xayah().JungleClear();
+		}
+		Xayah().Automatic();
+		AutoSmite().AutomaticSmite();
+		AutoSmite().KeyPressSmite();
+		Toxic().SpamEmote();
+		//Skins().fedSkinChanger();
+
+	}
+	void OnGapCloser(GapCloserSpell const& Args) override
+	{
+		
+	}
+	void OnAfterAttack(IUnit* Source, IUnit* Target) override
+	{
+		Xayah().OnAfterAttack(Source, Target);
+	}
+	void OnBeforeAttack(IUnit* Target) override
+	{
+
+	}
+	void OnLevelUp(IUnit* Source, int NewLevel) override
+	{
+
+	}
+	void OnInterruptible(InterruptibleSpell const& Args) override
+	{
+
+	}
+
+	void OnCreateObject(IUnit* Source) override
+	{
+		//Xayah().OnCreateObject(Source);
+	}
+
+	void OnDeleteObject(IUnit* Source) override
+	{
+		//Xayah().OnDeleteObject(Source);
+	}
+
+	void OnDash(UnitDash* Args) override
+	{
+	}
+
+	void OnProcessSpell(CastedSpell const& Args) override
+	{
+		Trinket().TrinketOnProcessSpell(Args);		
+	}
+
+	void OnExitVisible(IUnit* Source) override
+	{
+		Trinket().TrinketOnExitVisible(Source);
+	}
+
+	void OnBuffAdd(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnBuffRemove(IUnit* Source, void* BuffData) override
+	{
+	}
+
+	void OnGameEnd() override
+	{
+		Toxic().OnGameEnd();
+	}
+};
+
 IChampion* pChampion = nullptr;
 
 PLUGIN_EVENT(void) OnRender()
@@ -4632,6 +4743,8 @@ void LoadChampion()
 		pChampion = new cCaitlyn;
 	else if (szChampion == "vayne")
 		pChampion = new cVayne;
+	else if (szChampion == "xayah")
+		pChampion = new cXayah;
 	// Midlane
 	else if (szChampion == "ahri")
 		pChampion = new cAhri;

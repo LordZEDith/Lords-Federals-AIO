@@ -128,7 +128,7 @@ public:
 					if (strstr(GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1), "SummonerSmitePlayerGanker") ||
 						strstr(GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2), "SummonerSmitePlayerGanker"))
 					{
-						if (20 + 8 * GEntityList->Player()->GetLevel() > hero->GetHealth())
+						if (GetDistance(GEntityList->Player(), hero) <= 570 && 20 + 8 * GEntityList->Player()->GetLevel() > hero->GetHealth())
 						{
 							if (!FoundNeutralEpic(1500))
 							{

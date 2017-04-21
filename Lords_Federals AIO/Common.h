@@ -719,7 +719,7 @@ static bool CheckWallsVectores(Vec3 from, Vec3 to)
 static bool CheckShielded(IUnit* target)
 {
 	if (!target->HasBuff("BlackShield") && !target->HasBuff("bansheesveil") && !target->HasBuff("itemmagekillerveil") && !target->HasBuffOfType(BUFF_SpellShield) &&
-		!target->HasBuffOfType(BUFF_SpellImmunity) && !target->HasBuff("OlafRagnarok") && !target->HasBuff("SionR"))
+		!target->HasBuffOfType(BUFF_SpellImmunity) && !target->HasBuff("OlafRagnarok") && !target->HasBuff("SionR") && !target->HasBuff("UndyingRage"))
 	{
 		return true;
 	}

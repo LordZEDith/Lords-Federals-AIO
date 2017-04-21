@@ -119,7 +119,7 @@ public:
 		R->SetOverrideRadius(160);
 		Q->SetOverrideSpeed(2000);
 		W->SetOverrideSpeed(1600);
-		R->SetOverrideSpeed(2000);
+		R->SetOverrideSpeed(2000);		
 	}	
 
 	void static Drawing()
@@ -187,8 +187,8 @@ public:
 
 	static void Automatic()
 	{		
-		KeyPressUltimate();		
-
+		KeyPressUltimate();					
+		
 		for (auto target : GEntityList->GetAllHeros(false, true))
 		{
 			if (CheckTarget(target))
@@ -286,7 +286,7 @@ public:
 	
 	static void Harass()
 	{
-		if (GEntityList->Player()->ManaPercent() < HarassMana->GetInteger()) { return; }
+		if (GEntityList->Player()->ManaPercent() < HarassMana->GetInteger()) { return; }		
 
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 

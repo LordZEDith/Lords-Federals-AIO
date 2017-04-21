@@ -17,7 +17,8 @@ public:
 			AutoQ = ComboSettings->CheckBox("Destroy Barril", true);
 			ComboW = ComboSettings->CheckBox("Use W", true);
 			ComboE = ComboSettings->CheckBox("Use E", true);
-			ComboR = ComboSettings->CheckBox("Use R ToDO", true);			
+			ComboR = ComboSettings->CheckBox("Use R ToDO", true);
+			InsecKey = ComboSettings->AddKey("Beta Insec", 74);
 		}
 
 		HarassSettings = MainMenu->AddMenu("Harass Settings");
@@ -88,6 +89,7 @@ public:
 	static void Automatic()
 	{
 		DestroyBarril();
+		BetaInsec();
 		
 		if (AutoHarass->Enabled())
 		{
@@ -144,7 +146,13 @@ public:
 		{
 			Q->CastOnTarget(target, kHitChanceHigh);
 			LastSpellTick = GGame->TickCount();
-		}			
+		}
+
+		if (Q->IsReady() && !GragasQone() && CountEnemy(BarrilQ, 300) > 0 && GGame->TickCount() - LastSpellTick > 50)
+		{
+			Q->CastOnPlayer();
+			LastSpellTick = GGame->TickCount();
+		}
 
 		if (CheckTarget(target) && W->IsReady() && (!GragasQone() || !Q->IsReady()) && ComboW->Enabled() &&
 			GetDistance(GEntityList->Player(),target) < 300 && GOrbwalking->CanMove(100) && GGame->TickCount() - LastSpellTick > 50)
@@ -166,8 +174,6 @@ public:
 			LastSpellTick = GGame->TickCount();
 		}
 
-
-		// R Todo
 	}
 
 	static void Harass()
@@ -268,6 +274,18 @@ public:
 
 	static void DestroyBarril()
 	{
+		if (autoQ->Enabled() && HarassQ->Enabled() && Q->IsReady() && !GragasQone() && CountEnemy(BarrilQ, 300) > 0 && GGame->TickCount() - LastSpellTick > 50 )
+		{
+			Q->CastOnPlayer();
+			LastSpellTick = GGame->TickCount();
+		}
+
+		if (Q->IsReady() && !GragasQone() && CountEnemy(BarrilQ, 300) > 0 && GGame->TickCount() - LastSpellTick > 50)
+		{
+			Q->CastOnPlayer();
+			LastSpellTick = GGame->TickCount();
+		}
+		
 		if (LaneClearQ->Enabled() && LaneClearQLast->GetInteger() != 0 && Q->IsReady() && BarrilQ != Vec3(0, 0, 0) && !GragasQone())
 		{
 			if (LaneClearQLast->GetInteger() == 2)
@@ -297,26 +315,15 @@ public:
 		{
 			for (auto minion : GEntityList->GetAllMinions(false, false, true))
 			{
-				if (!CheckTarget(minion)) return;
-
-				if (GGame->TickCount() - LastQTick > 2000 || GetDistanceVectors(BarrilQ, minion->GetPosition()) <= 300 && getQdamage(minion) > minion->GetHealth())
+				if (CheckTarget(minion))
 				{
-					Q->CastOnPlayer();
+					if (GGame->TickCount() - LastQTick > 2000 || GetDistanceVectors(BarrilQ, minion->GetPosition()) <= 300 && getQdamage(minion) > minion->GetHealth())
+					{
+						Q->CastOnPlayer();
+					}
 				}
 			}
-		}
-
-		if (autoQ->Enabled() && HarassQ->Enabled() && Q->IsReady() && !GragasQone() && CountEnemy(BarrilQ, 300) > 0 && GGame->TickCount() - LastSpellTick > 50)
-		{
-			Q->CastOnPlayer();
-			LastSpellTick = GGame->TickCount();
-		}
-
-		if (AutoQ->Enabled() && ComboQ->Enabled() && Q->IsReady() && !GragasQone() && CountEnemy(BarrilQ, 300) > 0 && GGame->TickCount() - LastSpellTick > 50)
-		{
-			Q->CastOnPlayer();
-			LastSpellTick = GGame->TickCount();
-		}
+		}		
 	}
 
 	static void LaneClear()
@@ -384,7 +391,12 @@ public:
 			if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), Q->Range()); }			
 			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), E->Range()); }
 			if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 0, 0, 255), R->Range()); }
-		}				
+		}
+
+		if (BarrilQ != Vec3(0, 0, 0))
+		{
+			GRender->DrawOutlinedCircle(BarrilQ, Vec4(255, 0, 0, 255), 300);
+		}		
 	}
 
 	static void OnGapcloser(GapCloserSpell const& args)
@@ -406,6 +418,12 @@ public:
 					//LastQTick = GGame->TickCount();
 				}
 			}
+
+			if (GSpellData->GetSlot(Args.Data_) == kSlotR)
+			{
+				
+				Rposition = Args.EndPosition_;
+			}
 		}		
 	}
 
@@ -415,6 +433,15 @@ public:
 		{
 			BarrilQ = Source->GetPosition();
 			LastQTick = GGame->TickCount();			
+		}
+
+		if (strstr(Source->GetObjectName(), "Gragas_Base_R_End.troy"))
+		{
+			temp = true;
+			GPluginSDK->DelayFunctionCall(3000, []() {
+
+				temp = false;				
+			});			
 		}
 	}
 
@@ -426,5 +453,48 @@ public:
 			lastQpos = Vec3(0, 0, 0);
 			LastQTick = 0;
 		}
+	}	
+
+	static void BetaInsec()
+	{
+		if (IsKeyDown(InsecKey))
+		{
+			auto target = GGame->GetSelectedTarget();
+			GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
+
+			auto pPos = GEntityList->Player()->GetPosition();			
+			auto insecpos = pPos.Extend(target->GetPosition(), GetDistance(GEntityList->Player(), target) + 200);			
+
+			if (!target->IsFacing(GEntityList->Player()) && target->IsMoving() 
+				&& (GetDistanceVectors(GEntityList->Player()->GetPosition(), insecpos) <= R->Range() 
+					&& GetDistanceVectors(target->GetPosition(), insecpos) < 300))
+			{
+				R->CastOnPosition(pPos.Extend(target->GetPosition(), GetDistance(GEntityList->Player(), target) + 300));
+			}
+
+			if (target->IsFacing(GEntityList->Player()) && GetDistanceVectors(GEntityList->Player()->GetPosition(), insecpos) <= R->Range() && GetDistanceVectors(target->GetPosition(), insecpos) < 300 && target->IsMoving())
+			{
+				R->CastOnPosition(pPos.Extend(target->GetPosition(), GetDistance(GEntityList->Player(), target) + 100));
+			}
+			else if (GetDistanceVectors(GEntityList->Player()->GetPosition(), insecpos) <= R->Range() && GetDistanceVectors(target->GetPosition(), insecpos) < 300)
+			{
+				R->CastOnPosition(insecpos);
+			}
+
+			if (temp)
+			{
+				if (E->IsReady() && !target->IsDashing())
+				{
+					//E->CastOnPosition(target->ServerPosition());
+					E->CastOnTarget(target);
+				}
+				if (Q->IsReady())
+				{
+					//Q->CastOnPosition(target->ServerPosition());
+					Q->CastOnTarget(target, kHitChanceVeryHigh);
+				}
+			}
+		}
 	}
+	
 };
