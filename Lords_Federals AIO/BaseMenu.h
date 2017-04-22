@@ -530,13 +530,57 @@ struct XayahFeathers
 	IUnit* Target;	
 };
 
+enum SpellType {
+	
+	isSkillshotCircle,
+	isSkillshotLine,	
+	isTargeted,
+	isSelfCast
+};
+
+struct SpellsDanger
+{
+	std::string Champion;
+	std::string Name;
+	SpellType Type;
+};
+
+std::vector<SpellsDanger> SpellsDangerList =
+{
+	{ "Annie", "infernalguardian", isSkillshotCircle },
+	{ "Amumu", "curseofthesadmummy", isSelfCast },
+	{ "Ashe", "enchantedcystalarrow", isSkillshotLine },
+	{ "AurelionSol", "aurelionsolr", isSkillshotLine },
+	{ "Cassiopeia", "cassiopeiar", isSkillshotCircle },
+	{ "Chogath", "feast", isTargeted },
+	{ "Darius", "dariusexecute", isTargeted },
+	{ "Evelynn", "evelynnr", isSkillshotCircle },
+	{ "Gnar", "gnarult", isSelfCast },
+	{ "Garen", "egarenr", isTargeted },
+	{ "Graves", "gravesr", isSkillshotLine },
+	{ "Hecarim", "hecarimult", isSkillshotLine },
+	{ "Illaoi", "illaoir", isSelfCast },
+	{ "JarvanIV", "jarvanivcataclysm", isTargeted },
+	{ "LeeSin", "blindmonkrkick", isTargeted },
+	{ "Lissandra", "lissandrar", isTargeted },
+	{ "Malphite", "ufslash", isSkillshotCircle },
+	{ "MonkeyKing", "monkeykingspintowin", isSelfCast },
+	{ "Riven", "rivenizunablade", isSkillshotLine },
+	{ "Sejuani", "sejuaniglacialprisoncast", isSkillshotLine },
+	{ "Shyvana", "shyvanatrasformcast", isSkillshotLine },
+	{ "Sona", "sonar", isSkillshotLine },
+	{ "Syndra", "syndrar", isTargeted },
+	{ "Varus", "varusr", isSkillshotLine },
+	{ "Veigar", "veigarprimordialburst", isTargeted },
+	{ "Viktor", "viktorchaosstorm", isSkillshotCircle },
+};
+
 //std::vector<IUnit*> axeList;
 std::list<IUnit*> axeListTeste;
 SArray<IUnit*> DravenAxes;
 SArray<IUnit*> SkillMissiles;
 SArray<IUnit*> SyndraOrbs;
 SArray<IUnit*> SyndraOrbsIddle;
-
 SArray<XayahFeathers> XayahReturn;
 SArray<Vec3> Retorno;
 std::map<int, IMenuOption*> MenuDontUlt;

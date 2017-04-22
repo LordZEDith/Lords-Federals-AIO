@@ -15,23 +15,34 @@ public:
 		
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{
-			ComboQ = ComboSettings->AddSelection("Use Q Mode", 2, std::vector<std::string>({ "Disable", "After AA", "Always" }));
-			ComboW = ComboSettings->AddSelection("Use W Mode", 1, std::vector<std::string>({ "Disable", "After AA", "Always" }));
+			ComboQ = ComboSettings->AddSelection("Use Q Mode", 2, std::vector<std::string>({ "Off", "AfterAttacks", "Always" }));
+			ComboW = ComboSettings->AddSelection("Use W Mode", 1, std::vector<std::string>({ "Off", "AfterAttacks", "Always" }));
 			ComboE = ComboSettings->CheckBox("Use E", false);
 			ComboE2 = ComboSettings->CheckBox("Use E KS!", true);
 			ComboEA = ComboSettings->AddInteger("E Damage Reduction", 0, 100, 0);
 			PassiveStacks = ComboSettings->AddInteger("Min E Feather Stacks", 1, 10, 3);			
 			SemiManualKey = ComboSettings->AddKey("Semi Manual Cast R key", 71);
-			RMode = ComboSettings->AddSelection("R Semi Manual Mode", 1, std::vector<std::string>({ "Target Selector", "Nearest Mouse" }));
-		}
+			RMode = ComboSettings->AddSelection("R Semi Manual Mode", 1, std::vector<std::string>({ "Target Selector", "Nearest Cursor" }));
+		}		
 
 		HarassSettings = MainMenu->AddMenu("Harass Settings");
 		{
-			HarassQ = HarassSettings->AddSelection("Use Q Mode", 2, std::vector<std::string>({ "Disable", "After AA", "Always" }));
-			HarassW = HarassSettings->AddSelection("Use W Mode", 1, std::vector<std::string>({ "Disable", "After AA", "Always" }));
+			HarassQ = HarassSettings->AddSelection("Use Q Mode", 2, std::vector<std::string>({ "Off", "AfterAttacks", "Always" }));
+			HarassW = HarassSettings->AddSelection("Use W Mode", 1, std::vector<std::string>({ "Off", "AfterAttacks", "Always" }));
 			HarassE = HarassSettings->CheckBox("Use E", false);
 			hPassiveStacks = HarassSettings->AddInteger("Min E Feather Stacks", 1, 10, 3);
 			HarassMana = HarassSettings->AddInteger("Minimum MP% to Harass", 1, 100, 60);
+		}
+
+		LaneClearSettings = MainMenu->AddMenu("LaneClear Settings");
+		{
+			LaneClearQ = LaneClearSettings->CheckBox("Use Q in LaneClear", true);
+			MinionsQ = LaneClearSettings->AddInteger("Minimum minions to Q", 1, 10, 4);
+			LaneClearW = LaneClearSettings->CheckBox("Use W in LaneClear", true);
+			MinionsW = LaneClearSettings->AddInteger("Minimum minions to W", 1, 10, 6);
+			LaneClearE = LaneClearSettings->CheckBox("Use E in LaneClear", true);
+			MinionsE = LaneClearSettings->AddInteger("Minimum minions Kiable with E", 1, 10, 4);
+			LaneClearMana = LaneClearSettings->AddInteger("Minimum MP% to LaneClear", 1, 100, 60);
 		}
 
 		JungleClearSettings = MainMenu->AddMenu("JungleClear Settings");
@@ -45,9 +56,10 @@ public:
 		
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
-			Predic = fedMiscSettings->AddSelection("Q Prediction", 2, std::vector<std::string>({ "Medium", "High", "Very High" }));
+			Predic = fedMiscSettings->AddSelection("Q Prediction", 1, std::vector<std::string>({ "Medium", "High", "Very High" }));
 			cMode = fedMiscSettings->AddSelection("E Mode Active", 1, std::vector<std::string>({ "Automatic", "Combo/Harass Key" }));
 			SaveMana = fedMiscSettings->CheckBox("Save Mana to Cast E", true);
+			AutoR = fedMiscSettings->CheckBox("Auto R Dodge Dangers Spells", true);
 			//ComboAA = fedMiscSettings->AddInteger("Cast Spell When x Feathers", 0, 3, 0);
 		}
 		
@@ -57,9 +69,9 @@ public:
 			DrawQ = DrawingSettings->CheckBox("Draw Q", true);
 			DrawW = DrawingSettings->CheckBox("Draw W", false);			
 			DrawR = DrawingSettings->CheckBox("Draw R", false);			
-			DrawNear = DrawingSettings->AddSelection("Draw Feathers", 1, std::vector<std::string>({ "Disable", "Rectangle", "Line" }));
+			DrawNear = DrawingSettings->AddSelection("Draw Feathers", 1, std::vector<std::string>({ "Off", "Rectangle", "Line" }));
 			DrawColor = DrawingSettings->AddColor("Draws Color", 138, 43, 226, 255);
-			DrawEA = DrawingSettings->AddSelection("Possible Feathers Return", 1, std::vector<std::string>({ "Disable", "Mode Small", "Mode Big" }));			
+			DrawEA = DrawingSettings->AddSelection("Possible Feathers Return", 1, std::vector<std::string>({ "Off", "Mode Small", "Mode Big" }));			
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
 		}
 	}
@@ -67,15 +79,15 @@ public:
 	static void LoadSpells()
 	{
 		Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, (kCollidesWithNothing));
-		Q->SetSkillshot(0.25f, 50.f, 1850.f, 1050.f);		
+		Q->SetSkillshot(0.25f, 60.f, 1800.f, 1050.f);		
 
 		W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, (kCollidesWithNothing));
 		W->SetOverrideRange(1000);
 
-		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, (kCollidesWithNothing));		
+		E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, true, false, (kCollidesWithNothing));		
 
 		R = GPluginSDK->CreateSpell2(kSlotR, kConeCast, true, true, (kCollidesWithNothing));
-		R->SetSkillshot(0.25f, 50.f, 1850.f, 1050.f);
+		R->SetSkillshot(0.25f, 80.f, 1800.f, 1050.f);
 	}
 
 	static int PredicChange()
@@ -140,7 +152,7 @@ public:
 								XayahFeathers FT;
 								FT.Source = Feather;
 								FT.Target = Target;
-								XayahReturn.Add(FT);
+								XayahReturn.Add(FT);								
 							}
 						}
 						else
@@ -522,7 +534,7 @@ public:
 						strstr(jm->GetObjectName(), "Blue") ||
 						strstr(jm->GetObjectName(), "RiftHerald"))
 					{
-						GUtility->LogConsole("Dano Neutral: %f | DanoAA: %f", Damage(jm), GDamage->GetAutoAttackDamage(GEntityList->Player(), jm, false));
+						//GUtility->LogConsole("Dano Neutral: %f | DanoAA: %f", Damage(jm), GDamage->GetAutoAttackDamage(GEntityList->Player(), jm, false));
 						
 						if (Damage(jm) > jm->GetHealth() && GDamage->GetAutoAttackDamage(GEntityList->Player(), jm, false) < jm->GetHealth())
 						{
@@ -532,6 +544,23 @@ public:
 				}
 			}
 		}
+
+		if (LaneClearE->Enabled() && E->IsReady() && CountMinionsKiable() >= MinionsE->GetInteger())
+		{
+			E->CastOnPlayer();
+		}		
+	}
+
+	static int CountMinionsKiable()
+	{
+		if (XayahReturn.Count() > 0)
+		{			
+			SArray<XayahFeathers> minions = XayahReturn.Where([](XayahFeathers m) {return !m.Target->IsDead() && m.Target->IsVisible() && m.Target->IsCreep() && (Damage(m.Target) * 0.498) > m.Target->GetHealth() && GDamage->GetAutoAttackDamage(GEntityList->Player(), m.Target, false) < m.Target->GetHealth(); });
+
+			return minions.Count();
+		}
+
+		return 0;
 	}
 
 	static void Combo()
@@ -613,11 +642,7 @@ public:
 				LastSpellTick = GGame->TickCount();
 			}
 		}
-	}
-
-	static void LastHit()
-	{
-	}
+	}	
 
 	static void JungleClear()
 	{
@@ -663,6 +688,24 @@ public:
 
 	static void LaneClear()
 	{
+		auto pred = FindBestLineCastPosition(vector<Vec3>{ GEntityList->Player()->GetPosition() }, Q->Range(), Q->Range(), Q->Radius(), true, true);
+
+		if (FoundMinions(Q->Range()) && !FoundMinionsNeutral(Q->Range()))
+		{
+			if (LaneClearQ->Enabled() && Q->IsReady() && GEntityList->Player()->ManaPercent() >= LaneClearMana->GetInteger() && pred.HitCount >= MinionsQ->GetInteger())
+			{
+				if (GetDistanceVectors(GEntityList->Player()->GetPosition(), pred.CastPosition) <= Q->Range())
+				{
+					Q->CastOnPosition(pred.CastPosition);
+				}
+			}
+
+			if (LaneClearW->Enabled() && W->IsReady() && GEntityList->Player()->ManaPercent() >= LaneClearMana->GetInteger()
+				&& CountMinions(GEntityList->Player()->GetPosition(), GEntityList->Player()->AttackRange()) >= MinionsW->GetInteger())
+			{
+				W->CastOnPlayer();
+			}			
+		}
 	}
 
 	static void OnGapcloser(GapCloserSpell const& args)
@@ -716,9 +759,69 @@ public:
 		}
 	}
 
-	static void OnProcessSpell(CastedSpell const& Args)
+	static void OnProcessSpell(CastedSpell const& args)
 	{
+		if (AutoR->Enabled() && args.Caster_->IsHero() && args.Caster_->GetTeam() != GEntityList->Player()->GetTeam())
+		{
+			std::string SName = args.Name_;
+			for (auto Spells : SpellsDangerList)
+			{
+				if (strstr(Spells.Name.data(), ToLower(SName).c_str()))
+				{					
+					Vec2 EndPosition;
+					ProjectionInfo projection;
 
+					if (Spells.Type == isSkillshotCircle)
+					{
+
+					}
+
+					if (Spells.Type == isSkillshotLine)
+					{
+						if (GetDistanceVectors(args.Position_, args.EndPosition_) > R->Range())
+						{
+							EndPosition = args.Position_.To2D() + (args.EndPosition_.To2D() - args.Position_.To2D()).VectorNormalize() * (R->Range() * 2);
+						}
+
+						if (GetDistanceVectors(args.Position_, args.EndPosition_) < R->Range())
+						{
+							EndPosition = args.Position_.To2D() + (args.EndPosition_.To2D() - args.Position_.To2D()).VectorNormalize() * (R->Range() + 50);
+						}
+
+						ProjectOn(GEntityList->Player()->ServerPosition().To2D(), args.Position_.To2D(), args.EndPosition_.To2D(), projection);
+
+						if (projection.IsOnSegment)
+						{
+							if (R->IsReady())
+							{
+								R->CastOnPosition(args.Caster_->GetPosition());
+							}
+						}
+					}					
+
+					if (Spells.Type == isTargeted)
+					{
+						if (args.Target_ != nullptr && args.Target_->GetNetworkId() == GEntityList->Player()->GetNetworkId())
+						{
+							if (R->IsReady())
+							{
+								R->CastOnPosition(args.Caster_->GetPosition());
+							}
+						}
+					}
+
+					if (Spells.Type == isSelfCast)
+					{
+						if (args.Target_ != nullptr && GetDistance(GEntityList->Player(), args.Target_) <= args.Radius_) {
+							if (R->IsReady())
+							{
+								R->CastOnPosition(args.Caster_->GetPosition());
+							}
+						}
+					}					
+				}
+			}
+		}		
 	}
 
 	static void OnCreateObject(IUnit* Source)

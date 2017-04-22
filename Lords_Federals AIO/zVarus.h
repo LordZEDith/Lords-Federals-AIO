@@ -19,7 +19,7 @@ public:
 			ComboREnemies = RSettings->CheckBox("Use R AoE", true);
 			ComboR = RSettings->CheckBox("Use R KS combo R + Q + E + AA", true);
 			SemiManualKey = RSettings->AddKey("Semi Manual Cast R key", 71);
-			RMode = RSettings->AddSelection("R Semi Manual Mode", 1, std::vector<std::string>({ "Target Selector", "Nearest Mouse" }));
+			RMode = RSettings->AddSelection("R Semi Manual Mode", 1, std::vector<std::string>({ "Target Selector", "Nearest Cursor" }));
 		}
 
 		RMenu2 = RSettings->AddMenu(":: AoE Settings");

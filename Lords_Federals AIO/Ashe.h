@@ -19,7 +19,7 @@ public:
 			ComboR = ComboSettings->CheckBox("Use R KS combo R + W + AA", true);
 			UltEnemies = ComboSettings->CheckBox("Use R Aoe", true);
 			SemiManualKey = ComboSettings->AddKey("Semi-manual cast R key", 71);
-			RMode = ComboSettings->AddSelection("R Semi-manual Mode", 0, std::vector<std::string>({ "Target Selector", "Nearest Mouse" }));
+			RMode = ComboSettings->AddSelection("R Semi-manual Mode", 0, std::vector<std::string>({ "Target Selector", "Nearest Cursor" }));
 
 			for (auto enemy : GEntityList->GetAllHeros(false, true))
 			{

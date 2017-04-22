@@ -4630,7 +4630,8 @@ public:
 
 	void OnProcessSpell(CastedSpell const& Args) override
 	{
-		Trinket().TrinketOnProcessSpell(Args);		
+		Trinket().TrinketOnProcessSpell(Args);
+		Xayah().OnProcessSpell(Args);
 	}
 
 	void OnExitVisible(IUnit* Source) override
