@@ -2,6 +2,7 @@
 #include "PluginSDK.h"
 #include "Template.h"
 #include "Geometry.h"
+#include "HpBarIndicator.h"
 #include <list>
 #include <map>
 
@@ -423,6 +424,10 @@ IMenuOption* useZhonyas;
 IMenuOption* ZhonyasHP;
 IMenuOption* zzRot;
 
+IMenuOption* UseEspada;
+IMenuOption* ItemMinHealth;
+IMenuOption* ItemTargetHealth;
+
 IMenuOption* QD;
 IMenuOption* WD;
 IMenuOption* ED;
@@ -472,6 +477,8 @@ IMenuOption* Debug;
 
 IInventoryItem* Tiamat;
 IInventoryItem* Hydra;
+IInventoryItem* Cutlass;
+IInventoryItem* Blade;
 IInventoryItem* Ravenous;
 IInventoryItem* Ward1;
 IInventoryItem* Ward2;
@@ -544,37 +551,40 @@ struct SpellsDanger
 	std::string Champion;
 	std::string Name;
 	SpellType Type;
+	eSpellSlot Slot;
 };
 
 std::vector<SpellsDanger> SpellsDangerList =
 {
-	{ "Annie", "infernalguardian", isSkillshotCircle },
-	{ "Amumu", "curseofthesadmummy", isSelfCast },
-	{ "Ashe", "enchantedcrystalarrow", isSkillshotLine },
-	{ "AurelionSol", "aurelionsolr", isSkillshotLine },
-	{ "Cassiopeia", "cassiopeiar", isSkillshotCircle },
-	{ "Chogath", "feast", isTargeted },
-	{ "Darius", "dariusexecute", isTargeted },
-	{ "Evelynn", "evelynnr", isSkillshotCircle },
-	{ "Fizz", "fizzrmissile", isSkillshotLine },
-	{ "Gnar", "gnarult", isSelfCast },
-	{ "Garen", "egarenr", isTargeted },
-	{ "Graves", "graveschargeshot", isSkillshotLine },
-	{ "Hecarim", "hecarimult", isSkillshotLine },
-	{ "Illaoi", "illaoir", isSelfCast },
-	{ "JarvanIV", "jarvanivcataclysm", isTargeted },
-	{ "LeeSin", "blindmonkrkick", isTargeted },
-	{ "Lissandra", "lissandrar", isTargeted },
-	{ "Malphite", "ufslash", isSkillshotCircle },
-	{ "MonkeyKing", "monkeykingspintowin", isSelfCast },
-	{ "Riven", "rivenizunablade", isSkillshotLine },
-	{ "Sejuani", "sejuaniglacialprisoncast", isSkillshotLine },
-	{ "Shyvana", "shyvanatrasformcast", isSkillshotLine },
-	{ "Sona", "sonar", isSkillshotLine },
-	{ "Syndra", "syndrar", isTargeted },
-	{ "Varus", "varusr", isSkillshotLine },
-	{ "Veigar", "veigarprimordialburst", isTargeted },
-	{ "Viktor", "viktorchaosstorm", isSkillshotCircle },
+	{ "Annie", "infernalguardian", isSkillshotCircle, kSlotR },
+	{ "Amumu", "curseofthesadmummy", isSelfCast, kSlotR },
+	{ "Ashe", "enchantedcrystalarrow", isSkillshotLine, kSlotR },
+	{ "AurelionSol", "aurelionsolr", isSkillshotLine, kSlotR },
+	{ "Cassiopeia", "cassiopeiar", isSkillshotCircle, kSlotR },
+	{ "Chogath", "feast", isTargeted, kSlotR },
+	{ "Darius", "dariusexecute", isTargeted, kSlotR },
+	{ "Evelynn", "evelynnr", isSkillshotCircle, kSlotR },
+	{ "Ezreal", "ezrealtrueshotbarrage", isSkillshotLine, kSlotR },
+	{ "Fizz", "fizzrmissile", isSkillshotLine, kSlotR },
+	{ "Gnar", "gnarult", isSelfCast, kSlotR },
+	{ "Garen", "egarenr", isTargeted, kSlotR },
+	{ "Graves", "graveschargeshot", isSkillshotLine, kSlotR },
+	{ "Hecarim", "hecarimult", isSkillshotLine, kSlotR },
+	{ "Illaoi", "illaoir", isSelfCast, kSlotR },
+	{ "JarvanIV", "jarvanivcataclysm", isTargeted, kSlotR },
+	{ "Jinx", "jinxr", isSkillshotLine, kSlotR },
+	{ "LeeSin", "blindmonkrkick", isTargeted, kSlotR },
+	{ "Lissandra", "lissandrar", isTargeted, kSlotR },
+	{ "Malphite", "ufslash", isSkillshotCircle, kSlotR },
+	{ "MonkeyKing", "monkeykingspintowin", isSelfCast, kSlotR },
+	{ "Riven", "rivenizunablade", isSkillshotLine, kSlotR },
+	{ "Sejuani", "sejuaniglacialprisoncast", isSkillshotLine, kSlotR },
+	{ "Shyvana", "shyvanatrasformcast", isSkillshotLine, kSlotR },
+	{ "Sona", "sonar", isSkillshotLine, kSlotR },
+	{ "Syndra", "syndrar", isTargeted, kSlotR },
+	{ "Varus", "varusr", isSkillshotLine, kSlotR },
+	{ "Veigar", "veigarprimordialburst", isTargeted, kSlotR },
+	{ "Viktor", "viktorchaosstorm", isSkillshotCircle, kSlotR },
 };
 
 
@@ -592,6 +602,7 @@ std::map<int, IMenuOption*> ChampionUseW;
 std::map<int, IMenuOption*> ChampionAntiMelee;
 std::map<int, IMenuOption*> GapCloserList;
 std::map<int, IMenuOption*> ChampionUseE;
+std::map<std::string, IMenuOption*> ListaSpells;
 
 bool FoundSmite = false;
 bool FoundSmiteQ = false;

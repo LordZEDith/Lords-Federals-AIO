@@ -2,8 +2,6 @@
 #include "PluginSDK.h"
 #include "BaseMenu.h"
 #include "Common.h"
-#include "HpBarIndicator.h"
-
 
 class Xayah
 {
@@ -16,6 +14,18 @@ public:
 		RMenu = MainMenu->AddMenu("R Settings WIP");
 		{
 			AutoR = RMenu->CheckBox("Auto R Dodge Dangers Spells", true);
+			HealthR = RMenu->AddInteger("Min HP% to Dodge", 0, 100, 40);
+			for (auto enemy : GEntityList->GetAllHeros(false, true))
+			{
+				for (auto Spells : SpellsDangerList)
+				{
+					if (Compare(enemy->ChampionName(), Spells.Champion.data()) == 1)
+					{
+						std::string szMenuName = "Dodge - " + std::string(Spells.Champion.data()) + " : "  +  std::string(SpellLetra(Spells.Slot));
+						ListaSpells[Spells.Name] = RMenu->CheckBox(szMenuName.c_str(), true);
+					}
+				}				
+			}
 		}
 
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
@@ -66,7 +76,14 @@ public:
 			cMode = fedMiscSettings->AddSelection("E Mode Automatic", 1, std::vector<std::string>({ "Automatic", "Off" }));
 			SaveMana = fedMiscSettings->CheckBox("Save Mana to Cast E", true);
 			ECountEnemy = fedMiscSettings->AddInteger("Auto E Min Enemys Can be Rooted", 0, 5, 3);					
-		}		
+		}
+
+		Activator = MainMenu->AddMenu("Activator Settings");
+		{
+			UseEspada = Activator->CheckBox("Use Blade Cutlass", true);
+			ItemMinHealth = Activator->AddInteger("When my HP% <", 1, 100, 100);
+			ItemTargetHealth = Activator->AddInteger("When Enemy HP% <", 1, 100, 80);
+		}
 		
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
 		{
@@ -94,6 +111,9 @@ public:
 
 		R = GPluginSDK->CreateSpell2(kSlotR, kConeCast, true, true, (kCollidesWithNothing));
 		R->SetSkillshot(0.25f, 80.f, 1800.f, 1050.f);
+
+		Blade = GPluginSDK->CreateItemForId(3153, 550);
+		Cutlass = GPluginSDK->CreateItemForId(3144, 550);
 	}
 
 	static int PredicChange()
@@ -592,7 +612,7 @@ public:
 			auto Count = 0;
 			for (auto minions : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (CheckTarget(minions) && (Damage(minions) * 0.498) > minions->GetHealth() && GDamage->GetAutoAttackDamage(GEntityList->Player(), minions, false) < minions->GetHealth())
+				if (CheckTarget(minions) && (Damage(minions) * 0.498) > minions->GetHealth())
 				{
 					Count++;
 				}
@@ -790,6 +810,11 @@ public:
 				Q->CastOnTarget(Target, PredicChange());
 				LastSpellTick = GGame->TickCount();
 			}
+
+			if (Target->IsHero())
+			{
+				ActiveItens(Target);
+			}
 		}
 
 		if (CheckTarget(Target) && GOrbwalking->GetOrbwalkingMode() == kModeMixed && GEntityList->Player()->ManaPercent() >= HarassMana->GetInteger())
@@ -827,58 +852,64 @@ public:
 			for (auto Spells : SpellsDangerList)
 			{
 				if (strstr(Spells.Name.data(), ToLower(SName).c_str()))
-				{					
-					Vec2 EndPosition;
-					ProjectionInfo projection;
-
-					if (Spells.Type == isSkillshotCircle)
+				{
+					if (ListaSpells[ToLower(args.Name_)]->Enabled() && GEntityList->Player()->HealthPercent() <= HealthR->GetInteger())
 					{
+						Vec2 EndPosition;						
 
+						if (Spells.Type == isSkillshotCircle)
+						{
+							if (GetDistanceVectors(args.Position_, args.EndPosition_) > R->Range())
+							{
+								EndPosition = args.Position_.To2D() + (args.EndPosition_.To2D() - args.Position_.To2D()).VectorNormalize() * R->Range();
+							}
+
+							if (GetDistanceVectors(GEntityList->Player()->GetPosition(), To3D(EndPosition)) <= R->Range())
+							{
+								if (CheckTarget(args.Caster_) && args.Caster_->IsValidTarget(GEntityList->Player(), R->Range()))
+								{
+									auto CastPos = Extend(GEntityList->Player()->GetPosition(), args.Caster_->GetPosition(), R->Range());
+									R->CastOnPosition(CastPos);
+								}
+								else
+								{
+									auto Target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R->Range());
+
+									if (CheckTarget(Target) && Target->IsValidTarget(GEntityList->Player(), R->Range()))
+									{
+										auto CastPos = Extend(GEntityList->Player()->GetPosition(), Target->GetPosition(), R->Range());
+										R->CastOnPosition(CastPos);
+									}
+									else
+									{
+										auto CastPos = Extend(GEntityList->Player()->GetPosition(), args.Position_, R->Range());
+										R->CastOnPosition(CastPos);
+									}
+								}
+							}
+						}						
+
+						if (Spells.Type == isTargeted)
+						{
+							if (args.Target_ != nullptr && args.Target_->GetNetworkId() == GEntityList->Player()->GetNetworkId())
+							{
+								if (R->IsReady())
+								{
+									R->CastOnPosition(args.Caster_->GetPosition());
+								}
+							}
+						}
+
+						if (Spells.Type == isSelfCast)
+						{
+							if (args.Target_ != nullptr && GetDistance(GEntityList->Player(), args.Target_) <= args.Radius_) {
+								if (R->IsReady())
+								{
+									R->CastOnPosition(args.Caster_->GetPosition());
+								}
+							}
+						}
 					}
-
-					/*if (Spells.Type == isSkillshotLine)
-					{
-						if (GetDistanceVectors(args.Position_, args.EndPosition_) > R->Range())
-						{
-							EndPosition = args.Position_.To2D() + (args.EndPosition_.To2D() - args.Position_.To2D()).VectorNormalize() * (R->Range() * 2);
-						}
-
-						if (GetDistanceVectors(args.Position_, args.EndPosition_) < R->Range())
-						{
-							EndPosition = args.Position_.To2D() + (args.EndPosition_.To2D() - args.Position_.To2D()).VectorNormalize() * (R->Range() + 50);
-						}
-
-						ProjectOn(GEntityList->Player()->ServerPosition().To2D(), args.Position_.To2D(), args.EndPosition_.To2D(), projection);
-
-						if (projection.IsOnSegment)
-						{
-							if (R->IsReady())
-							{
-								R->CastOnPosition(args.Caster_->GetPosition());
-							}
-						}
-					}*/				
-
-					if (Spells.Type == isTargeted)
-					{
-						if (args.Target_ != nullptr && args.Target_->GetNetworkId() == GEntityList->Player()->GetNetworkId())
-						{
-							if (R->IsReady())
-							{
-								R->CastOnPosition(args.Caster_->GetPosition());
-							}
-						}
-					}
-
-					if (Spells.Type == isSelfCast)
-					{
-						if (args.Target_ != nullptr && GetDistance(GEntityList->Player(), args.Target_) <= args.Radius_) {
-							if (R->IsReady())
-							{
-								R->CastOnPosition(args.Caster_->GetPosition());
-							}
-						}
-					}					
 				}
 			}
 		}		
@@ -890,27 +921,31 @@ public:
 		{
 			for (auto spells : SkillMissiles.ToVector())
 			{
-
-				if (spells != nullptr && GetDistance(spells, GEntityList->Player()) <= (0.6 + GGame->Latency() / 1000) * GMissileData->GetSpeed(spells))
+				if (ListaSpells[ToLower(GMissileData->GetName(spells))]->Enabled())
 				{
-					if (CheckTarget(GMissileData->GetCaster(spells)) && GMissileData->GetCaster(spells)->IsValidTarget(GEntityList->Player(), R->Range()))
+					if (spells != nullptr &&
+						GetDistance(spells, GEntityList->Player()) <= (0.6 + GGame->Latency() / 1000) * GMissileData->GetSpeed(spells) &&
+						GEntityList->Player()->HealthPercent() <= HealthR->GetInteger())
 					{
-						auto CastPos = Extend(GEntityList->Player()->GetPosition(), GMissileData->GetCaster(spells)->GetPosition(), R->Range());
-						R->CastOnPosition(CastPos);
-					}
-					else
-					{
-						auto Target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R->Range());
-
-						if (CheckTarget(Target) && Target->IsValidTarget(GEntityList->Player(), R->Range()))
+						if (CheckTarget(GMissileData->GetCaster(spells)) && GMissileData->GetCaster(spells)->IsValidTarget(GEntityList->Player(), R->Range()))
 						{
-							auto CastPos = Extend(GEntityList->Player()->GetPosition(), Target->GetPosition(), R->Range());
+							auto CastPos = Extend(GEntityList->Player()->GetPosition(), GMissileData->GetCaster(spells)->GetPosition(), R->Range());
 							R->CastOnPosition(CastPos);
 						}
 						else
 						{
-							auto CastPos = Extend(GEntityList->Player()->GetPosition(), GMissileData->GetStartPosition(spells), R->Range());
-							R->CastOnPosition(CastPos);
+							auto Target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R->Range());
+
+							if (CheckTarget(Target) && Target->IsValidTarget(GEntityList->Player(), R->Range()))
+							{
+								auto CastPos = Extend(GEntityList->Player()->GetPosition(), Target->GetPosition(), R->Range());
+								R->CastOnPosition(CastPos);
+							}
+							else
+							{
+								auto CastPos = Extend(GEntityList->Player()->GetPosition(), GMissileData->GetStartPosition(spells), R->Range());
+								R->CastOnPosition(CastPos);
+							}
 						}
 					}
 				}
@@ -922,16 +957,11 @@ public:
 	{
 		if (Source != nullptr)
 		{
-			if (Source->IsMissile() && GMissileData->GetCaster(Source)->GetTeam() != GEntityList->Player()->GetTeam())
-			{
-				if (GetDistance(Source, GEntityList->Player()) < 1500)
-				{
-					//GUtility->LogConsole("Nome do Missile: %s", GMissileData->GetName(Source));
-				}	
-				
+			if (Source->IsMissile() && GMissileData->GetCaster(Source)->IsHero() && GMissileData->GetCaster(Source)->GetTeam() != GEntityList->Player()->GetTeam())
+			{				
 				for (auto Spells : SpellsDangerList)
-				{
-					if (Spells.Type == isSkillshotCircle || Spells.Type == isSkillshotLine)
+				{					
+					if (Spells.Type == isSkillshotLine)
 					{
 						if (Compare(GMissileData->GetName(Source), Spells.Name.data()) == 1)
 						{
@@ -948,7 +978,7 @@ public:
 	{
 		if (Source != nullptr)
 		{
-			if (Source->IsMissile() && GMissileData->GetCaster(Source)->GetTeam() != GEntityList->Player()->GetTeam())
+			if (Source->IsMissile() && GMissileData->GetCaster(Source)->IsHero() && GMissileData->GetCaster(Source)->GetTeam() != GEntityList->Player()->GetTeam())
 			{				
 				for (auto Spells : SpellsDangerList)
 				{
@@ -1002,6 +1032,26 @@ public:
 			if (CheckTarget(TargetR) && CheckShielded(TargetR) && TargetR->IsValidTarget(GEntityList->Player(), R->Range()))
 			{
 				R->CastOnTarget(TargetR, PredicChange());
+			}
+		}
+	}
+
+	static void ActiveItens(IUnit* target)
+	{
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && CheckTarget(target))
+		{
+			if (UseEspada->Enabled() && target->IsValidTarget(GEntityList->Player(), 550) &&
+				GEntityList->Player()->HealthPercent() < ItemMinHealth->GetInteger() && target->HealthPercent() < ItemTargetHealth->GetInteger())
+			{
+				if (Blade->IsOwned() && Blade->IsReady())
+				{
+					Blade->CastOnTarget(target);
+				}
+
+				if (Cutlass->IsOwned() && Cutlass->IsReady())
+				{
+					Cutlass->CastOnTarget(target);
+				}
 			}
 		}
 	}

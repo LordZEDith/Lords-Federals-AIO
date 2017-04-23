@@ -22,7 +22,6 @@
     <ProjectGuid>{C8E2B0C6-96EA-4905-85BC-744E66302A09}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Lords_FederalsAIO</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

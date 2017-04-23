@@ -113,6 +113,11 @@ inline int Compare(const char a[], const char b[])
 	return 1;
 }
 
+inline std::string SpellLetra(eSpellSlot Spellslot)
+{
+	return Spellslot == kSlotQ ? "Q" : Spellslot == kSlotW ? "W" : Spellslot == kSlotE ? "E" : Spellslot == kSlotR ? "R" : "UnKnown";
+}
+
 static bool CheckIsWard(IUnit* minion)
 {
 	if (strstr(minion->GetBaseSkinName(), "YellowTrinket") ||
