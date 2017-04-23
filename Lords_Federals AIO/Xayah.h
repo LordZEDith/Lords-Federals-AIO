@@ -21,8 +21,8 @@ public:
 				{
 					if (Compare(enemy->ChampionName(), Spells.Champion.data()) == 1)
 					{
-						std::string szMenuName = "Dodge - " + std::string(Spells.Champion.data()) + " : "  +  std::string(SpellLetra(Spells.Slot));
-						ListaSpells[Spells.Name] = RMenu->CheckBox(szMenuName.c_str(), true);
+						std::string szMenuName = "Dodge - " + std::string(Spells.Champion.data()) + " : "  +  std::string(SpellLetra(Spells.Slot));							
+						ListaSpells[Spells.Champion + Spells.Name] = RMenu->CheckBox(szMenuName.c_str(), true);
 					}
 				}				
 			}
@@ -846,19 +846,61 @@ public:
 
 	static void OnProcessSpell(CastedSpell const& args)
 	{
-		if (AutoR->Enabled() && args.Caster_->IsHero() && args.Caster_->GetTeam() != GEntityList->Player()->GetTeam())
+		if (AutoR->Enabled() && R->IsReady() && args.Caster_->IsHero() && args.Caster_->GetTeam() != GEntityList->Player()->GetTeam())
 		{
 			std::string SName = args.Name_;
 			for (auto Spells : SpellsDangerList)
 			{
 				if (strstr(Spells.Name.data(), ToLower(SName).c_str()))
-				{
-					if (ListaSpells[ToLower(args.Name_)]->Enabled() && GEntityList->Player()->HealthPercent() <= HealthR->GetInteger())
+				{					
+					if (ListaSpells[std::string(args.Caster_->ChampionName()) + ToLower(args.Name_)]->Enabled() && GEntityList->Player()->HealthPercent() <= HealthR->GetInteger())
 					{
-						Vec2 EndPosition;						
+						Vec2 EndPosition;
+						ProjectionInfo projection;						
+
+						if (Spells.Type == isSkillshotLine)
+						{
+							if (GetDistanceVectors(args.Position_, args.EndPosition_) > R->Range())
+							{
+								EndPosition = args.Position_.To2D() + (args.EndPosition_.To2D() - args.Position_.To2D()).VectorNormalize() * (R->Range() + R->Range());
+							}
+
+							if (GetDistanceVectors(args.Position_, args.EndPosition_) < R->Range())
+							{
+								EndPosition = args.Position_.To2D() + (args.EndPosition_.To2D() - args.Position_.To2D()).VectorNormalize() * (R->Range() + 60);
+							}
+
+							ProjectOn(GEntityList->Player()->ServerPosition().To2D(), args.Position_.To2D(), EndPosition, projection);
+
+							if (projection.IsOnSegment)
+							{
+								if (CheckTarget(args.Caster_) && args.Caster_->IsValidTarget(GEntityList->Player(), R->Range()))
+								{
+									auto CastPos = Extend(GEntityList->Player()->GetPosition(), args.Caster_->GetPosition(), R->Range());
+									R->CastOnPosition(CastPos);
+								}
+								else
+								{
+									auto Target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R->Range());
+
+									if (CheckTarget(Target) && Target->IsValidTarget(GEntityList->Player(), R->Range()))
+									{
+										auto CastPos = Extend(GEntityList->Player()->GetPosition(), Target->GetPosition(), R->Range());
+										R->CastOnPosition(CastPos);
+									}
+									else
+									{
+										auto CastPos = Extend(GEntityList->Player()->GetPosition(), args.Position_, R->Range());
+										R->CastOnPosition(CastPos);
+									}
+								}
+							}
+						}
 
 						if (Spells.Type == isSkillshotCircle)
 						{
+							EndPosition = args.EndPosition_.To2D();
+							
 							if (GetDistanceVectors(args.Position_, args.EndPosition_) > R->Range())
 							{
 								EndPosition = args.Position_.To2D() + (args.EndPosition_.To2D() - args.Position_.To2D()).VectorNormalize() * R->Range();
@@ -893,20 +935,15 @@ public:
 						{
 							if (args.Target_ != nullptr && args.Target_->GetNetworkId() == GEntityList->Player()->GetNetworkId())
 							{
-								if (R->IsReady())
-								{
-									R->CastOnPosition(args.Caster_->GetPosition());
-								}
+								R->CastOnPosition(args.Caster_->GetPosition());								
 							}
 						}
 
 						if (Spells.Type == isSelfCast)
 						{
-							if (args.Target_ != nullptr && GetDistance(GEntityList->Player(), args.Target_) <= args.Radius_) {
-								if (R->IsReady())
-								{
-									R->CastOnPosition(args.Caster_->GetPosition());
-								}
+							if (args.Target_ != nullptr && GetDistance(GEntityList->Player(), args.Target_) <= args.Radius_) 
+							{
+								R->CastOnPosition(args.Caster_->GetPosition());								
 							}
 						}
 					}
@@ -917,28 +954,19 @@ public:
 
 	static void DodgeLineSkillsShots()
 	{
-		if (AutoR->Enabled() && R->IsReady() && SkillMissiles.Count() > 0)
+		if (AutoR->Enabled() && R->IsReady() && SkillsMissilesDanger.Count() > 0)
 		{
-			for (auto spells : SkillMissiles.ToVector())
-			{
-				std::string SpellName;
-				if (strstr(ToLower(GMissileData->GetName(spells)).c_str(), "graveschargeshot"))
-				{
-					SpellName = "graveschargeshot";
-				}
-				{
-					SpellName = ToLower(GMissileData->GetName(spells));
-				}
-
-				if (ListaSpells[SpellName]->Enabled())
-				{
-					if (spells != nullptr &&
-						GetDistance(spells, GEntityList->Player()) <= (0.6 + GGame->Latency() / 1000) * GMissileData->GetSpeed(spells) &&
+			for (auto spells : SkillsMissilesDanger.ToVector())
+			{				
+				if (ListaSpells[GMissileData->GetCaster(spells.Missile)->ChampionName() + spells.Name]->Enabled())
+				{					
+					if (spells.Missile != nullptr &&
+						GetDistance(spells.Missile, GEntityList->Player()) <= (0.6 + GGame->Latency() / 1000) * GMissileData->GetSpeed(spells.Missile) &&
 						GEntityList->Player()->HealthPercent() <= HealthR->GetInteger())
 					{
-						if (CheckTarget(GMissileData->GetCaster(spells)) && GMissileData->GetCaster(spells)->IsValidTarget(GEntityList->Player(), R->Range()))
+						if (CheckTarget(GMissileData->GetCaster(spells.Missile)) && GMissileData->GetCaster(spells.Missile)->IsValidTarget(GEntityList->Player(), R->Range()))
 						{
-							auto CastPos = Extend(GEntityList->Player()->GetPosition(), GMissileData->GetCaster(spells)->GetPosition(), R->Range());
+							auto CastPos = Extend(GEntityList->Player()->GetPosition(), GMissileData->GetCaster(spells.Missile)->GetPosition(), R->Range());
 							R->CastOnPosition(CastPos);
 						}
 						else
@@ -952,7 +980,7 @@ public:
 							}
 							else
 							{
-								auto CastPos = Extend(GEntityList->Player()->GetPosition(), GMissileData->GetStartPosition(spells), R->Range());
+								auto CastPos = Extend(GEntityList->Player()->GetPosition(), GMissileData->GetStartPosition(spells.Missile), R->Range());
 								R->CastOnPosition(CastPos);
 							}
 						}
@@ -970,17 +998,20 @@ public:
 			{				
 				if (GetDistance(Source, GEntityList->Player()) < 1500)
 				{
-					GUtility->LogConsole("Nome do Missile: %s", GMissileData->GetName(Source));
+					//GUtility->LogConsole("Nome do Missile: %s", GMissileData->GetName(Source));
 				}
 
 				for (auto Spells : SpellsDangerList)
 				{					
-					if (Spells.Type == isSkillshotLine)
+					if (Spells.Missile)
 					{
-						if (strstr(ToLower(GMissileData->GetName(Source)).c_str(), Spells.Name.data()))							
+						if (strstr(ToLower(GMissileData->GetName(Source)).c_str(), Spells.NameMissile.data()))							
 						{
-							GUtility->LogConsole("Missile Detectado");
-							SkillMissiles.Add(Source);
+							//GUtility->LogConsole("Missile Detectado");
+							MissilesDangers md;
+							md.Missile = Source;
+							md.Name = Spells.Name;
+							SkillsMissilesDanger.Add(md);
 						}
 					}
 				}
@@ -996,11 +1027,11 @@ public:
 			{				
 				for (auto Spells : SpellsDangerList)
 				{
-					if (Spells.Type == isSkillshotCircle || Spells.Type == isSkillshotLine)
+					if (Spells.Missile)
 					{
-						if (strstr(ToLower(GMissileData->GetName(Source)).c_str(), Spells.Name.data()))
+						if (strstr(ToLower(GMissileData->GetName(Source)).c_str(), Spells.NameMissile.data()))
 						{
-							SkillMissiles.RemoveAll([&](IUnit* s) {return s->GetNetworkId() == Source->GetNetworkId(); });
+							SkillsMissilesDanger.RemoveAll([&](MissilesDangers s) {return s.Missile->GetNetworkId() == Source->GetNetworkId(); });							
 						}
 					}
 				}

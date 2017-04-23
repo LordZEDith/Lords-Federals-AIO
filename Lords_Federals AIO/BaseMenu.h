@@ -538,6 +538,12 @@ struct XayahFeathers
 	IUnit* Target;	
 };
 
+struct MissilesDangers
+{
+	IUnit* Missile;
+	std::string Name;
+};
+
 enum SpellType {
 	
 	isSkillshotCircle,
@@ -552,40 +558,43 @@ struct SpellsDanger
 	std::string Name;
 	SpellType Type;
 	eSpellSlot Slot;
+	bool Missile;
+	std::string NameMissile;
 };
 
 std::vector<SpellsDanger> SpellsDangerList =
 {
-	{ "Annie", "infernalguardian", isSkillshotCircle, kSlotR },
-	{ "Amumu", "curseofthesadmummy", isSelfCast, kSlotR },
-	{ "Ashe", "enchantedcrystalarrow", isSkillshotLine, kSlotR },
-	{ "AurelionSol", "aurelionsolr", isSkillshotLine, kSlotR },
-	{ "Cassiopeia", "cassiopeiar", isSkillshotCircle, kSlotR },
-	{ "Chogath", "feast", isTargeted, kSlotR },
-	{ "Darius", "dariusexecute", isTargeted, kSlotR },
-	{ "Evelynn", "evelynnr", isSkillshotCircle, kSlotR },
-	{ "Ezreal", "ezrealtrueshotbarrage", isSkillshotLine, kSlotR },
-	{ "Fizz", "fizzrmissile", isSkillshotLine, kSlotR },
-	{ "Gnar", "gnarult", isSelfCast, kSlotR },
-	{ "Garen", "egarenr", isTargeted, kSlotR },
-	{ "Graves", "graveschargeshot", isSkillshotLine, kSlotR },
-	{ "Hecarim", "hecarimult", isSkillshotLine, kSlotR },
-	{ "Illaoi", "illaoir", isSelfCast, kSlotR },
-	{ "JarvanIV", "jarvanivcataclysm", isTargeted, kSlotR },
-	{ "Jinx", "jinxr", isSkillshotLine, kSlotR },
-	{ "LeeSin", "blindmonkrkick", isTargeted, kSlotR },
-	{ "Lissandra", "lissandrar", isTargeted, kSlotR },
-	{ "Lux", "luxrvfxmis", isSkillshotLine, kSlotR },
-	{ "Malphite", "ufslash", isSkillshotCircle, kSlotR },	
-	{ "MonkeyKing", "monkeykingspintowin", isSelfCast, kSlotR },
-	{ "Riven", "rivenizunablade", isSkillshotLine, kSlotR },
-	{ "Sejuani", "sejuaniglacialprisoncast", isSkillshotLine, kSlotR },
-	{ "Shyvana", "shyvanatrasformcast", isSkillshotLine, kSlotR },
-	{ "Sona", "sonar", isSkillshotLine, kSlotR },
-	{ "Syndra", "syndrar", isTargeted, kSlotR },
-	{ "Varus", "varusr", isSkillshotLine, kSlotR },
-	{ "Veigar", "veigarprimordialburst", isTargeted, kSlotR },
-	{ "Viktor", "viktorchaosstorm", isSkillshotCircle, kSlotR },
+	{ "Annie", "infernalguardian", isSkillshotCircle, kSlotR, false, "" },
+	{ "Amumu", "curseofthesadmummy", isSelfCast, kSlotR, false, "" },
+	{ "Ashe", "enchantedcrystalarrow", isSkillshotLine, kSlotR, true, "enchantedcrystalarrow" },
+	{ "AurelionSol", "aurelionsolr", isSkillshotLine, kSlotR, true, "notyet" },
+	{ "Cassiopeia", "cassiopeiar", isSkillshotCircle, kSlotR, false, "" },
+	{ "Chogath", "feast", isTargeted, kSlotR, false, "" },
+	{ "Darius", "dariusexecute", isTargeted, kSlotR, false, "" },
+	{ "Draven", "dravenr", isSkillshotLine, kSlotR, true, "dravenr" },
+	{ "Evelynn", "evelynnr", isSkillshotCircle, kSlotR, false, "" },
+	{ "Ezreal", "ezrealtrueshotbarrage", isSkillshotLine, kSlotR, true, "ezrealtrueshotbarrage" },
+	{ "Fizz", "fizzr", isSkillshotLine, kSlotR, true, "fizzrmissile" },
+	{ "Gnar", "gnarult", isSelfCast, kSlotR, false, "" },
+	{ "Garen", "egarenr", isTargeted, kSlotR, false, "" },
+	{ "Graves", "graveschargeshot", isSkillshotLine, kSlotR, true, "graveschargeshot" },
+	{ "Hecarim", "hecarimult", isSkillshotLine, kSlotR, true, "hecarimultmissile" },
+	{ "Illaoi", "illaoir", isSelfCast, kSlotR, false, "" },
+	{ "JarvanIV", "jarvanivcataclysm", isTargeted, kSlotR, false, "" },
+	{ "Jinx", "jinxr", isSkillshotLine, kSlotR, true, "jinxr" },
+	{ "LeeSin", "blindmonkrkick", isTargeted, kSlotR, false, "" },
+	{ "Lissandra", "lissandrar", isTargeted, kSlotR, false, "" },
+	{ "Lux", "luxmalicecannon", isSkillshotLine, kSlotR, true, "luxrvfxmis" },
+	{ "Malphite", "ufslash", isSkillshotCircle, kSlotR, false, "" },
+	{ "MonkeyKing", "monkeykingspintowin", isSelfCast, kSlotR, false, "" },
+	{ "Riven", "rivenizunablade", isSkillshotLine, kSlotR, true, "rivenwindslashmissile" },
+	{ "Sejuani", "sejuaniglacialprisontart", isSkillshotLine, kSlotR, true, "sejuaniglacialprison" },
+	{ "Shyvana", "shyvanatrasformcast", isSkillshotLine, kSlotR, false, "" },
+	{ "Sona", "sonar", isSkillshotLine, kSlotR, true, "sonar" },
+	{ "Syndra", "syndrar", isTargeted, kSlotR, false, "" },
+	{ "Varus", "varusr", isSkillshotLine, kSlotR, true, "varusrmissile" },
+	{ "Veigar", "veigarprimordialburst", isTargeted, kSlotR, false, "" },
+	{ "Viktor", "viktorchaosstorm", isSkillshotCircle, kSlotR, false, "" },
 };
 
 
@@ -593,6 +602,7 @@ std::vector<SpellsDanger> SpellsDangerList =
 std::list<IUnit*> axeListTeste;
 SArray<IUnit*> DravenAxes;
 SArray<IUnit*> SkillMissiles;
+SArray<MissilesDangers> SkillsMissilesDanger;
 SArray<IUnit*> SyndraOrbs;
 SArray<IUnit*> SyndraOrbsIddle;
 SArray<XayahFeathers> XayahReturn;
