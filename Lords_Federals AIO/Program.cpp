@@ -4745,8 +4745,8 @@ void LoadChampion()
 		pChampion = new cDraven;
 	else if (szChampion == "tristana")
 		pChampion = new cTristana;
-	//else if (szChampion == "ezreal")
-		//pChampion = new cEzreal;
+	else if (szChampion == "ezreal")
+		pChampion = new cEzreal;
 	else if (szChampion == "caitlyn")
 		pChampion = new cCaitlyn;
 	else if (szChampion == "vayne")
