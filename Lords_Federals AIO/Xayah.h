@@ -921,7 +921,16 @@ public:
 		{
 			for (auto spells : SkillMissiles.ToVector())
 			{
-				if (ListaSpells[ToLower(GMissileData->GetName(spells))]->Enabled())
+				std::string SpellName;
+				if (strstr(ToLower(GMissileData->GetName(spells)).c_str(), "graveschargeshot"))
+				{
+					SpellName = "graveschargeshot";
+				}
+				{
+					SpellName = ToLower(GMissileData->GetName(spells));
+				}
+
+				if (ListaSpells[SpellName]->Enabled())
 				{
 					if (spells != nullptr &&
 						GetDistance(spells, GEntityList->Player()) <= (0.6 + GGame->Latency() / 1000) * GMissileData->GetSpeed(spells) &&
@@ -959,13 +968,18 @@ public:
 		{
 			if (Source->IsMissile() && GMissileData->GetCaster(Source)->IsHero() && GMissileData->GetCaster(Source)->GetTeam() != GEntityList->Player()->GetTeam())
 			{				
+				if (GetDistance(Source, GEntityList->Player()) < 1500)
+				{
+					GUtility->LogConsole("Nome do Missile: %s", GMissileData->GetName(Source));
+				}
+
 				for (auto Spells : SpellsDangerList)
 				{					
 					if (Spells.Type == isSkillshotLine)
 					{
-						if (Compare(GMissileData->GetName(Source), Spells.Name.data()) == 1)
+						if (strstr(ToLower(GMissileData->GetName(Source)).c_str(), Spells.Name.data()))							
 						{
-							//GUtility->LogConsole("Missile Detectado");
+							GUtility->LogConsole("Missile Detectado");
 							SkillMissiles.Add(Source);
 						}
 					}
@@ -984,7 +998,7 @@ public:
 				{
 					if (Spells.Type == isSkillshotCircle || Spells.Type == isSkillshotLine)
 					{
-						if (Compare(GMissileData->GetName(Source), Spells.Name.data()) == 1)
+						if (strstr(ToLower(GMissileData->GetName(Source)).c_str(), Spells.Name.data()))
 						{
 							SkillMissiles.RemoveAll([&](IUnit* s) {return s->GetNetworkId() == Source->GetNetworkId(); });
 						}
