@@ -13,12 +13,17 @@ public:
 	{
 		MainMenu = GPluginSDK->AddMenu("Lords & Federals Xayah");		
 		
+		RMenu = MainMenu->AddMenu("R Settings WIP");
+		{
+			AutoR = RMenu->CheckBox("Auto R Dodge Dangers Spells", true);
+		}
+
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{
 			ComboQ = ComboSettings->AddSelection("Use Q Mode", 2, std::vector<std::string>({ "Off", "AfterAttacks", "Always" }));
 			ComboW = ComboSettings->AddSelection("Use W Mode", 1, std::vector<std::string>({ "Off", "AfterAttacks", "Always" }));
 			ComboE = ComboSettings->CheckBox("Use E", false);
-			ComboE2 = ComboSettings->CheckBox("Use E KS!", true);
+			ComboE2 = ComboSettings->CheckBox("Use E KS", true);
 			ComboEA = ComboSettings->AddInteger("E Damage Reduction", 0, 100, 0);
 			PassiveStacks = ComboSettings->AddInteger("Min E Feather Stacks", 1, 10, 3);			
 			SemiManualKey = ComboSettings->AddKey("Semi Manual Cast R key", 71);
@@ -57,11 +62,11 @@ public:
 		fedMiscSettings = MainMenu->AddMenu("Miscs Settings");
 		{
 			Predic = fedMiscSettings->AddSelection("Q Prediction", 1, std::vector<std::string>({ "Medium", "High", "Very High" }));
-			cMode = fedMiscSettings->AddSelection("E Mode Active", 1, std::vector<std::string>({ "Automatic", "Combo/Harass Key" }));
+			AutoPassiveStacks = fedMiscSettings->AddInteger("Min Feather Stacks: Mode Auto", 3, 15, 6);
+			cMode = fedMiscSettings->AddSelection("E Mode Automatic", 1, std::vector<std::string>({ "Automatic", "Off" }));
 			SaveMana = fedMiscSettings->CheckBox("Save Mana to Cast E", true);
-			AutoR = fedMiscSettings->CheckBox("Auto R Dodge Dangers Spells", true);
-			//ComboAA = fedMiscSettings->AddInteger("Cast Spell When x Feathers", 0, 3, 0);
-		}
+			ECountEnemy = fedMiscSettings->AddInteger("Auto E Min Enemys Can be Rooted", 0, 5, 3);					
+		}		
 		
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");
 		{
@@ -71,7 +76,8 @@ public:
 			DrawR = DrawingSettings->CheckBox("Draw R", false);			
 			DrawNear = DrawingSettings->AddSelection("Draw Feathers", 1, std::vector<std::string>({ "Off", "Rectangle", "Line" }));
 			DrawColor = DrawingSettings->AddColor("Draws Color", 138, 43, 226, 255);
-			DrawEA = DrawingSettings->AddSelection("Possible Feathers Return", 1, std::vector<std::string>({ "Off", "Mode Small", "Mode Big" }));			
+			DrawEA = DrawingSettings->AddSelection("Possible Feathers Return", 1, std::vector<std::string>({ "Off", "Mode Small", "Mode Big" }));
+			DrawECustom = DrawingSettings->CheckBox("Possible Rooted Targets", true);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
 		}
 	}
@@ -252,14 +258,14 @@ public:
 						{
 							if (GetTargetDraw->GetHPBarPosition(pos) && DrawEA->GetInteger() == 1)
 							{
-								static auto messageTimer = GRender->CreateFontW("Comic Sans", 16.f, kFontWeightNormal);
+								static auto messageTimer = GRender->CreateFontW("Comic Sans", 12.f, kFontWeightBold);
 								messageTimer->SetLocationFlags(kFontLocationCenterVertical);
 								messageTimer->SetOutline(true);
 
 								if (XayahReturn.Count() > 0)
 								{
 									messageTimer->SetColor(Vec4(255, 255, 0, 255));
-									messageTimer->Render(pos.x + 10, pos.y, "Feather Back: %i", fed.Count());
+									messageTimer->Render(pos.x + 10, pos.y + 2, "Feather Back: %i", fed.Count());
 								}
 							}
 							else if (DrawEA->GetInteger() == 2)
@@ -282,13 +288,13 @@ public:
 							Vec2 LifePos;
 							if (GetTargetDraw->GetHPBarPosition(LifePos))
 							{
-								static auto messageTimer = GRender->CreateFontW("Comic Sans", 12.f, kFontWeightNormal);
+								static auto messageTimer = GRender->CreateFontW("Comic Sans", 12.f, kFontWeightBold);
 								messageTimer->SetLocationFlags(kFontLocationCenterVertical);
 								messageTimer->SetOutline(true);
 
 								if (XayahReturn.Count() > 0)
 								{
-									messageTimer->SetColor(Vec4(211, 211, 211, 255));
+									messageTimer->SetColor(Vec4(255, 255, 255, 255));
 									messageTimer->Render(LifePos.x, LifePos.y - 3, "Feather Back: %i", fed.Count());
 								}
 
@@ -300,12 +306,35 @@ public:
 		}
 
 		
-		if (DrawComboDamage->Enabled())
+		if (DrawComboDamage->Enabled() || DrawECustom->Enabled())
 		{
 			for (auto t : GEntityList->GetAllHeros(false, true))
 			{
-				auto damage = GetEDamage(t);
-				HpBarIndicator::drawDmg(t, damage, Vec4(0, 0, 255, 255));
+				if (DrawComboDamage->Enabled())
+				{
+					auto damage = GetEDamage(t);
+					HpBarIndicator::drawDmg(t, damage, Vec4(0, 0, 255, 255));
+				}
+
+				if (DrawECustom->Enabled())
+				{
+					if (CheckTarget(t) && CountPossiblesFeathers(t) >= 3)
+					{
+						Vec2 LifePos;
+						if (t->GetHPBarPosition(LifePos))
+						{
+							static auto messageTimer = GRender->CreateFontW("Comic Sans", 20.f, kFontWeightBold);
+							messageTimer->SetLocationFlags(kFontLocationCenterVertical);
+							messageTimer->SetOutline(true);
+
+							if (XayahReturn.Count() > 0)
+							{
+								messageTimer->SetColor(Vec4(0, 255, 0, 255));
+								messageTimer->Render(LifePos.x + 20, LifePos.y - 20, ">Rootable<");
+							}
+						}
+					}
+				}
 			}
 		}
 	}	
@@ -368,7 +397,7 @@ public:
 		auto damage = EDamage[GEntityList->Player()->GetSpellLevel(kSlotE) - 1]* 1.05 + (GEntityList->Player()->BonusDamage()* 0.635);
 		auto dcrit = (GEntityList->Player()->Crit() * 0.49);
 		
-		if (line == 0)
+		if (line == 0 || GEntityList->Player()->GetSpellLevel(kSlotE) == 0)
 		{
 			return 0;
 		}
@@ -503,7 +532,7 @@ public:
 			{
 				if (CheckTarget(tar))
 				{
-					GUtility->LogConsole("Dano: %f, Critico? %f, My Critic? %f", Damage(tar), tar->Crit(), GEntityList->Player()->Crit());
+					//GUtility->LogConsole("Dano: %f, Critico? %f, My Critic? %f", Damage(tar), tar->Crit(), GEntityList->Player()->Crit());
 					if(GetEDamage(tar) >= tar->GetHealth() && !tar->IsDashing())
 					{
 						E->CastOnPlayer();
@@ -548,16 +577,47 @@ public:
 		if (LaneClearE->Enabled() && E->IsReady() && CountMinionsKiable() >= MinionsE->GetInteger())
 		{
 			E->CastOnPlayer();
-		}		
+		}
+
+		if (E->IsReady() && ECountEnemy->GetInteger() > 0 && CountRootedsTarget() >= ECountEnemy->GetInteger())
+		{
+			E->CastOnPlayer();
+		}
 	}
 
 	static int CountMinionsKiable()
 	{
 		if (XayahReturn.Count() > 0)
 		{			
-			SArray<XayahFeathers> minions = XayahReturn.Where([](XayahFeathers m) {return !m.Target->IsDead() && m.Target->IsVisible() && m.Target->IsCreep() && (Damage(m.Target) * 0.498) > m.Target->GetHealth() && GDamage->GetAutoAttackDamage(GEntityList->Player(), m.Target, false) < m.Target->GetHealth(); });
+			auto Count = 0;
+			for (auto minions : GEntityList->GetAllMinions(false, true, false))
+			{
+				if (CheckTarget(minions) && (Damage(minions) * 0.498) > minions->GetHealth() && GDamage->GetAutoAttackDamage(GEntityList->Player(), minions, false) < minions->GetHealth())
+				{
+					Count++;
+				}
+			}			
 
-			return minions.Count();
+			return Count;
+		}
+
+		return 0;
+	}
+
+	static int CountRootedsTarget()
+	{
+		if (XayahReturn.Count() > 0)
+		{
+			auto Count = 0;
+			for (auto targets : GEntityList->GetAllHeros(false, true))
+			{
+				if (CheckTarget(targets) && CountPossiblesFeathers(targets) >= 3)
+				{
+					Count++;
+				}
+			}
+
+			return Count;
 		}
 
 		return 0;
@@ -597,13 +657,13 @@ public:
 
 	static void AutoE()
 	{		
-		if (cMode->GetInteger() == 0 && E->IsReady())
+		if (cMode->GetInteger() == 0 && E->IsReady() && (ComboE->Enabled() || HarassE->Enabled()))
 		{
 			for (auto eTarget : GEntityList->GetAllHeros(false, true))
 			{
 				if (CheckTarget(eTarget))
 				{
-					if (CountPossiblesFeathers(eTarget) >= PassiveStacks->GetInteger() && CountPossiblesFeathers(eTarget) >= 3)
+					if (CountPossiblesFeathers(eTarget) >= AutoPassiveStacks->GetInteger() && CountPossiblesFeathers(eTarget) >= 3)
 					{
 						E->CastOnPlayer();
 					}
@@ -776,7 +836,7 @@ public:
 
 					}
 
-					if (Spells.Type == isSkillshotLine)
+					/*if (Spells.Type == isSkillshotLine)
 					{
 						if (GetDistanceVectors(args.Position_, args.EndPosition_) > R->Range())
 						{
@@ -797,7 +857,7 @@ public:
 								R->CastOnPosition(args.Caster_->GetPosition());
 							}
 						}
-					}					
+					}*/				
 
 					if (Spells.Type == isTargeted)
 					{
@@ -824,21 +884,91 @@ public:
 		}		
 	}
 
+	static void DodgeLineSkillsShots()
+	{
+		if (AutoR->Enabled() && R->IsReady() && SkillMissiles.Count() > 0)
+		{
+			for (auto spells : SkillMissiles.ToVector())
+			{
+
+				if (spells != nullptr && GetDistance(spells, GEntityList->Player()) <= (0.6 + GGame->Latency() / 1000) * GMissileData->GetSpeed(spells))
+				{
+					if (CheckTarget(GMissileData->GetCaster(spells)) && GMissileData->GetCaster(spells)->IsValidTarget(GEntityList->Player(), R->Range()))
+					{
+						auto CastPos = Extend(GEntityList->Player()->GetPosition(), GMissileData->GetCaster(spells)->GetPosition(), R->Range());
+						R->CastOnPosition(CastPos);
+					}
+					else
+					{
+						auto Target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R->Range());
+
+						if (CheckTarget(Target) && Target->IsValidTarget(GEntityList->Player(), R->Range()))
+						{
+							auto CastPos = Extend(GEntityList->Player()->GetPosition(), Target->GetPosition(), R->Range());
+							R->CastOnPosition(CastPos);
+						}
+						else
+						{
+							auto CastPos = Extend(GEntityList->Player()->GetPosition(), GMissileData->GetStartPosition(spells), R->Range());
+							R->CastOnPosition(CastPos);
+						}
+					}
+				}
+			}
+		}
+	}
+
 	static void OnCreateObject(IUnit* Source)
 	{
-
+		if (Source != nullptr)
+		{
+			if (Source->IsMissile() && GMissileData->GetCaster(Source)->GetTeam() != GEntityList->Player()->GetTeam())
+			{
+				if (GetDistance(Source, GEntityList->Player()) < 1500)
+				{
+					//GUtility->LogConsole("Nome do Missile: %s", GMissileData->GetName(Source));
+				}	
+				
+				for (auto Spells : SpellsDangerList)
+				{
+					if (Spells.Type == isSkillshotCircle || Spells.Type == isSkillshotLine)
+					{
+						if (Compare(GMissileData->GetName(Source), Spells.Name.data()) == 1)
+						{
+							//GUtility->LogConsole("Missile Detectado");
+							SkillMissiles.Add(Source);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	static void OnDeleteObject(IUnit* Source)
 	{
-		
+		if (Source != nullptr)
+		{
+			if (Source->IsMissile() && GMissileData->GetCaster(Source)->GetTeam() != GEntityList->Player()->GetTeam())
+			{				
+				for (auto Spells : SpellsDangerList)
+				{
+					if (Spells.Type == isSkillshotCircle || Spells.Type == isSkillshotLine)
+					{
+						if (Compare(GMissileData->GetName(Source), Spells.Name.data()) == 1)
+						{
+							SkillMissiles.RemoveAll([&](IUnit* s) {return s->GetNetworkId() == Source->GetNetworkId(); });
+						}
+					}
+				}
+			}
+		}		
 	}
 
 	static void SemiManualR()
 	{
 		if (IsKeyDown(SemiManualKey))
 		{
-			//GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
+			GOrbwalking->Orbwalk(nullptr, GGame->CursorPosition());
 
 			if (!R->IsReady())
 			{

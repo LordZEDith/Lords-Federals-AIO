@@ -328,6 +328,7 @@ IMenuOption* DrawPetStatus;
 IMenuOption* DrawECustom;
 IMenuOption* DrawCaitSpots;
 IMenuOption* DrawColor;
+IMenuOption* DrawColorDMG;
 
 IMenuOption* HealthPercent;
 IMenuOption* FarmMana;
@@ -549,15 +550,16 @@ std::vector<SpellsDanger> SpellsDangerList =
 {
 	{ "Annie", "infernalguardian", isSkillshotCircle },
 	{ "Amumu", "curseofthesadmummy", isSelfCast },
-	{ "Ashe", "enchantedcystalarrow", isSkillshotLine },
+	{ "Ashe", "enchantedcrystalarrow", isSkillshotLine },
 	{ "AurelionSol", "aurelionsolr", isSkillshotLine },
 	{ "Cassiopeia", "cassiopeiar", isSkillshotCircle },
 	{ "Chogath", "feast", isTargeted },
 	{ "Darius", "dariusexecute", isTargeted },
 	{ "Evelynn", "evelynnr", isSkillshotCircle },
+	{ "Fizz", "fizzrmissile", isSkillshotLine },
 	{ "Gnar", "gnarult", isSelfCast },
 	{ "Garen", "egarenr", isTargeted },
-	{ "Graves", "gravesr", isSkillshotLine },
+	{ "Graves", "graveschargeshot", isSkillshotLine },
 	{ "Hecarim", "hecarimult", isSkillshotLine },
 	{ "Illaoi", "illaoir", isSelfCast },
 	{ "JarvanIV", "jarvanivcataclysm", isTargeted },
@@ -574,6 +576,7 @@ std::vector<SpellsDanger> SpellsDangerList =
 	{ "Veigar", "veigarprimordialburst", isTargeted },
 	{ "Viktor", "viktorchaosstorm", isSkillshotCircle },
 };
+
 
 //std::vector<IUnit*> axeList;
 std::list<IUnit*> axeListTeste;
@@ -659,6 +662,7 @@ bool EQcastNow = false;
 bool CheckAttack = false;
 
 IMenuOption* PassiveStacks;
+IMenuOption* AutoPassiveStacks;
 IMenuOption* hPassiveStacks;
 IMenuOption* jPassiveStacks;
 IMenuOption* lPassiveStacks;

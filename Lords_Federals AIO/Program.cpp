@@ -114,7 +114,7 @@ public:
 
 	void OnDeleteObject(IUnit* Source) override
 	{
-
+		Template().OnDeleteObject(Source);
 	}
 	void OnInterruptible(InterruptibleSpell const& Args) override
 	{
@@ -4572,6 +4572,7 @@ public:
 		Xayah().XayahE();
 		Xayah().KSJungle();
 		Xayah().SemiManualR();
+		Xayah().DodgeLineSkillsShots();
 
 		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
@@ -4616,12 +4617,12 @@ public:
 
 	void OnCreateObject(IUnit* Source) override
 	{
-		//Xayah().OnCreateObject(Source);
+		Xayah().OnCreateObject(Source);
 	}
 
 	void OnDeleteObject(IUnit* Source) override
 	{
-		//Xayah().OnDeleteObject(Source);
+		Xayah().OnDeleteObject(Source);
 	}
 
 	void OnDash(UnitDash* Args) override
@@ -4744,8 +4745,8 @@ void LoadChampion()
 		pChampion = new cDraven;
 	else if (szChampion == "tristana")
 		pChampion = new cTristana;
-	else if (szChampion == "ezreal")
-		pChampion = new cEzreal;
+	//else if (szChampion == "ezreal")
+		//pChampion = new cEzreal;
 	else if (szChampion == "caitlyn")
 		pChampion = new cCaitlyn;
 	else if (szChampion == "vayne")
@@ -4828,8 +4829,9 @@ void LoadChampion()
 		pChampion = new cTemplate;
 	else
 	{		
-		GGame->PrintChat(szChampion.data());
-		GGame->PrintChat("Champion Not Supported");
+		//GGame->PrintChat(szChampion.data());
+		//GGame->PrintChat("Champion Not Supported");
+		pChampion = new cTemplate;
 	}	
 	
 	if (pChampion != nullptr)

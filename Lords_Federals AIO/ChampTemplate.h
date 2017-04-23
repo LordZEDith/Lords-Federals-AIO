@@ -21,7 +21,6 @@ public:
 			DrawR = DrawingSettings->CheckBox("Draw R", false);
 			DrawComboDamage = DrawingSettings->CheckBox("Draw combo damage", true);
 		}
-
 	}
 
 	static void LoadSpells()
@@ -111,13 +110,33 @@ public:
 
 	static void OnProcessSpell(CastedSpell const& Args)
 	{
+		GUtility->LogConsole("Spell Name: %s", Args.Name_);
 
 	}
 
 	static void OnCreateObject(IUnit* Source)
 	{
+		if (Source != nullptr)
+		{
+			if (Source->IsMissile() /*&& GMissileData->GetCaster(Source)->GetTeam() != GEntityList->Player()->GetTeam()*/)
+			{
+				if (GetDistance(Source, GEntityList->Player()) < 1500)
+				{
+					GUtility->LogConsole("Nome do Missile: %s", GMissileData->GetName(Source));
 
+					//GUtility->LogConsole("Create Missile");
 
+					for (auto Spells : SpellsDangerList)
+					{
+						if (Compare(GMissileData->GetName(Source), Spells.Name.data()) == 1)
+						{
+							GUtility->LogConsole("Missile Detectado");
+							SkillMissiles.Add(Source);
+						}						
+					}
+				}
+			}
+		}
 	}
 
 	static void OnDeleteObject(IUnit* Source)

@@ -104,6 +104,15 @@ inline string ToLower(string String)
 	return L;
 }
 
+inline int Compare(const char a[], const char b[])
+{
+	for (int i = 0; a[i] != '\0'; i++)
+		if (toupper(a[i]) != toupper(b[i]))
+			return 0;
+
+	return 1;
+}
+
 static bool CheckIsWard(IUnit* minion)
 {
 	if (strstr(minion->GetBaseSkinName(), "YellowTrinket") ||
