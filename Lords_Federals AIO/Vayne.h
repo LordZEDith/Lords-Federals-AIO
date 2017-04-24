@@ -10,7 +10,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Vayne");
+		MainMenu = GPluginSDK->AddMenu("Federals Vayne");
 
 		QSettings = MainMenu->AddMenu("Tumble Settings");
 		{

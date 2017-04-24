@@ -9,7 +9,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Rumble");
+		MainMenu = GPluginSDK->AddMenu("Federals Rumble");
 
 		QMenu = MainMenu->AddMenu("Heat Settings");
 		{

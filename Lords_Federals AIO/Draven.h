@@ -21,7 +21,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Draven");
+		MainMenu = GPluginSDK->AddMenu("Federals Draven");
 
 		AxeSettings = MainMenu->AddMenu("Axe Settings");
 		{

@@ -8,7 +8,7 @@ class Rengar
 public:
 	void  Menu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Rengar");
+		MainMenu = GPluginSDK->AddMenu("Federals Rengar");
 		//CMenu = MainMenu->AddMenu("Combo Settings");
 		QMenu = MainMenu->AddMenu("Q Settings");
 		WMenu = MainMenu->AddMenu("W Settings");

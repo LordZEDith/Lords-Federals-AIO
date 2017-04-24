@@ -9,7 +9,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Xayah");		
+		MainMenu = GPluginSDK->AddMenu("Federals Xayah");		
 		
 		RMenu = MainMenu->AddMenu("R Settings WIP");
 		{

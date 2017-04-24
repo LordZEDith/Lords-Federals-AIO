@@ -8,7 +8,7 @@ class Diana
 public:
 	void Menu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Diana");
+		MainMenu = GPluginSDK->AddMenu("Federals Diana");
 		QMenu = MainMenu->AddMenu("Q Settings");
 
 		WMenu = MainMenu->AddMenu("W Settings");

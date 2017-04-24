@@ -7,7 +7,7 @@
 	public:
 		void  Menu()
 		{
-			MainMenu = GPluginSDK->AddMenu("Lords & Federals Riven");
+			MainMenu = GPluginSDK->AddMenu("Federals Riven");
 			ComboMenu = MainMenu->AddMenu("Combo Settings");
 			HarassMenu = MainMenu->AddMenu("Harass Settings");
 			Misc = MainMenu->AddMenu("Miscellaneous");

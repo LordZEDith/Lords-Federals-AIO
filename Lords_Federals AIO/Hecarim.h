@@ -21,7 +21,7 @@ public:
 	
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Hecarim");
+		MainMenu = GPluginSDK->AddMenu("Federals Hecarim");
 
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{

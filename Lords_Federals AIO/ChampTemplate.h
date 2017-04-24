@@ -10,7 +10,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Template");
+		MainMenu = GPluginSDK->AddMenu("Federals Template");
 
 
 		DrawingSettings = MainMenu->AddMenu("Drawing Settings");

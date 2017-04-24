@@ -11,7 +11,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Ziggs");
+		MainMenu = GPluginSDK->AddMenu("Federals Ziggs");
 
 		FarmSettings = MainMenu->AddMenu("Farm Settings");
 		{

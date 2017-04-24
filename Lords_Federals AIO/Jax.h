@@ -9,7 +9,7 @@ public:
 
 	void  Menu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Jax");
+		MainMenu = GPluginSDK->AddMenu("Federals Jax");
 		ComboMenu = MainMenu->AddMenu("Combo Settings");
 		HarassMenu = MainMenu->AddMenu("Harass Settings");
 		FarmMenu = MainMenu->AddMenu("LaneClear Settings");

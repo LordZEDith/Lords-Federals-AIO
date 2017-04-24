@@ -8,7 +8,7 @@ public:
 
 	void  Menu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Karthus");
+		MainMenu = GPluginSDK->AddMenu("Federals Karthus");
 		QMenu = MainMenu->AddMenu("Q Settings");
 		WMenu = MainMenu->AddMenu("W Settings");
 		EMenu = MainMenu->AddMenu("E Settings");

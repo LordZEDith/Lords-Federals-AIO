@@ -11,7 +11,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Ahri");
+		MainMenu = GPluginSDK->AddMenu("Federals Ahri");
 
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{

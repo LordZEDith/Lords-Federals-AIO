@@ -9,7 +9,7 @@ class Warwick
 public:
 	void  Menu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Warwick");
+		MainMenu = GPluginSDK->AddMenu("Federals Warwick");
 		QMenu = MainMenu->AddMenu("Q Settings");
 		WMenu = MainMenu->AddMenu("W Settings");
 		EMenu = MainMenu->AddMenu("E Settings");

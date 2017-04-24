@@ -9,7 +9,7 @@ public:
 
 	static void InitializeMenu()
 	{	
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Maokai");
+		MainMenu = GPluginSDK->AddMenu("Federals Maokai");
 		
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{			

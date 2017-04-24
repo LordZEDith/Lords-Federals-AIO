@@ -8,7 +8,7 @@ public:
 
 	static void  InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Xerath");
+		MainMenu = GPluginSDK->AddMenu("Federals Xerath");
 
 		RSettings = MainMenu->AddMenu("R Settings");
 		{

@@ -9,7 +9,7 @@ public:
 
 	void  Menu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Darius");
+		MainMenu = GPluginSDK->AddMenu("Federals Darius");
 		QMenu = MainMenu->AddMenu("Q Settings");
 		WMenu = MainMenu->AddMenu("W Settings");
 		EMenu = MainMenu->AddMenu("E Settings");

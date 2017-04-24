@@ -19,7 +19,7 @@ PLUGIN_EVENT(void) OnOrbwalkAttack(IUnit* Source, IUnit* Target)
 }
 #pragma endregion
 
-PluginSetup("Lords & Federals AIO");
+PluginSetup("Federals AIO");
 
 class IChampion
 {
@@ -4862,7 +4862,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	//VersionCheck().RunVersionChecker();
 	LoadChampion();
 	pChampion->OnLoad();	
-	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "Welcome to Lords & Federals AIO");	
+	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "Welcome to Federals AIO");	
 	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "[News]: Galio, Pantheon, Gnar, Kindred, Ivern and Xayah are now Supported");
 	GRender->NotificationEx(Color::LightBlue().Get(), 3, true, false, "[Betas]: Ahri Updates, Draven Update, Vayne");
 	GRender->NotificationEx(Color::LightBlue().Get(), 10, true, true, "[Donations]: If you like our plugins please leave a donation, link can be found in our signatures");

@@ -10,7 +10,7 @@ public:
 
 	void  Menu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Tristana");
+		MainMenu = GPluginSDK->AddMenu("Federals Tristana");
 
 		QMenu = MainMenu->AddMenu("Q Settings");
 		WMenu = MainMenu->AddMenu("W Settings");

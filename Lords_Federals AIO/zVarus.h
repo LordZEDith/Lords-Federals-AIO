@@ -10,7 +10,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Varus Rework");
+		MainMenu = GPluginSDK->AddMenu("Federals Varus Rework");
 
 		RSettings = MainMenu->AddMenu("Ultimate Settings");
 		{

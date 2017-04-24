@@ -9,7 +9,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Ashe");
+		MainMenu = GPluginSDK->AddMenu("Federals Ashe");
 
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{

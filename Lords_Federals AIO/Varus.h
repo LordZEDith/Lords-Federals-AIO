@@ -9,7 +9,7 @@ public:
 
 	void  Menu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Varus");
+		MainMenu = GPluginSDK->AddMenu("Federals Varus");
 		QMenu = MainMenu->AddMenu("Combo");
 		WMenu = MainMenu->AddMenu("Harass");
 		EMenu = MainMenu->AddMenu("LaneClear");

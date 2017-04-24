@@ -9,7 +9,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Kindred");
+		MainMenu = GPluginSDK->AddMenu("Federals Kindred");
 
 		RSettings = MainMenu->AddMenu("R Settings");
 		{

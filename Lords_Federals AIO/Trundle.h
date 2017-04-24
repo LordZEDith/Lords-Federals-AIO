@@ -9,7 +9,7 @@ public:
 
 	void  Menu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Trundle");
+		MainMenu = GPluginSDK->AddMenu("Federals Trundle");
 		ComboMenu = MainMenu->AddMenu("Combo Menu");
 		HarassMenu = MainMenu->AddMenu("Harass Menu");
 		ItemMenu = MainMenu->AddMenu("Item Menu");

@@ -10,7 +10,7 @@ public:
 
 	void  Menu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Ekko");
+		MainMenu = GPluginSDK->AddMenu("Federals Ekko");
 		KS = MainMenu->AddMenu("KS");
 		Activator = MainMenu->AddMenu("Activator");
 		Draw = MainMenu->AddMenu("Draw");

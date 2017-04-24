@@ -10,7 +10,7 @@ public:
 	 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Syndra");
+		MainMenu = GPluginSDK->AddMenu("Federals Syndra");
 
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{			

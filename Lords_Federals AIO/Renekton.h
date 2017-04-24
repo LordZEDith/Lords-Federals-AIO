@@ -13,7 +13,7 @@ public:
 
 	void  Menu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Renekton");		
+		MainMenu = GPluginSDK->AddMenu("Federals Renekton");		
 
 		csettings = MainMenu->AddMenu("Combo Settings");
 		{

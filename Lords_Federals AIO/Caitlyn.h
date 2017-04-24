@@ -17,7 +17,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Caitlyn");
+		MainMenu = GPluginSDK->AddMenu("Federals Caitlyn");
 
 		WSettings = MainMenu->AddMenu("Trap Settings");
 		{

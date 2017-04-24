@@ -15,7 +15,7 @@ public:
 	static int CardPick;
 	void  Menu()
 	{
-	MainMenu = GPluginSDK->AddMenu("Lords & Federals Twisted");
+	MainMenu = GPluginSDK->AddMenu("Federals Twisted");
 
 	ComboMenu = MainMenu->AddMenu("Combo");
 	{

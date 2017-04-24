@@ -8,7 +8,7 @@ class Sona
 public:
 	void  Menu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Sona");
+		MainMenu = GPluginSDK->AddMenu("Federals Sona");
 		QMenu = MainMenu->AddMenu("Q Settings");
 		WMenu = MainMenu->AddMenu("W Settings");
 		EMenu = MainMenu->AddMenu("E Settings");

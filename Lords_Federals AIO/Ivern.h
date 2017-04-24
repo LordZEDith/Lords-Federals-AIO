@@ -9,7 +9,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Ivern");
+		MainMenu = GPluginSDK->AddMenu("Federals Ivern");
 
 		ESettings = MainMenu->AddMenu("E Shield Settings");
 		{

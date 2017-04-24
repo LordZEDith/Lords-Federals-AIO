@@ -9,7 +9,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Mundo");
+		MainMenu = GPluginSDK->AddMenu("Federals Mundo");
 
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{

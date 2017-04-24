@@ -10,7 +10,7 @@ public:
 	 
 	static void InitializeMenu()
 	{		
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Tristana");
+		MainMenu = GPluginSDK->AddMenu("Federals Tristana");
 
 		WSettings = MainMenu->AddMenu("W Settings");
 		{

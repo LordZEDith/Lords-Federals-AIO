@@ -10,7 +10,7 @@ public:
 
 	static void InitializeMenu()
 	{
-		MainMenu = GPluginSDK->AddMenu("Lords & Federals Galio Beta");
+		MainMenu = GPluginSDK->AddMenu("Federals Galio Beta");
 
 		ComboSettings = MainMenu->AddMenu("Combo Settings");
 		{
